@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+        <FrameLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/login_image" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/react" />
+
+
+
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_weight="1"
+            android:elevation="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <RelativeLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:paddingTop="16dp"
+            android:layout_marginTop="120dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </FrameLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:paddingBottom="20dp"
+                android:elevation="2dp"
+                android:paddingHorizontal="24dp"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".LoginActivity">
+
+
+                <RelativeLayout
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:id="@+id/rl_logo"
+                    android:layout_gravity="center"
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:layout_centerInParent="true"
+                        android:id="@+id/img_logo"
+                        android:layout_alignParentTop="true"
+                        android:src="@drawable/paws"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"/>
+
+                    <TextView
+                        android:gravity="center"
+                        android:layout_below="@id/img_logo"
+                        android:textSize="40dp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/white"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/comfortaa"
+                        android:text="@string/app_name" />
+
+                </RelativeLayout>
+
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    app:layout_constraintTop_toBottomOf="@id/rl_logo"
+                    android:inputType="textEmailAddress"
+                    android:elevation="2dp"
+                    android:padding="12dp"
+                    android:id="@+id/et_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/et_background"
+                    android:hint="@string/input_email"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:ignore="MissingConstraints"/>
+
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:inputType="textPassword"
+                    android:elevation="2dp"
+                    android:padding="12dp"
+                    android:background="@drawable/et_background"
+                    android:id="@+id/et_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="20dp"
+                    android:hint="@string/input_password"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/et_email"
+                    tools:ignore="MissingConstraints"/>
+
+
+                <Button
+                    android:id="@+id/btn_login"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/sign_in"
+                    app:layout_constraintEnd_toEndOf="@id/et_password"
+                    app:layout_constraintStart_toStartOf="@id/et_password"
+                    app:layout_constraintTop_toBottomOf="@id/et_password"
+                    tools:ignore="MissingConstraints" />
+
+                <RelativeLayout
+                    android:gravity="center"
+                    android:layout_marginTop="20dp"
+                    app:layout_constraintTop_toBottomOf="@id/btn_login"
+                    app:layout_constraintEnd_toEndOf="@id/et_password"
+                    app:layout_constraintStart_toStartOf="@id/et_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/tv_dont"
+                        android:text="@string/dont_have_account"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                    </TextView>
+
+                    <TextView
+                        android:id="@+id/tv_sign_up"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_toRightOf="@id/tv_dont"
+                        android:text="@string/sign_up"
+                        android:textColor="@color/purple_500"/>
+                </RelativeLayout>
+
+                <Switch
+                    android:visibility="gone"
+                    android:id="@+id/switch_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="12dp"
+                    app:layout_constraintEnd_toEndOf="@id/et_password"
+                    app:layout_constraintStart_toStartOf="@id/et_password"
+                    app:layout_constraintTop_toBottomOf="@id/btn_login"
+                    tools:ignore="UseSwitchCompatOrMaterialXml"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+</FrameLayout>
+
+
+

@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Dog Finder</string>
+    <string name="input_email">Enter email</string>
+    <string name="login">Login</string>
+    <string name="is_night_mode">is_night_mode</string>
+    <string name="input_password">Enter password</string>
+    <string name="dont_have_account">Don\'t have an account?</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_in">Sign in</string>
+    <string name="input_password_confirm">Confirm password</string>
+    <string name="already_have_account">Already have an account?</string>
+</resources>
