@@ -14,6 +14,17 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123123123@databas
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
+V1 = "/v1"
+
 # import and register Blueprints
 from .user import user
-app.register_blueprint(user, url_prefix='/auth')
+app.register_blueprint(user, url_prefix=f"{V1}/auth")
+
+
+# import and register Blueprints
+from .pets import pets
+app.register_blueprint(pets, url_prefix=f"{V1}/pets")
+
+
+
+
