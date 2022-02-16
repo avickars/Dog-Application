@@ -25,5 +25,4 @@ folder-add:
 folder-move:
 	aws s3 mv --recursive $(local_folder) s3://$(bucket)/$(aws_folder)
 
-
 	
