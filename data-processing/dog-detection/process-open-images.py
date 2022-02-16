@@ -1,19 +1,37 @@
 import pandas as pd
+import os
+import PIL.Image
 
 def main():
-    # Removing Non Dog Boxes
+    for type in ['test', 'train', 'validation']:
+        # Removing Non Dog Boxes
+        detections = pd.read_csv(f"open-images-v6/{type}/labels/detections.csv", index_col=0)
+        detections = detections[detections['LabelName'] == '/m/0bt9lr']
 
-    test = pd.read_csv('open-images-v6/test/labels/detections.csv')
-    test = test[test['LabelName'] == '/m/0bt9lr']
-    test.to_csv('open-images-v6/test/labels/detections.csv')
+        # Determining Image height and Wight
+        imageRowWidth = []
+        for image in os.listdir(f"open-images-v6/{type}/data"):
 
-    train = pd.read_csv('open-images-v6/train/labels/detections.csv')
-    train = train[train['LabelName'] == '/m/0bt9lr']
-    train.to_csv('open-images-v6/train/labels/detections.csv')
+            # Reading in the image
+            img = PIL.Image.open(f"open-images-v6/{type}/data/{image}")
 
-    validation = pd.read_csv('open-images-v6/validation/labels/detections.csv')
-    validation = validation[validation['LabelName'] == '/m/0bt9lr']
-    validation.to_csv('open-images-v6/validation/labels/detections.csv')
+            # Determining the actual height and width
+            w, h = img.size
+
+            # Recording the height and width
+            imageRowWidth.append([image[0:-4], w, h])
+
+        # Creating dataframe
+        rowWidthDf = pd.DataFrame(imageRowWidth, columns=['ImageID', 'imageWidth','imageHeight'])
+        
+        # Merging with detections
+        appendedDetections = pd.merge(detections, rowWidthDf)
+
+
+        appendedDetections.to_csv(f"open-images-v6/{type}/labels/detections.csv")    
+
+
+
 
 
 
