@@ -2,19 +2,17 @@
     "Version": "2012-10-17",
     "Statement": [
        {
-          "Sid": "Example permissions",
+          "Sid": "Rishab Permissions",
           "Effect": "Allow",
           "Principal": {
-             "AWS": "arn:aws:iam::AccountB-ID:root"
+             "AWS": "arn:aws:iam::455125577962:user/Administrator"
           },
           "Action": [
-             "s3:GetBucketLocation",
-             "s3:ListBucket",
-             "s3:DeleteObject",
-             "s3:PutObject"
+             "s3:*"
           ],
           "Resource": [
-             "arn:aws:s3:::dog-app-756"
+             "arn:aws:s3:::dog-app-756",
+             "arn:aws:s3:::dog-app-756/*"
           ]
        }
     ]
