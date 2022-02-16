@@ -2,6 +2,7 @@ import json
 from functools import wraps
 from flask import request, jsonify
 from main.models import db, User, UserSession
+from sqlalchemy.exc import SQLAlchemyError
 
 
 def logged_in(f):
@@ -19,3 +20,18 @@ def logged_in(f):
             })
             return _error
     return decorated_func
+
+
+
+def handle_sql_exception(f):
+    @wraps(f)
+    def applicator(*args, **kwargs):
+      try:
+         return f(*args,**kwargs)
+      except SQLAlchemyError as err:
+        _error = {
+          "status": False,
+          "error": err._message()
+        }
+        return jsonify(_error)
+    return applicator

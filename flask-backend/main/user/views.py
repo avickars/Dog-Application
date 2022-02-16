@@ -3,22 +3,28 @@ import random
 import string
 from flask import request, jsonify
 from main.models import db, User, users_schema, UserSession
-from main.user.middleware import logged_in
+from main.user.middleware import logged_in, handle_sql_exception
+from sqlalchemy import delete
 from . import user
 
 
-@user.route('/', methods=['POST'])
-@logged_in
-def home():
-    print(request.data)
-    return "hello all"
 
 @user.route('/register', methods=['POST'])
+@handle_sql_exception
 def register():
     register_data = request.data
     register_data = json.loads(register_data)
 
     print(register_data)
+
+    _res = db.session.query(User.id).filter_by(email=register_data['email']).first()
+
+    if _res is not None:
+        _error = {
+            "status": False,
+            "message": "Seems you already have an account. Please sign-in!"
+        }
+        return jsonify(_error)
 
     _user = User(
         name=register_data['name'],
@@ -27,9 +33,15 @@ def register():
         password=register_data['password'])
     db.session.add(_user)
     db.session.commit()
-    return { "status" : True }
+
+    _data = {
+        "status": True,
+        "message": "User registered successfully!",
+    }
+    return jsonify(_data)
 
 @user.route('/login', methods=['POST'])
+@handle_sql_exception
 def login():
     login_data = request.data
     login_data = json.loads(login_data)
@@ -67,6 +79,24 @@ def login():
         "refresh_token": refresh_token
     }
     return jsonify(_data)
+
+@user.route('/logout', methods=['POST'])
+@handle_sql_exception
+def dispose_refresh_token():
+    logout_data = json.loads(request.data)
+
+    rt = logout_data['refresh_token']
+    sql1 = delete(UserSession).where(UserSession.refresh_token == rt)
+    db.session.execute(sql1)
+    db.session.commit()
+
+    _data = {
+        "status": True,
+        "message": "Logged out successfully!",
+    }
+    return jsonify(_data)
+
+
 
 @user.route('/getUsers')
 def getusers():
