@@ -1,8 +1,8 @@
 import random
 import numpy as np
-from iou_yolo import IOU_YOLO
+from iou_yolo import iou_yolo
 
-def KMEANS(data, num_clusters=5, max_iters=10):
+def kmeans(data, num_clusters=5, max_iters=10):
     # CITATION: https://fairyonice.github.io/Part_1_Object_Detection_with_Yolo_for_VOC_2014_data_anchor_box_clustering.html
     # data: [[width, height]...[width, height]]
     
@@ -22,6 +22,7 @@ def KMEANS(data, num_clusters=5, max_iters=10):
     # Defining iteration counter
     i = 0
     
+    # Ending when either max_iters is reached or the clusters don't change
     while (i < max_iters) and ~np.all(nearestClusters == newClusters):
         
         # Assignment the new clusters as the all clusters
@@ -32,7 +33,7 @@ def KMEANS(data, num_clusters=5, max_iters=10):
 
         # Computing the distance to the centroids for each point
         for cluster in range(0,num_clusters):        
-            centroidDistances[:,cluster] = 1 - IOU_YOLO(centroids[cluster,:],data)
+            centroidDistances[:,cluster] = 1 - iou_yolo(centroids[cluster,:],data)
         
         # Determining each points cluster
         newClusters = np.argmin(centroidDistances,axis=1)

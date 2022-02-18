@@ -63,43 +63,43 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 
-class OpenImagesDataset(Dataset):
-    def __init__(self, rootDirectory, anchorBoxes, transform=None, dataType='train'):
-        # Root directory of the Open-Images Dataset
-        self.rootDirectory = rootDirectory
+# class OpenImagesDataset(Dataset):
+#     def __init__(self, rootDirectory, anchorBoxes, transform=None, dataType='train'):
+#         # Root directory of the Open-Images Dataset
+#         self.rootDirectory = rootDirectory
         
-        # Directory containing the images
-        self.imageDirectory = f"{self.rootDirectory}/{dataType}/data"
+#         # Directory containing the images
+#         self.imageDirectory = f"{self.rootDirectory}/{dataType}/data"
         
-        # The transformation of the images to apply
-        self.transform = transform
+#         # The transformation of the images to apply
+#         self.transform = transform
         
-        # The data set type (train/validation/test)
-        self.dataType = dataType
+#         # The data set type (train/validation/test)
+#         self.dataType = dataType
         
-        # Image labels (i.e. true bounding boxes)
-        self.labels = pd.read_csv(f"{rootDirectory}/{dataType}/labels/detections.csv", index_col=0)\
+#         # Image labels (i.e. true bounding boxes)
+#         self.labels = pd.read_csv(f"{rootDirectory}/{dataType}/labels/detections.csv", index_col=0)\
         
-        # List of imageIDs with no duplicates
-        self.imageList = self.labels['ImageID'].drop_duplicates()
+#         # List of imageIDs with no duplicates
+#         self.imageList = self.labels['ImageID'].drop_duplicates()
         
-        # Pre-defined anchor box width/heights
-        with open(anchorBoxes, 'rb') as f:
-            self.anchorBoxes = np.load(f)
+#         # Pre-defined anchor box width/heights
+#         with open(anchorBoxes, 'rb') as f:
+#             self.anchorBoxes = np.load(f)
             
-    def __len__(self):
-        return len(self.imageList)
+#     def __len__(self):
+#         return len(self.imageList)
     
-    def __getitem__(self, index):
-        # Creating the path of the iamge
-        img_path = os.path.join(self.imageDirectory, f"{self.imageList.iloc[index]}.jpg")
+#     def __getitem__(self, index):
+#         # Creating the path of the iamge
+#         img_path = os.path.join(self.imageDirectory, f"{self.imageList.iloc[index]}.jpg")
         
-        # Reading in the image
-        image = Image.open(img_path)
+#         # Reading in the image
+#         image = Image.open(img_path)
         
-        # Transforming the image according to its datatype
-        image = imageTransforms[self.dataType](image)
+#         # Transforming the image according to its datatype
+#         image = imageTransforms[self.dataType](image)
         
         
         
-        return image, 1
+        # return image, 1

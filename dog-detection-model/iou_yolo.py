@@ -1,6 +1,6 @@
 import numpy as np
 
-def IOU_YOLO(box, boxes):
+def iou_yolo(box, boxes):
     # CITATION: https://fairyonice.github.io/Part_1_Object_Detection_with_Yolo_for_VOC_2014_data_anchor_box_clustering.html 
     # box: [width, height]
     # boxes: [[width, height]...[width, height]]
