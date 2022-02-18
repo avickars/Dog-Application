@@ -5,8 +5,40 @@ import torch
 from torchvision import transforms
 import os
 from PIL import Image
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 
 IMAGE_SIZE = 448
+
+def plot_tensor(image, box):
+    # Create figure and axes
+    fig, ax = plt.subplots()
+    
+    # Displaying the image 
+    ax.imshow(image.permute(1, 2, 0))
+    
+    # Creating coordinates for the bounding box
+    # CITATION: https://stackoverflow.com/questions/37435369/matplotlib-how-to-draw-a-rectangle-on-image
+    # (XMin, YMin) * IMAGE_SIZE
+    xy = box[[0,2]] * IMAGE_SIZE
+    
+    # (XMax - XMin) * IMAGE_SIZE
+    width = (box[1] - box[0]) * IMAGE_SIZE
+    # (YMax - YMin) * IMAGE_SIZE
+    height = (box[3] - box[2]) * IMAGE_SIZE
+    
+    # Creating the bounding box
+    rect = patches.Rectangle(xy=xy, 
+                             width=width, 
+                             height=height, 
+                             linewidth=1, 
+                             edgecolor='r', 
+                             facecolor='none')
+    # Adding the bounding box
+    ax.add_patch(rect)
+    
+    # Displaying the image and bounding box
+    plt.show()
 
 imageTransforms = {
     'train': transforms.Compose([
@@ -27,6 +59,9 @@ imageTransforms = {
 }
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+
+
 
 class OpenImagesDataset(Dataset):
     def __init__(self, rootDirectory, anchorBoxes, transform=None, dataType='train'):
