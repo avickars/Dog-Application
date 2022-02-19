@@ -4,14 +4,18 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable/et_background.xml" value="0.226" />
+        <entry key="app/src/main/res/drawable/ic_notifications_black_24dp.xml" value="0.1235" />
+        <entry key="app/src/main/res/drawable/ic_round_login_24.xml" value="0.1235" />
         <entry key="app/src/main/res/drawable/react.xml" value="0.335" />
-        <entry key="app/src/main/res/layout/activity_home.xml" value="0.16183136899365366" />
+        <entry key="app/src/main/res/layout/activity_home.xml" value="0.19186248779296877" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.23226318359375" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.27237854003906253" />
         <entry key="app/src/main/res/layout/activity_register.xml" value="0.22780797101449277" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.16183136899365366" />
         <entry key="app/src/main/res/layout/fragment_dashboard.xml" value="0.16183136899365366" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.16183136899365366" />
+        <entry key="app/src/main/res/layout/fragment_notifications.xml" value="0.16183136899365366" />
+        <entry key="app/src/main/res/layout/notification_item.xml" value="0.16183136899365366" />
       </map>
     </option>
   </component>

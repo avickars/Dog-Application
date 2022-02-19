@@ -9,7 +9,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.an2t.myapplication.R
-import com.an2t.myapplication.home.MainActivity
+import com.an2t.myapplication.home.HomeActivity
 import com.an2t.myapplication.model.LoginReq
 import com.an2t.myapplication.model.RegReq
 
@@ -55,7 +55,7 @@ class RegisterActivity : AppCompatActivity() {
             Observer { l_res ->
                 l_res?.let {
                     if (it.status!!) {
-                        val i = Intent(this, MainActivity::class.java)
+                        val i = Intent(this, HomeActivity::class.java)
                         startActivity(i)
                     } else {
                         Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
