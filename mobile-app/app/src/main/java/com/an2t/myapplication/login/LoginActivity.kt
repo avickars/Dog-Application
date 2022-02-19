@@ -1,6 +1,5 @@
 package com.an2t.myapplication.login
 
-import android.R.attr.data
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -10,7 +9,10 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.an2t.myapplication.R
-import com.an2t.myapplication.home.MainActivity
+import com.an2t.myapplication.home.HomeActivity
+import com.an2t.myapplication.model.LoginReq
+import com.an2t.myapplication.model.LoginRes
+import com.an2t.myapplication.utils.AppConstants.Companion.SHARED_PREF_DOG_APP
 
 
 class LoginActivity : AppCompatActivity() {
@@ -40,27 +42,35 @@ class LoginActivity : AppCompatActivity() {
     fun _addListeners(){
         btn_login.setOnClickListener {
             if(validateLogin()){
-                Toast.makeText(
-                    this, "Call api here",
-                    Toast.LENGTH_LONG
-                ).show()
+                val email = et_email.text.toString().trim()
+                val password = et_password.text.toString().trim()
+                val device_type = "MOBILE"
+                val loginReq = LoginReq(device_type, email, password)
+                mLVM.callLogin(loginReq)
             }
         }
     }
-
 
     private fun _observe() {
         mLVM.l_res.observe(this,
             Observer { l_res ->
                 l_res?.let {
                     if (it.status!!) {
-                        val i = Intent(this, MainActivity::class.java)
+                        saveRefreshToken(it)
+                        val i = Intent(this, HomeActivity::class.java)
                         startActivity(i)
+                        finish()
                     } else {
                         Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
                     }
                 }
             })
+    }
+
+    private fun saveRefreshToken(it: LoginRes) {
+        val editor = getSharedPreferences(SHARED_PREF_DOG_APP, MODE_PRIVATE).edit()
+        editor.putString("refresh_token", it.refreshToken)
+        editor.apply()
     }
 
 

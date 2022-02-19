@@ -8,8 +8,22 @@ data class LoginReq(
     val password: String
 )
 
-
 data class LoginRes(
+    @SerializedName("message")
+    val message: String?,
+    @SerializedName("refresh_token")
+    val refreshToken: String?,
+    @SerializedName("status")
+    val status: Boolean?
+)
+
+data class RegReq(
+    val device_type: String?,
+    val email: String?,
+    val password: String?
+)
+
+data class RegRes(
     @SerializedName("message")
     val message: String?,
     @SerializedName("refresh_token")

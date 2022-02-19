@@ -1,18 +1,20 @@
-package com.an2t.myapplication.login
+package com.an2t.myapplication.register
 
 import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.an2t.myapplication.model.LoginReq
 import com.an2t.myapplication.model.LoginRes
+import com.an2t.myapplication.model.RegReq
+import com.an2t.myapplication.model.RegRes
 import com.an2t.myapplication.network.RetrofitClient
 import com.an2t.myapplication.network.ServiceAPI
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-class LoginVM : ViewModel() {
+class RegisterVM: ViewModel() {
 
-    val l_res = MutableLiveData<LoginRes?>()
+    val l_res = MutableLiveData<RegRes?>()
     var _s: ServiceAPI
 
     init {
@@ -21,8 +23,8 @@ class LoginVM : ViewModel() {
     }
 
     @SuppressLint("CheckResult")
-    fun callLogin(u: LoginReq) {
-        _s.login(u)
+    fun callRegisterAPI(u: RegReq) {
+        _s.register(u)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe (
@@ -37,9 +39,5 @@ class LoginVM : ViewModel() {
                 }, {e ->
                     print(e)
                 })
-    }
-
-    private fun displayData(p: LoginRes?) {
-        l_res.value = p
     }
 }

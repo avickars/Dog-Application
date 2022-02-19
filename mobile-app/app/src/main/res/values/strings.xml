@@ -9,4 +9,8 @@
     <string name="sign_in">Sign in</string>
     <string name="input_password_confirm">Confirm password</string>
     <string name="already_have_account">Already have an account?</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 </resources>

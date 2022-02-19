@@ -17,7 +17,7 @@ object RetrofitClient {
                     })
                     .build()
                 ourInstance = Retrofit.Builder()
-                    .baseUrl("http://127.0.0.1:5000/v1/")
+                    .baseUrl("https://dog-finder-app-1.herokuapp.com/v1/")
                     .client(_c)
                     .addConverterFactory(GsonConverterFactory.create())
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
