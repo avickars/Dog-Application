@@ -5,7 +5,7 @@ import PIL.Image
 def main():
     for type in ['test', 'train', 'validation']:
             # Removing Non Dog Boxes
-            detections = pd.read_csv(f"open-images-v6/{type}/labels/detections.csv", index_col=0)
+            detections = pd.read_csv(f"open-images-v6/{type}/labels/detections.csv")
             detections = detections[detections['LabelName'] == '/m/0bt9lr']
 
             # Determining Image height and Wight
@@ -51,7 +51,13 @@ def main():
             # Merging with detections
             appendedDetections = pd.merge(detections, rowWidthDf)
 
+            # Converting the box coordinates
+            appendedDetections['XMin'] = appendedDetections['XMin'] * appendedDetections['imageWidth']
+            appendedDetections['XMax'] = appendedDetections['XMax'] * appendedDetections['imageWidth']
+            appendedDetections['YMin'] = appendedDetections['YMin'] * appendedDetections['imageHeight']
+            appendedDetections['YMax'] = appendedDetections['YMax'] * appendedDetections['imageHeight']
 
+            # Writing to disk
             appendedDetections.to_csv(f"open-images-v6/{type}/labels/detections.csv")    
 
 
