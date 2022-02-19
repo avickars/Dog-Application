@@ -8,7 +8,7 @@ basedir = os.getcwd()
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123123123@database-1.cabcbf9wyrc1.us-west-2.rds.amazonaws.com:5432/dogfinder'
+app.config['SQLALCHEMY_DATABASE_URI'] = ''
 
 
 db = SQLAlchemy(app)

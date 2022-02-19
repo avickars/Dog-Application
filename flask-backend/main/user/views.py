@@ -2,15 +2,14 @@ import json
 import random
 import string
 from flask import request, jsonify
-from main.models import db, User, users_schema, UserSession
-from main.user.middleware import logged_in, handle_sql_exception
 from sqlalchemy import delete
+from main.models import db, User, users_schema, UserSession
+from main.user.middleware import handle_all_exceptions
 from . import user
 
 
-
 @user.route('/register', methods=['POST'])
-@handle_sql_exception
+@handle_all_exceptions
 def register():
     register_data = request.data
     register_data = json.loads(register_data)
@@ -41,7 +40,7 @@ def register():
     return jsonify(_data)
 
 @user.route('/login', methods=['POST'])
-@handle_sql_exception
+@handle_all_exceptions
 def login():
     login_data = request.data
     login_data = json.loads(login_data)
@@ -81,7 +80,7 @@ def login():
     return jsonify(_data)
 
 @user.route('/logout', methods=['POST'])
-@handle_sql_exception
+@handle_all_exceptions
 def dispose_refresh_token():
     logout_data = json.loads(request.data)
 
@@ -95,6 +94,7 @@ def dispose_refresh_token():
         "message": "Logged out successfully!",
     }
     return jsonify(_data)
+
 
 
 

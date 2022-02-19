@@ -1,7 +1,7 @@
 from main import db, ma
 
 class User(db.Model):
-    _tablename_ = 'user'
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(80), unique=True, nullable=False)
@@ -24,7 +24,7 @@ user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
 class UserSession(db.Model):
-    _tablename_ = 'user_session'
+    __tablename__ = 'user_session'
     id = db.Column(db.Integer, primary_key=True)
     refresh_token = db.Column(db.String(80), unique=True, nullable=False)
     device_type = db.Column(db.String(80), nullable=False)
@@ -49,7 +49,7 @@ user_session_s_schema = UserSessionSchema(many=True)
 
 
 class Pets(db.Model):
-    _tablename_ = 'pets'
+    __tablename__ = 'pets'
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer,
@@ -87,5 +87,5 @@ pets_schema = PetsSchema()
 pets_s_schema = PetsSchema(many=True)
 
 
-if _name_ == "_main_":
+if __name__ == "_main_":
     print("conected to db")

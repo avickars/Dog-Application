@@ -41,17 +41,15 @@ def logged_in(f):
             return _error
     return decorated_func
 
-
-
-def handle_sql_exception(f):
+def handle_all_exceptions(f):
     @wraps(f)
     def applicator(*args, **kwargs):
       try:
-         return f(args,*kwargs)
-      except SQLAlchemyError as err:
+         return f(*args, **kwargs)
+      except Exception as err:
         _error = {
           "status": False,
-          "error": err._message()
+          "error": f"Error : {err.args[0]}"
         }
         return jsonify(_error)
     return applicator
