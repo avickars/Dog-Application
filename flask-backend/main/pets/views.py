@@ -42,6 +42,8 @@ def upload_lost_pet_image(*args, **kwargs):
         Key=img_name
     )
 
+    os.remove(img_name)
+
     url = 'https://imagescmpt.s3.us-west-2.amazonaws.com/' + img_name
 
     _pets = Pets(
