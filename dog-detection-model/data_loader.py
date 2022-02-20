@@ -36,7 +36,7 @@ class OpenImagesDataset(Dataset):
         
         # List of imageIDs with no duplicates
         # Becomes: [imageID...imageID]
-        self.imageList = self.labels['ImageID'].drop_duplicates()
+        self.imageList = self.labels['ImageID'].drop_duplicates().reset_index(drop=True)
         
         # Pre-defined anchor box width/heights
         # [(Width, Heights)...(Width, Heights)]
