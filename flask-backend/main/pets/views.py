@@ -6,6 +6,7 @@ from flask import request, jsonify
 from main.models import db, Pets
 from main.user.middleware import logged_in, handle_all_exceptions
 from . import pets
+import os
 
 
 @pets.route('/', methods=['POST'])
