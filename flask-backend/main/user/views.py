@@ -95,11 +95,7 @@ def dispose_refresh_token():
     }
     return jsonify(_data)
 
-
-
-
 @user.route('/getUsers')
 def getusers():
     users = User.query.all()
     return jsonify(users_schema.dump(users))
-

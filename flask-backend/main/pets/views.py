@@ -32,7 +32,9 @@ def upload_lost_pet_image(*args, **kwargs):
     img_name = uui + '.jpg'
     img.save(img_name)
 
-    client = boto3.client('s3')
+    client = boto3.client('s3',region_name='us-west-2',
+                      aws_access_key_id=os.environ['AWS_ID']
+                      aws_secret_access_key=os.environ['AWS_SECRET'])
     client.upload_file(
         Bucket=bucket,
         Filename=img_name,

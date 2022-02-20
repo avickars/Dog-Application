@@ -23,6 +23,7 @@ class UserSchema(ma.Schema):
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
+
 class UserSession(db.Model):
     __tablename__ = 'user_session'
     id = db.Column(db.Integer, primary_key=True)
@@ -75,13 +76,7 @@ class Pets(db.Model):
 class PetsSchema(ma.Schema):
     class Meta:
         fields = (
-            'user_id',
-            'image_url',
-            'breed',
-            'weight',
-            'height',
-            'pet_name')
-
+            'user_id', 'image_url', 'breed', 'weight', 'height', 'pet_name')
 
 pets_schema = PetsSchema()
 pets_s_schema = PetsSchema(many=True)

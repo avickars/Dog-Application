@@ -8,7 +8,7 @@ basedir = os.getcwd()
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = ''
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['POSTGRES_AWS_DB']
 
 
 db = SQLAlchemy(app)
@@ -24,7 +24,3 @@ app.register_blueprint(user, url_prefix=f"{V1}/auth")
 # import and register Blueprints
 from .pets import pets
 app.register_blueprint(pets, url_prefix=f"{V1}/pets")
-
-
-
-
