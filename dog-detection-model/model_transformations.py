@@ -72,7 +72,11 @@ class Normalize():
         coords (np.array): array of box coord just passing through
     """
     def __init__(self):
-        self.normalize = transforms.Normalize([0.4777, 0.4482, 0.3984], [0.2717, 0.2655, 0.2715])
+        # Not using training set mean and SD
+        # self.normalize = transforms.Normalize([0.4777, 0.4482, 0.3984], [0.2717, 0.2655, 0.2715])
+        
+        # Using VGG19 mean and SD
+        self.normalize = transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     def __call__(self, image, coords):
         return self.normalize(image), coords
 

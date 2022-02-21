@@ -1,7 +1,7 @@
 from torch.utils.data import Dataset
 import torch
 import pandas as pd
-from model_transformations import Transformations,normalize_box_coordinates
+from model_transformations import normalize_box_coordinates
 from PIL import Image
 import os
 import numpy as np
@@ -22,7 +22,7 @@ class OpenImagesDataset(Dataset):
         self.dataType = dataType
         
         # The transformation of the images to apply
-        self.transform = Transformations(imageSize=imageSize, dataType=self.dataType)
+        self.transform = transform(imageSize=imageSize, dataType=self.dataType)
         
         # Image labels (i.e. true bounding boxes)
         self.labels = pd.read_csv(f"{rootDirectory}/{dataType}/labels/detections.csv", index_col=0)
@@ -133,5 +133,5 @@ class OpenImagesDataset(Dataset):
                 gridCellRow, 
                 gridCellCol,
                 bestAnchorBox*5:bestAnchorBox*5+5
-            ] = torch.tensor([bestAnchorBoxIOU, xGridCell, yGridCell, relativeWidth, relativeHeight])
+            ] = torch.tensor([1, xGridCell, yGridCell, relativeWidth, relativeHeight])
         return y

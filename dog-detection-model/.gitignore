@@ -1,3 +1,4 @@
 open-images-v6
 .ipynb_checkpoints
 __pycache__
+yolov2.pt
