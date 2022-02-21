@@ -63,12 +63,12 @@ class OpenImagesDataset(Dataset):
         
         input, boxes = self.transform(image, boxes)
         
-        label = self.create_label(boxes)
+        label = self.__create_label(boxes)
 
         return input, label
     
         
-    def create_label(self, boxes):
+    def __create_label(self, boxes):
         """Creates the Y values of the model
         
         Args: boxes(np.array): [[xmin, xmax, ymin, ymax]...[xmin, xmax, ymin, ymax]]
@@ -109,6 +109,9 @@ class OpenImagesDataset(Dataset):
             # Computing the best anchor box (highest IOU with the object)
             bestAnchorBox = np.argmax(ious)
 
+            # Computing the best IOU that corresponds with the bestAnchorBox
+            bestAnchorBoxIOU = np.max(ious)
+
             # Getting the best anchor box width/height    
             bestAnchorBoxWidth = self.anchorBoxes[bestAnchorBox,0]
             bestAnchorBoxHeight = self.anchorBoxes[bestAnchorBox,1]
@@ -130,5 +133,5 @@ class OpenImagesDataset(Dataset):
                 gridCellRow, 
                 gridCellCol,
                 bestAnchorBox*5:bestAnchorBox*5+5
-            ] = torch.tensor([1, xGridCell, yGridCell, relativeWidth, relativeHeight])
+            ] = torch.tensor([bestAnchorBoxIOU, xGridCell, yGridCell, relativeWidth, relativeHeight])
         return y
