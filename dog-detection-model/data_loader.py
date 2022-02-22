@@ -102,6 +102,9 @@ class OpenImagesDataset(Dataset):
             objectHeight = objectsHeight[i]
             xObjectCenter = xObjectsCenter[i]
             yObjectCenter = yObjectsCenter[i]
+
+            print('XCenter:',xObjectCenter)
+            print('YCenter:',yObjectCenter)
             
             # Computing the IOUs for all anchor boxes
             ious = iou_yolo([objectWidth, objectHeight], self.anchorBoxes)
@@ -121,17 +124,17 @@ class OpenImagesDataset(Dataset):
             relativeHeight = objectHeight / bestAnchorBoxHeight
                         
             # Computing the grid cell each box falls into 
-            gridCellRow = (xObjectCenter * self.gridSize).astype(int)
-            gridCellCol = (yObjectCenter * self.gridSize).astype(int)
+            gridCellRow = (yObjectCenter * self.gridSize).astype(int)
+            gridCellCol = (xObjectCenter * self.gridSize).astype(int)
             
             # Computing the location of the center point relative to the grid cell
-            xGridCell = xObjectCenter * self.gridSize - gridCellRow
-            yGridCell = yObjectCenter * self.gridSize - gridCellCol
+            xGridCell = xObjectCenter * self.gridSize - gridCellCol
+            yGridCell = yObjectCenter * self.gridSize - gridCellRow
             
             # Assigning object to its grid cell / Best Anchor Box
             y[ 
                 gridCellRow, 
                 gridCellCol,
                 bestAnchorBox*5:bestAnchorBox*5+5
-            ] = torch.tensor([1, xGridCell, yGridCell, relativeWidth, relativeHeight])
+            ] = torch.tensor([1, yGridCell, xGridCell, relativeWidth, relativeHeight])
         return y
