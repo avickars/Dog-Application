@@ -1,31 +1,32 @@
 import numpy as np
 
 def IOU(box, boxes):
-    # box: [x_min, x_max, y_min, y_max]
-    # boxes: [[x_min, x_max, y_min, y_max]...[x_min, x_max, y_min, y_max]]
+    # box: [probObject, ymin, xmin, height, width]
+    # boxes: [[probObject, ymin, xmin, height, width]...[probObject, ymin, xmin, height, width]]
     
     # Computing the Intersection
-    intersectionWidth = np.minimum(boxes[:,1], box[1]) - np.maximum(boxes[:,0], box[0])
-    intersectionHeight = np.minimum(boxes[:,3], box[3]) - np.maximum(boxes[:,2], box[2])
+    
+    # min(boxes[ymin] + boxes[height], box[ymin] + box[height]) - max(boxes[ymin], box[ymin])
+    intersectionHeight = np.minimum(boxes[:,1] + boxes[:,3], box[1] + box[3]) - \
+        np.maximum(boxes[:,1], box[1])
+    
+    
+    # min(boxes[xmin] + boxes[width], box[xmin] + box[width]) - max(boxes[xmin], box[xmin])
+    intersectionWidth = np.minimum(boxes[:,2] + boxes[:,4], box[2] + box[4]) - \
+        np.maximum(boxes[:,2], box[2])
+    
     intersection = intersectionWidth * intersectionHeight
     
     # If the intersection is negative, then they don't intersect
     intersection[intersection < 0] = 0
     
-    # [x_min, y_min]
-    minHeightAndWidth = boxes[:, [0,2]]
+    # Computing the union
     
-    # [x_max, y_max]
-    maxHeightAndWidth = boxes[:, [1,3]]
+    # Area = height*width
+    boxesArea = boxes[:,3] * boxes[:,4]
     
-    # [width, height]
-    widthAndHeight = maxHeightAndWidth - minHeightAndWidth
-    
-    # Area = width * height
-    boxesArea = widthAndHeight[:,0] * widthAndHeight[:,1]
-    
-    # Area = (x_max - x_min)*(y_max-y_min)
-    boxArea = (box[1] - box[0])*(box[3] - box[2])
+    # Area = height*width
+    boxArea = box[3] * box[4]
     
     # Union = Area(A) + Area(B) - Intersection(AB)
     union = boxArea + boxesArea - intersection

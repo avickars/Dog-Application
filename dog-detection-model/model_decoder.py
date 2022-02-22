@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 
 class Decoder(object):
     """Decode the output of the model to match the label
@@ -128,6 +129,9 @@ class Decoder(object):
         
         # Turning these from ycenter to ymin
         predictions[:,:,:,self.bYLocations] -= predictions[:,:,:,self.bHLocations]/2
+
+        # Some of the predictions can be slightly negative, and possibly greater than 1, so just clamping them.
+        predictions = torch.clamp(predictions, min=0, max=1)
         
         
         

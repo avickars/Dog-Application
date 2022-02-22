@@ -1,3 +1,4 @@
+from turtle import width
 from torch.utils.data import Dataset
 import torch
 import pandas as pd
@@ -102,9 +103,6 @@ class OpenImagesDataset(Dataset):
             objectHeight = objectsHeight[i]
             xObjectCenter = xObjectsCenter[i]
             yObjectCenter = yObjectsCenter[i]
-
-            print('XCenter:',xObjectCenter)
-            print('YCenter:',yObjectCenter)
             
             # Computing the IOUs for all anchor boxes
             ious = iou_yolo([objectWidth, objectHeight], self.anchorBoxes)
@@ -120,8 +118,10 @@ class OpenImagesDataset(Dataset):
             bestAnchorBoxHeight = self.anchorBoxes[bestAnchorBox,1]
 
             # Computing the width/height of object relative to the best anchor box
-            relativeWidth = objectWidth / bestAnchorBoxWidth
-            relativeHeight = objectHeight / bestAnchorBoxHeight
+            # relativeWidth = objectWidth / bestAnchorBoxWidth
+            # relativeHeight = objectHeight / bestAnchorBoxHeight
+            # width = relativeWidth * bestAnchorBoxWidth
+            # height = relativeHeight * bestAnchorBoxHeight
                         
             # Computing the grid cell each box falls into 
             gridCellRow = (yObjectCenter * self.gridSize).astype(int)
@@ -136,5 +136,5 @@ class OpenImagesDataset(Dataset):
                 gridCellRow, 
                 gridCellCol,
                 bestAnchorBox*5:bestAnchorBox*5+5
-            ] = torch.tensor([1, yGridCell, xGridCell, relativeWidth, relativeHeight])
+            ] = torch.tensor([1, yGridCell, xGridCell, objectHeight, objectWidth])
         return y

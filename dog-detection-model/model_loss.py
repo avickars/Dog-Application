@@ -14,24 +14,25 @@ class YoloLoss(nn.Module):
                                               end=5*self.numAnchorBoxes-1,
                                               step=5,
                                               dtype=torch.long)
-        self.bXLocations = torch.arange(start=1, 
+        self.bYLocations = torch.arange(start=1, 
                                         end=5*self.numAnchorBoxes,
                                         step=5,
                                         dtype=torch.long)
-        self.bYLocations = torch.arange(start=2, 
+        self.bXLocations = torch.arange(start=2, 
                                         end=5*self.numAnchorBoxes,
                                         step=5,
                                         dtype=torch.long)
-        self.bWLocations = torch.arange(start=3, 
+        self.bHLocations = torch.arange(start=3, 
                                         end=5*self.numAnchorBoxes,
                                         step=5,
                                         dtype=torch.long)
-        self.bHLocations = torch.arange(start=4, 
+        self.bWLocations = torch.arange(start=4, 
                                         end=5*self.numAnchorBoxes,
                                         step=5,
                                         dtype=torch.long)
         
         # Reading in the the anchor boxes
+        # Has form: [[width, height],...,[width, height]]
         with open(anchorBoxes, 'rb') as f:
             self.anchorBoxes = torch.from_numpy(np.load(f)).to(device)
             
