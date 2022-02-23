@@ -1,5 +1,6 @@
 import numpy as np
 from iou import IOU
+import torch
 
 class NonMaxSurpression(object):
     # CITATION: https://www.youtube.com/watch?v=YDkjWEN8jNA&list=PLhhyoLH6Ijfw0TpCTVTNk42NN08H6UvNq&index=3&t=117s
@@ -32,7 +33,7 @@ class NonMaxSurpression(object):
         """
         target = target.reshape((target.shape[0], -1, 5)).tolist()
         
-        boxes = []
+        boxesAllBatches = []
         
         # Iterating through each batch
         for batch in target:
@@ -43,31 +44,26 @@ class NonMaxSurpression(object):
 
             # Sorting the boxes in descending order with respect to theprobability of object
             boxes = sorted(boxes, key=lambda x: x[0], reverse=True)
-            
-            # Popping off the best box
-            chosenBox = np.array(boxes.pop(0))
-            
-            # Appending to the list of boxes
-            batchBoxes.append(chosenBox)
 
             # While there are still boxes to check
             while boxes:                
-                # Computing the IOU between this box and all others
-                ious = IOU(chosenBox, np.array(boxes))
-                
-                # Checking if the boxes are under the IOU threshold
-                meetsIOUThreshold = (ious < self.iouThreshold).nonzero()[0]
-                
-                # If under the threshold, we keep them otherwise we discard the,
-                boxes = [boxes[i] for i in meetsIOUThreshold]
-                
-            
                 # Popping off the best box
                 chosenBox = np.array(boxes.pop(0))
-                
+
                 # Appending to the list of boxes
-                batchBoxes.append(chosenBox)
+                batchBoxes.append(torch.tensor(chosenBox))
+
+                # Testing if there are any more boxes to consider
+                if len(boxes) > 0:
+                    # Computing the IOU between this box and all others
+                    ious = IOU(chosenBox, np.array(boxes))
+                    
+                    # Checking if the boxes are under the IOU threshold
+                    meetsIOUThreshold = (ious < self.iouThreshold).nonzero()[0]
+                    
+                    # If under the threshold, we keep them otherwise we discard the,
+                    boxes = [boxes[i] for i in meetsIOUThreshold]
                 
             # Appending the list of boxes for this batch
-            boxes.append(batchBoxes)
-        return boxes
+            boxesAllBatches.append(batchBoxes)
+        return boxesAllBatches

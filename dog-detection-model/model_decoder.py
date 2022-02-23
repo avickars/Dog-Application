@@ -132,8 +132,10 @@ class Decoder(object):
 
         # Some of the predictions can be slightly negative, and possibly greater than 1, so just clamping them.
         predictions = torch.clamp(predictions, min=0, max=1)
+
+
         
         
         
 
-        return predictions
+        return predictions.cpu()
