@@ -69,8 +69,8 @@ class YoloLoss(nn.Module):
         xyLoss = self.lambdaCoord * torch.sum(probObjectAndIou * (xLoss + yLoss))
         
         # Computing the square differences between the predicted and real h/w values
-        wLoss = torch.square(torch.sqrt(bW) - torch.sqrt(bW_hat))
-        hLoss = torch.square(torch.sqrt(bH) - torch.sqrt(bH_hat))
+        wLoss = torch.square(torch.sqrt(bW +  1e-8) - torch.sqrt(bW_hat +  1e-8))
+        hLoss = torch.square(torch.sqrt(bH +  1e-8) - torch.sqrt(bH_hat +  1e-8))
     
         # Putting them together and applying filter (i.e. only the gridcell/anchor box that is
         # responsible takes any loss)
