@@ -127,7 +127,7 @@ class RandomVerticalFlip(object):
         
     def __call__(self, image, coords):
         if np.random.choice([0,1], p=[1-self.p,self.p]):
-            image = image.transpose(Image.FLIP_TOP_BOTTOM)
+            image = image.transpose(image.FLIP_TOP_BOTTOM)
             
             temp = 1-np.copy(coords[:,2])
             coords[:,2] = 1-coords[:,3]

@@ -19,7 +19,9 @@ class DogDetectorModel(nn.Module):
         # Rejigging the output to have the correct number of classifying features
         self.model.roi_heads.box_predictor = FastRCNNPredictor(inFeatures, numClasses)
 
-    def forward(self, modelInput):
-
-        # Returning the model output
-        return self.model(modelInput)
+    def forward(self, image, label):
+        if self.model.training:
+            # Returning the training model output
+            return self.model(image, label)
+        else:
+            return self.model(image)

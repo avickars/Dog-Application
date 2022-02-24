@@ -4,3 +4,5 @@ import torch
 BATCH_SIZE = 30
 
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+IMAGE_SIZE = 448
