@@ -60,7 +60,7 @@ class NonMaxSurpression(object):
                     ious = IOU(chosenBox[1:], torch.tensor(bBoxAndProb)[:,1:])
 
                     # Checking if the boxes are under the IOU threshold
-                    meetsIOUThreshold = (ious < self.iouThreshold).nonzero()[0]
+                    meetsIOUThreshold = (ious < self.iouThreshold).nonzero().flatten()
 
                     # If under the threshold, we keep them otherwise we discard them,
                     bBoxAndProb = [bBoxAndProb[i] for i in meetsIOUThreshold]    

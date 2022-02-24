@@ -19,6 +19,8 @@ def trainer(model, optimizer, dataLoader, epoch):
         lr_scheduler = torch.optim.lr_scheduler.LinearLR(
             optimizer, start_factor=warmup_factor, total_iters=warmup_iters
         )
+    
+    allLosses = []
 
     # Executing each batch
     for batchIndex, (images, targets) in loop:
@@ -52,3 +54,9 @@ def trainer(model, optimizer, dataLoader, epoch):
 
         if lr_scheduler is not None:
             lr_scheduler.step()
+    
+        allLosses.append(loss)
+
+    meanLoss = sum(allLosses)/len(allLosses)
+
+    loop.set_description(f"EPOCH: {epoch} | Classifier Loss {lossDict['loss_classifier']} | Bbox Loss: {lossDict['loss_box_reg']} | Objectness Loss {lossDict['loss_objectness']} | Mean Loss {meanLoss}")
