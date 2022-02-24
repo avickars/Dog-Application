@@ -64,9 +64,9 @@ class NonMaxSurpression(object):
             
  
             
-            targets[i]['boxes'] = [chosenBox[1:] for chosenBox in chosenBoxes]
-            targets[i]['labels'] = [1 for chosenBox in chosenBoxes]
-            targets[i]['scores'] = [chosenBox[0] for chosenBox in chosenBoxes]
+            targets[i]['boxes'] = torch.stack([chosenBox[1:] for chosenBox in chosenBoxes])
+            targets[i]['labels'] = torch.tensor([1 for chosenBox in chosenBoxes])
+            targets[i]['scores'] = torch.tensor([chosenBox[0].item() for chosenBox in chosenBoxes])
             
 
         return targets

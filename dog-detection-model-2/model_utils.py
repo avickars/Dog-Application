@@ -126,7 +126,7 @@ def plot_tensor(image, predictedBoxes=None, trueBoxes=None):
                                     width=width, 
                                     height=height, 
                                     linewidth=1, 
-                                    edgecolor='r', 
+                                    edgecolor='g', 
                                     facecolor='none')
             # Adding the bounding box
             ax.add_patch(rect)

@@ -1,18 +1,19 @@
 from tqdm import tqdm
-from params import DEVICE
+from params import DEVICE, CPU_DEVICE
 import torch
 from coco_utils import convert_to_coco_api
 from coco_eval import CocoEvaluator
-
+from mean_average_precision import MAP
+from non_max_surpression import NonMaxSurpression
 
 def evaluator(model, dataLoader):
+    # Defining non max surpressor
+    nms = NonMaxSurpression()
+
     # Getting the number of threads available
     n_threads = torch.get_num_threads()
 
     torch.set_num_threads(1)
-
-    # Defining the CPU device
-    cpu_device = torch.device("cpu")
     
     iou_types = ["bbox"]
 
@@ -36,7 +37,7 @@ def evaluator(model, dataLoader):
 
             outputs = model(images, targets)
 
-            outputs = [{k: v.to(cpu_device) for k, v in t.items()} for t in outputs]
+            outputs = [{k: v.to(CPU_DEVICE) for k, v in t.items()} for t in outputs]
 
             res = {target["image_id"].item(): output for target, output in zip(targets, outputs)}
 
@@ -46,5 +47,12 @@ def evaluator(model, dataLoader):
     coco_evaluator.accumulate()
     coco_evaluator.summarize()
 
-    return coco_evaluator
+    outputs = nms(outputs)
+    
+    APs = []
+    for threshold in torch.arange(start=0.5, end=1, step=0.05):
+        APs.append(MAP(outputs, targets, threshold))
+    map = sum(APs)/len(APs)
+
+    return coco_evaluator, map
 
