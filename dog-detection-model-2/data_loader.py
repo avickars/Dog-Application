@@ -37,9 +37,9 @@ class OpenImagesDataset(Dataset):
             
     def __len__(self):
         if self.dataType == 'train':
-            return 1000
+            return 5000
         else:
-            return 100
+            return 1000
         return len(self.imageList)
     
     def __getitem__(self, index):

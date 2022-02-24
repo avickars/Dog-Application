@@ -27,6 +27,9 @@ def evaluator(model, dataLoader):
 
     iouTypes = ['bbox']
 
+    outputsAll = []
+    targetsAll = []
+
     # Turning off the gradient
     with torch.no_grad():
 
@@ -43,15 +46,18 @@ def evaluator(model, dataLoader):
 
             coco_evaluator.update(res)
 
-    
+            # Appening outputs to calculate the MAP and execute non-max-surpression on entire validation/test set
+            outputsAll += (outputs)
+            targetsAll += (targets)
+
     coco_evaluator.accumulate()
     coco_evaluator.summarize()
 
-    outputs = nms(outputs)
+    outputsAll = nms(outputsAll)
     
     APs = []
     for threshold in torch.arange(start=0.5, end=1, step=0.05):
-        APs.append(MAP(outputs, targets, threshold))
+        APs.append(MAP(outputsAll, targetsAll, threshold))
     map = sum(APs)/len(APs)
 
     return coco_evaluator, map
