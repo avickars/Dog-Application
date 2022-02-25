@@ -59,6 +59,6 @@ def upload_lost_pet_image(*args, **kwargs):
 
     _data = {
         "status": True,
-        "message": "Image uploaded successfully!",
+        "message": url,
     }
     return jsonify(_data)
