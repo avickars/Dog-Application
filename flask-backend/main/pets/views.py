@@ -27,7 +27,7 @@ def upload_lost_pet_image(*args, **kwargs):
 
     image_file = request.files['image']
     img = Image.open(image_file.stream)
-
+    img = img.convert('RGB')
 
     uui = str(uuid.uuid4())
     img_name = uui + '.jpg'
