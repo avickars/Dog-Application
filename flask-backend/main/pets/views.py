@@ -5,12 +5,13 @@ from PIL import Image
 from flask import request, jsonify
 from main.models import db, Pets
 from main.user.middleware import logged_in, handle_all_exceptions
+from main.dog_detection_demo.forflask import first_model
 from . import pets
 import os
 
 
 @pets.route('/', methods=['POST'])
-@handle_all_exceptions
+# @handle_all_exceptions
 @logged_in
 def upload_lost_pet_image(*args, **kwargs):
 
@@ -31,6 +32,7 @@ def upload_lost_pet_image(*args, **kwargs):
 
     uui = str(uuid.uuid4())
     img_name = uui + '.jpg'
+    cwd = os.getcwd()
     img.save(img_name)
 
     client = boto3.client('s3',region_name='us-west-2',
@@ -42,6 +44,8 @@ def upload_lost_pet_image(*args, **kwargs):
         Key=img_name
     )
 
+    img_pth = cwd + '/' + img_name
+    outputs = first_model(img_pth)
     os.remove(img_name)
 
     url = 'https://imagescmpt.s3.us-west-2.amazonaws.com/' + img_name
@@ -59,6 +63,7 @@ def upload_lost_pet_image(*args, **kwargs):
 
     _data = {
         "status": True,
-        "message": url,
+        "url": url,
+        "outputs": outputs,
     }
     return jsonify(_data)
