@@ -31,3 +31,12 @@ data class RegRes(
     @SerializedName("status")
     val status: Boolean?
 )
+
+data class ImageResponse(
+    @SerializedName("message")
+    val message: String?,
+    @SerializedName("status")
+    val status: Boolean?,
+    @SerializedName("url")
+    val url: String?
+)
