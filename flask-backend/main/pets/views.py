@@ -57,6 +57,7 @@ def upload_lost_pet_image(*args, **kwargs):
         weight = float(request.form.get('weight', '')),
         height = float(request.form.get('height', '')),
         pet_name = request.form.get('pet_name', ''),
+        dog_extractor = outputs
     )
     db.session.add(_pets)
     db.session.commit()
