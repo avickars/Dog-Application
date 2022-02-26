@@ -61,15 +61,17 @@ class Pets(db.Model):
     weight = db.Column(db.Float, nullable=False)
     height = db.Column(db.Float)
     pet_name = db.Column(db.String)
+    dog_extractor = db.Column(db.JSON)
 
 
-    def _init_(self, user_id, image_url, breed, weight, height, pet_name):
+    def _init_(self, user_id, image_url, breed, weight, height, pet_name, dog_extractor):
         self.user_id = user_id
         self.image_url = image_url
         self.breed = breed
         self.weight = weight
         self.height = height
         self.pet_name = pet_name
+        self.dog_extractor = dog_extractor
 
 
 # JSON Schema
