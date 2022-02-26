@@ -3,6 +3,7 @@ package com.an2t.myapplication.login
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
@@ -12,6 +13,7 @@ import com.an2t.myapplication.R
 import com.an2t.myapplication.home.HomeActivity
 import com.an2t.myapplication.model.LoginReq
 import com.an2t.myapplication.model.LoginRes
+import com.an2t.myapplication.register.RegisterActivity
 import com.an2t.myapplication.utils.AppConstants.Companion.SHARED_PREF_DOG_APP
 
 
@@ -20,6 +22,7 @@ class LoginActivity : AppCompatActivity() {
     lateinit var et_email: AppCompatEditText
     lateinit var et_password: AppCompatEditText
     lateinit var btn_login: Button
+    lateinit var tv_sign_up: TextView
 
     lateinit var mLVM: LoginVM
 
@@ -37,6 +40,7 @@ class LoginActivity : AppCompatActivity() {
         et_email = findViewById(R.id.et_email)
         et_password = findViewById(R.id.et_password)
         btn_login = findViewById(R.id.btn_login)
+        tv_sign_up = findViewById(R.id.tv_sign_up)
     }
 
     fun _addListeners(){
@@ -48,6 +52,10 @@ class LoginActivity : AppCompatActivity() {
                 val loginReq = LoginReq(device_type, email, password)
                 mLVM.callLogin(loginReq)
             }
+        }
+        tv_sign_up.setOnClickListener {
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -88,6 +96,7 @@ class LoginActivity : AppCompatActivity() {
         }
         return true
     }
+
 }
 
 
@@ -113,7 +122,3 @@ class LoginActivity : AppCompatActivity() {
 //            }
 //        }
 //
-//        tv_sign_up.setOnClickListener {
-//            val intent = Intent(this, RegisterActivity::class.java)
-//            startActivity(intent)
-//        }
