@@ -67,13 +67,13 @@ class NonMaxSurpression(object):
 
             # If we don't find any boxes, we output empty tensors
             if len(chosenBoxes) > 0:
-                targets[i]['boxes'] = torch.stack([chosenBox[2:] for chosenBox in chosenBoxes])
-                targets[i]['labels'] = torch.tensor([chosenBox[0].item() for chosenBox in chosenBoxes])
-                targets[i]['scores'] = torch.tensor([chosenBox[1].item() for chosenBox in chosenBoxes])
+                targets[i]['boxes'] = torch.stack([chosenBox[2:] for chosenBox in chosenBoxes]).tolist()
+                targets[i]['labels'] = torch.tensor([chosenBox[0].item() for chosenBox in chosenBoxes]).tolist()
+                targets[i]['scores'] = torch.tensor([chosenBox[1].item() for chosenBox in chosenBoxes]).tolist()
             else:
-                targets[i]['boxes'] = torch.empty(0)
-                targets[i]['labels'] = torch.empty(0)
-                targets[i]['scores'] = torch.empty(0)
+                targets[i]['boxes'] = torch.empty(0).tolist()
+                targets[i]['labels'] = torch.empty(0).tolist()
+                targets[i]['scores'] = torch.empty(0).tolist()
             
 
         return targets
