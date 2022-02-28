@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "222674178206",
+    "project_id": "dogfinder-81370",
+    "storage_bucket": "dogfinder-81370.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:222674178206:android:a823f3395f291db638eb8f",
+        "android_client_info": {
+          "package_name": "com.an2t.myapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "222674178206-d1onp589s7ktj5t772ko2g567qkio7dk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.an2t.myapplication",
+            "certificate_hash": "7cc3f42d02915c7f6f19090c1ac26a21beb94f8a"
+          }
+        },
+        {
+          "client_id": "222674178206-f5a5grgqtka52h15rkdgog51m5103df1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCm27uqDoxSGtfEnqBGp2Jo4k_zAJymn3s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "222674178206-f5a5grgqtka52h15rkdgog51m5103df1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
