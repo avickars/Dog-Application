@@ -1,6 +1,7 @@
 package com.an2t.myapplication.home.ui.home
 
 import android.Manifest
+import android.R.attr.data
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.ContentValues
@@ -16,26 +17,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.an2t.myapplication.R
 import com.an2t.myapplication.databinding.FragmentHomeBinding
 import com.an2t.myapplication.model.ImageResponse
 import com.an2t.myapplication.network.RetrofitClient
 import com.an2t.myapplication.network.ServiceAPI
+import com.squareup.picasso.Picasso
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.http.Part
 import java.io.ByteArrayOutputStream
-
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 //import com.an2t.myapplication.home1.databinding.FragmentHomeBinding
 class HomeFragment : Fragment(), Callback<ImageResponse> {
@@ -55,6 +59,9 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
     internal lateinit var mSAPI: ServiceAPI
     lateinit var mPD: ProgressDialog
 
+    lateinit var imageUploaded: ImageView
+    lateinit var tv_data: TextView
+
     //lateinit var mLVM: MainVM
     lateinit var bitmap: Bitmap
 
@@ -73,6 +80,8 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
         iniProgress()
         val btnUploadCamera: Button = binding.btnUploadCamera
         val btnUploadGallery: Button = binding.btnUploadGallery
+        imageUploaded = binding.imgUpload
+        tv_data = binding.tvData
 
         btnUploadCamera.setOnClickListener {
             openCamera()
@@ -232,43 +241,42 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
         super.onActivityResult(requestCode, resultCode, intent)
         if (resultCode == Activity.RESULT_OK && requestCode == 123) {
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(activity?.contentResolver, intent?.data)
-                if (bitmap.height > 1000) {
-                    bitmap = bitmap.scale(1000)
+
+                intent?.data?.let {
+                    uri ->
+                    val path = ImageFilePath.getPath(activity, uri)
+                    val file = File(path)
+                    var contentType = ""
+
+                    if(!file.name.contains("pdf")){
+                        contentType = "image/${file.name.split(".")[1]}"
+                    }else {
+                        contentType = "application/pdf"
+                    }
+
+                    val propertyImage = RequestBody.create(contentType.toMediaTypeOrNull(), file)
+                    val p = MultipartBody.Part.createFormData("image", file.name, propertyImage)
+
+                    val p1 = RequestBody.create("text/plain".toMediaTypeOrNull(), "bb")
+                    val p2 = RequestBody.create("text/plain".toMediaTypeOrNull(), "60")
+                    val p3 = RequestBody.create("text/plain".toMediaTypeOrNull(), "100")
+                    val p4 = RequestBody.create("text/plain".toMediaTypeOrNull(), "aa")
+                    val p5 = RequestBody.create("text/plain".toMediaTypeOrNull(), "uMnKWqWzulKYkmEiqBnJQqcQplqaHQ")
+
+                    mPD.show()
+                    mSAPI.uploadImage(
+                        p , p1 , p2 , p3 , p4 , p5
+                    ).enqueue(this)
                 }
+//                val selectedImageUri: Uri = intent?.data
+//                bitmap = MediaStore.Images.Media.getBitmap(activity?.contentResolver, intent?.data)
+//                MediaStore.Images.Media.get
+//                if (bitmap.height > 1000) {
+//                    bitmap = bitmap.scale(1000)
+//                }
 
-                val tempUri = getImageUri()
-                val path = ImageFilePath.getPath(activity, tempUri)
-                val file = File(path)
-                var contentType = ""
+//                val tempUri = getImageUri()
 
-                if(!file.name.contains("pdf")){
-                    contentType = "image/${file.name.split(".")[1]}"
-                }else {
-                    contentType = "application/pdf"
-                }
-
-                val propertyImage = RequestBody.create(contentType.toMediaTypeOrNull(), file)
-                val p = MultipartBody.Part.createFormData("image", file.name, propertyImage)
-
-
-//                @Part("breed") breed: RequestBody,
-//                @Part("weight") weight: RequestBody,
-//                @Part("height") height: RequestBody,
-//                @Part("pet_name") pet_name: RequestBody,
-//                @Part("refresh_token") refresh_token: RequestBody,
-
-
-                val p1 = RequestBody.create("text/plain".toMediaTypeOrNull(), "bb")
-                val p2 = RequestBody.create("text/plain".toMediaTypeOrNull(), "60")
-                val p3 = RequestBody.create("text/plain".toMediaTypeOrNull(), "100")
-                val p4 = RequestBody.create("text/plain".toMediaTypeOrNull(), "aa")
-                val p5 = RequestBody.create("text/plain".toMediaTypeOrNull(), "uMnKWqWzulKYkmEiqBnJQqcQplqaHQ")
-
-                mPD.show()
-                mSAPI.uploadImage(
-                    p , p1 , p2 , p3 , p4 , p5
-                ).enqueue(this)
             } catch (e: IOException) {
                 print(e.toString())
             }
@@ -285,8 +293,8 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
                     bitmap = bitmap.scale(1000)
                 }
 
-                val tempUri = getImageUri()
-                val path = ImageFilePath.getPath(activity, tempUri)
+//                val tempUri = getImageUri()
+                val path = ImageFilePath.getPath(activity, cam_uri_photo)
                 val file = File(path)
                 var contentType = ""
                 if(!file.name.contains("pdf")){
@@ -303,7 +311,6 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
                 val p4 = RequestBody.create("text/plain".toMediaTypeOrNull(), "aa")
                 val p5 = RequestBody.create("text/plain".toMediaTypeOrNull(), "uMnKWqWzulKYkmEiqBnJQqcQplqaHQ")
 
-
                 mPD.show()
                 mSAPI.uploadImage(
                     p , p1 , p2 , p3 , p4 , p5
@@ -319,13 +326,13 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
 
 
 
-
-    private fun getImageUri(): Uri {
-        val bytes = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 5, bytes)
-        val path = MediaStore.Images.Media.insertImage(activity?.contentResolver, bitmap, "CameraImage", null)
-        return Uri.parse(path)
-    }
+//    @Deprecated
+//    private fun getImageUri(): Uri {
+//        val bytes = ByteArrayOutputStream()
+//        bitmap.compress(Bitmap.CompressFormat.JPEG, 5, bytes)
+//        val path = MediaStore.Images.Media.insertImage(activity?.contentResolver, bitmap, "CameraImage", null)
+//        return Uri.parse(path)
+//    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -338,7 +345,12 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
     ) {
         mPD.dismiss()
         val res_data = response.body()
-        Toast.makeText(context , "Uploaded " + res_data?.message + " image URL " + res_data?.url, Toast.LENGTH_LONG).show()
+        Picasso.get()
+            .load(res_data?.url)
+            .placeholder(R.drawable.login_image)
+            .error(R.drawable.login_image)
+            .into(imageUploaded)
+        tv_data.text = res_data?.outputs.toString()
     }
 
     override fun onFailure(call: Call<ImageResponse>, t: Throwable) {

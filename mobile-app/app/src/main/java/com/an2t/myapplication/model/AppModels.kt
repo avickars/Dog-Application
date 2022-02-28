@@ -33,10 +33,20 @@ data class RegRes(
 )
 
 data class ImageResponse(
-    @SerializedName("message")
-    val message: String?,
+    @SerializedName("outputs")
+    val outputs: List<Output>?,
     @SerializedName("status")
     val status: Boolean?,
     @SerializedName("url")
     val url: String?
+)
+
+
+data class Output(
+    @SerializedName("boxes")
+    val boxes: List<List<Double>>?,
+    @SerializedName("labels")
+    val labels: List<Double>?,
+    @SerializedName("scores")
+    val scores: List<Double>?
 )
