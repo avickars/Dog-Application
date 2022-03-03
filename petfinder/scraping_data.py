@@ -76,6 +76,8 @@ def main():
         info = pd.DataFrame()
         alreadyDownloadedLinks = []
 
+    numSuccessfulDownloads = len(info)
+
     # Iterating through each link
     for index, link in links.iterrows():
         # Subsetting to get the link
@@ -130,6 +132,9 @@ def main():
             # Saving attributes info in case download breaks
             info = info.append(dogInfo, ignore_index=True)
             info.to_csv('attributes.csv')
+
+            # resetting dog info list
+            dogInfo = []
 
 
         if numSuccessfulDownloads >= 10000:

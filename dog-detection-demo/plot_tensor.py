@@ -5,8 +5,8 @@ def plot_tensor(image, predictedBoxes=None, trueBoxes=None):
     """"Plots the decoded model output
     Args: 
         image (tensor): The image tensor
-        predictedBoxes (tensor): Boxes predicted by the model ([[objectCertainty, ymin, xmin, height, width],...,[objectCertainty, ymin, xmin, height, width]])
-        trueBoxes (tensor): The true boxes ([[objectCertainty, ymin, xmin, height, width],...,[objectCertainty, ymin, xmin, height, width]])
+        predictedBoxes (tensor): Boxes predicted by the model ([[xmin, ymin, xmax, ymax],...,[xmin, ymin, xmax, ymax]])
+        trueBoxes (tensor): The true boxes ([[xmin, ymin, xmax, ymax],...,[xmin, ymin, xmax, ymax]])
     Returns:
         Nothing
     """

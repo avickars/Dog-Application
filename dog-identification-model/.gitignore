@@ -3,3 +3,4 @@ dog-detection-model.pt
 attributes.csv
 dogs
 cleaned_dogs
+boxesDF.csv
