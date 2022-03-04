@@ -104,7 +104,8 @@ def main():
         attributes = dog_attributes(soup)
 
         # Making the directory for this dog
-        os.mkdir(f"dogs/dog_{index}")
+        if not os.path.exists(f"dogs/dog_{index}"):
+            os.mkdir(f"dogs/dog_{index}")
 
         # Appending to the attributes
         attributes['path'] = f"dog_{index}"

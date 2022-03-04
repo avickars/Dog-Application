@@ -3,22 +3,7 @@ from PIL import Image
 import numpy as np
 import pandas as pd
 pd.options.mode.chained_assignment = None
-
-
-# def normalize_box_coordinates(coordinates, width, height):
-#     """Normalizes boxes to [0,1]
-#
-#     Args:
-#         coordinates: Pandas DF (imageID, xMin, xMax, yMin, yMax)
-#         width: Pandas Series of widths
-#         height: Pandas Series of heights
-#     """
-#     coordinates['XMin'] = (coordinates['XMin'] / width) * IMAGE_SIZE
-#     coordinates['XMax'] = (coordinates['XMax'] / width) * IMAGE_SIZE
-#     coordinates['YMin'] = (coordinates['YMin'] / height) * IMAGE_SIZE
-#     coordinates['YMax'] = (coordinates['YMax'] / height) * IMAGE_SIZE
-#
-#     return coordinates
+from params import IMAGE_SIZE
 
 class Crop:
     def __call__(self, img, coords):
@@ -58,25 +43,27 @@ class Transformations(object):
         self.toTensor = ToTensor()
 
         self.crop = Crop()
+
+        self.resize = Resize(imageSize=IMAGE_SIZE)
         
         # Defining them in list according to data type
         self.transormations = {
             'train': [
-                # self.resize,
                 self.crop,
-                self.randomHorizontalFlip,
-                self.randomVerticalFlip,
-                # self.toTensor
+                # self.randomHorizontalFlip,
+                # self.randomVerticalFlip,
+                self.resize,
+                self.toTensor
                 ],
             'validation': [
                 self.crop,
-                # self.resize, 
-                # self.toTensor
+                self.resize,
+                self.toTensor
                 ],
             'test': [
                 self.crop,
-                # self.resize, 
-                # self.toTensor
+                self.resize,
+                self.toTensor
                 ]
             }
                 
