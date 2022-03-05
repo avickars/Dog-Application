@@ -60,7 +60,7 @@ def main():
         os.mkdir('dogs')
 
     # Reading in the pet links
-    links = pd.read_csv('pet_links.txt',names=['links'])
+    links = pd.read_csv('pet_links.txt',names=['links']).drop_duplicates()
 
     # Defining list to hold attributes
     dogInfo = []
@@ -133,6 +133,9 @@ def main():
             # Saving attributes info in case download breaks
             info = info.append(dogInfo, ignore_index=True)
             info.to_csv('attributes.csv')
+
+            if numSuccessfulDownloads == 2000:
+                val = input("Enter a value to continue download: ")
 
             # resetting dog info list
             dogInfo = []

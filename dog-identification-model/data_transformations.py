@@ -50,7 +50,7 @@ class Transformations(object):
         self.transormations = {
             'train': [
                 self.crop,
-                # self.randomHorizontalFlip,
+                self.randomHorizontalFlip,
                 # self.randomVerticalFlip,
                 self.resize,
                 self.toTensor

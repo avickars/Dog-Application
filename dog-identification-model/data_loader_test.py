@@ -9,7 +9,6 @@ class DogsDataSet_Test(Dataset):
     def __init__(self, dataType='train'):
         # Reading attributes
         self.dogList = pd.read_csv('attributes.csv')
-        self.dogList = self.dogList[self.dogList['cleanImages'] >= 2]
         self.dogList = self.dogList[self.dogList['type'] == dataType]
         self.dogList = self.dogList.reset_index(drop=True)
 

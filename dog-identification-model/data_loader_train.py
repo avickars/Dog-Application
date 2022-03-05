@@ -9,7 +9,6 @@ class DogsDataSet_Train(Dataset):
     def __init__(self, dataType='train'):
         # Reading attributes
         self.dogList = pd.read_csv('attributes.csv')
-        self.dogList = self.dogList[self.dogList['cleanImages'] >= 2]
         self.dogList = self.dogList[self.dogList['type'] == dataType]
         self.dogList = self.dogList.reset_index(drop=True)
 
@@ -100,4 +99,4 @@ class DogsDataSet_Train(Dataset):
         positiveImg = self.transform(positiveImg, positiveImgBox.values[0])
         negativeImg = self.transform(negativeImg, negativeImgBox.values[0])
 
-        return positiveImg, anchorImg, negativeImg
+        return index, negativeImgIndex, positiveImg, anchorImg, negativeImg

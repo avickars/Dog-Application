@@ -2,8 +2,8 @@ from tqdm import tqdm
 from params import DEVICE
 import math
 import sys
-import torch
 from triplet_loss import triplet_loss
+from params import MARGIN
 
 
 def trainer(model, optimizer, dataLoader, epoch):
@@ -12,19 +12,10 @@ def trainer(model, optimizer, dataLoader, epoch):
     # Defining loop to get the nice progress bar
     loop = tqdm(enumerate(dataLoader), total=len(dataLoader), leave=True)
 
-    # lr_scheduler = None
-    # if epoch == 0:
-    #     warmup_factor = 1.0 / 1000
-    #     warmup_iters = min(1000, len(dataLoader) - 1)
-    #
-    #     lr_scheduler = torch.optim.lr_scheduler.LinearLR(
-    #         optimizer, start_factor=warmup_factor, total_iters=warmup_iters
-    #     )
-
     allLosses = []
 
     # Executing each batch
-    for batchIndex, (positiveImg, anchorImg, negativeImg) in loop:
+    for batchIndex, (index, negativeImgIndex, positiveImg, anchorImg, negativeImg) in loop:
         # Moving everything to training device
         positiveImg = positiveImg.to(DEVICE)
         anchorImg = anchorImg.to(DEVICE)
@@ -39,7 +30,7 @@ def trainer(model, optimizer, dataLoader, epoch):
         negativeImgEncoding = model(negativeImg)
 
         # Summing to total the loss of all types
-        lossTotal = triplet_loss(anchorImgEncoding, positiveImgEncoding, negativeImgEncoding, 0.2)
+        lossTotal = triplet_loss(anchorImgEncoding, positiveImgEncoding, negativeImgEncoding, MARGIN)
 
         # Extracting the loss to use in case it goes to nan
         loss = lossTotal.item()
@@ -54,15 +45,13 @@ def trainer(model, optimizer, dataLoader, epoch):
         optimizer.step()
 
         # Outputting the loss
-        loop.set_description(
-            f"EPOCH: {epoch} | Loss {loss}")
-
-        # if lr_scheduler is not None:
-        #     lr_scheduler.step()
+        loop.set_description(f"EPOCH: {epoch} | Loss {loss / positiveImg.shape[0]}")
 
         allLosses.append(loss)
 
-    meanLoss = sum(allLosses) / len(allLosses)
+    meanLoss = sum(allLosses) / len(dataLoader)
 
     loop.set_description(
-        f"EPOCH: {epoch} | Mean Loss {meanLoss}")
+        f"EPOCH: {epoch} | Training Mean Loss {meanLoss}")
+
+    return meanLoss
