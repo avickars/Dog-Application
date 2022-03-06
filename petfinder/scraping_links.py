@@ -13,16 +13,15 @@ def main():
 
     driver = webdriver.Chrome(ChromeDriverManager().install())
 
-    # for i in range(1, 2800):
-    driver.get(link + str(1))
-    timeout = 5  # seconds
-    wait = WebDriverWait(driver, timeout)
-    time.sleep(5)
-    pet_links = driver.find_elements(By.CLASS_NAME, "petCard-link")
-
     COUNT=0
 
     for i in range(1, 2800):
+        driver.get(link + str(i))
+        timeout = 5  # seconds
+        wait = WebDriverWait(driver, timeout)
+        time.sleep(5)
+        pet_links = driver.find_elements(By.CLASS_NAME, "petCard-link")
+
         for pet_link in pet_links:
             # print(pet_link.get_attribute('href'))
             with open('pet_links.txt', 'a') as f:

@@ -1,0 +1,6 @@
+dog-detection-model.pt
+.ipynb_checkpoints
+attributes.csv
+dogs
+cleaned_dogs
+boxesDF.csv

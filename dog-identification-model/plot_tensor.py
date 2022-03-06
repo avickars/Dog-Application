@@ -19,13 +19,7 @@ def plot_tensor(image, predictedBoxes=None, trueBoxes=None):
     if predictedBoxes is not None:
         # Creating coordinates for the bounding box
         # CITATION: https://stackoverflow.com/questions/37435369/matplotlib-how-to-draw-a-rectangle-on-image
-        # (XMin, YMin) * IMAGE_SIZE
         for box in predictedBoxes:
-            # xy = box[[0,1]] * IMAGE_SIZE
-        
-            # width = (box[2] - box[0]) * IMAGE_SIZE
-
-            # height = (box[3] - box[1]) * IMAGE_SIZE
 
             xy = box[[0,1]]
 

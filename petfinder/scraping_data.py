@@ -6,6 +6,7 @@ import re
 import os
 import shutil
 import urllib.request
+import urllib.error as error
 
 
 def images_links(imageObjects):
@@ -60,7 +61,7 @@ def main():
         os.mkdir('dogs')
 
     # Reading in the pet links
-    links = pd.read_csv('pet_links.txt',names=['links'])
+    links = pd.read_csv('pet_links.txt',names=['links']).drop_duplicates()
 
     # Defining list to hold attributes
     dogInfo = []
@@ -75,6 +76,8 @@ def main():
     except FileNotFoundError:
         info = pd.DataFrame()
         alreadyDownloadedLinks = []
+
+    numSuccessfulDownloads = len(info)
 
     # Iterating through each link
     for index, link in links.iterrows():
@@ -102,7 +105,8 @@ def main():
         attributes = dog_attributes(soup)
 
         # Making the directory for this dog
-        os.mkdir(f"dogs/dog_{index}")
+        if not os.path.exists(f"dogs/dog_{index}"):
+            os.mkdir(f"dogs/dog_{index}")
 
         # Appending to the attributes
         attributes['path'] = f"dog_{index}"
@@ -111,9 +115,12 @@ def main():
         # Downloading images
         imageCounter = 0
         for imageLink in imageLinks:
-            dog_image_name = f"dogs/dog_{index}/img_{imageCounter}.jpg"
-            urllib.request.urlretrieve(imageLink, dog_image_name)
-            imageCounter += 1
+            try:
+                dog_image_name = f"dogs/dog_{index}/img_{imageCounter}.jpg"
+                urllib.request.urlretrieve(imageLink, dog_image_name)
+                imageCounter += 1
+            except error.HTTPError:
+                print('unable to download image, skipping')
 
         attributes['downloadedImages'] = imageCounter
         attributes['link'] = link
@@ -130,6 +137,12 @@ def main():
             # Saving attributes info in case download breaks
             info = info.append(dogInfo, ignore_index=True)
             info.to_csv('attributes.csv')
+
+            if numSuccessfulDownloads == 2000:
+                val = input("Enter a value to continue download: ")
+
+            # resetting dog info list
+            dogInfo = []
 
 
         if numSuccessfulDownloads >= 10000:
