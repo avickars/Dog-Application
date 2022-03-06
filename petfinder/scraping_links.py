@@ -24,7 +24,7 @@ def main():
 
         for pet_link in pet_links:
             # print(pet_link.get_attribute('href'))
-            with open('pet_links2.txt', 'a') as f:
+            with open('pet_links.txt', 'a') as f:
                 f.write(pet_link.get_attribute('href'))
                 f.write('\n')
 

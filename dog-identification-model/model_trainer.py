@@ -14,6 +14,8 @@ def trainer(model, optimizer, dataLoader, epoch):
 
     allLosses = []
 
+    numObservations = 0
+
     # Executing each batch
     for batchIndex, (index, negativeImgIndex, positiveImg, anchorImg, negativeImg) in loop:
         # Moving everything to training device
@@ -49,9 +51,10 @@ def trainer(model, optimizer, dataLoader, epoch):
 
         allLosses.append(loss)
 
-    meanLoss = sum(allLosses) / len(dataLoader)
+        numObservations += positiveImg.shape[0]
 
-    loop.set_description(
-        f"EPOCH: {epoch} | Training Mean Loss {meanLoss}")
+    meanLoss = sum(allLosses) / numObservations
+
+    print(f"EPOCH: {epoch} | Final Training Mean Loss {meanLoss}")
 
     return meanLoss

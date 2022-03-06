@@ -11,11 +11,6 @@ class DogIdentificationModel(nn.Module):
         self.model = models.vgg19_bn(pretrained=True)
 
         self.model.classifier = self.model.classifier = nn.Sequential(
-        # nn.Linear(25088, 5000),
-        #     nn.ReLU(),
-        #     nn.Linear(5000, 1000),
-        #     nn.ReLU(),
-        #     nn.Linear(1000, 500)
             nn.Linear(25088, 500),
             nn.ReLU(),
             nn.Linear(500, 500),

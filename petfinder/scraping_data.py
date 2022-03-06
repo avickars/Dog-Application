@@ -6,6 +6,7 @@ import re
 import os
 import shutil
 import urllib.request
+import urllib.error as error
 
 
 def images_links(imageObjects):
@@ -114,9 +115,12 @@ def main():
         # Downloading images
         imageCounter = 0
         for imageLink in imageLinks:
-            dog_image_name = f"dogs/dog_{index}/img_{imageCounter}.jpg"
-            urllib.request.urlretrieve(imageLink, dog_image_name)
-            imageCounter += 1
+            try:
+                dog_image_name = f"dogs/dog_{index}/img_{imageCounter}.jpg"
+                urllib.request.urlretrieve(imageLink, dog_image_name)
+                imageCounter += 1
+            except error.HTTPError:
+                print('unable to download image, skipping')
 
         attributes['downloadedImages'] = imageCounter
         attributes['link'] = link

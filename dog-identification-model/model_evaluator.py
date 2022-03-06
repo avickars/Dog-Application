@@ -14,6 +14,8 @@ def evaluator(model, dataLoader, epoch):
 
     allLosses = []
 
+    numObservations = 0
+
     # Turning off the gradient
     with torch.no_grad():
 
@@ -37,10 +39,11 @@ def evaluator(model, dataLoader, epoch):
             # Outputting the loss
             loop.set_description(f"EPOCH: {epoch} | Loss {lossTotal.item() / positiveImg.shape[0]}")
 
-    meanLoss = sum(allLosses) / len(dataLoader)
+            numObservations += positiveImg.shape[0]
 
-    loop.set_description(
-        f"EPOCH: {epoch} | Validation Mean Loss {meanLoss}")
+    meanLoss = sum(allLosses) / numObservations
+
+    print(f"EPOCH: {epoch} | Final Validation Mean Loss {meanLoss}")
 
     return meanLoss
 
