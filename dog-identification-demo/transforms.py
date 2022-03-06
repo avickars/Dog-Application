@@ -4,7 +4,6 @@ import torch
 
 IMAGE_SIZE = 448
 
-
 class Resize(object):
     # CITATION: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html#transforms
     """Rescale the image in a sample to a given size.
@@ -61,16 +60,17 @@ def load_and_transform(imageLinks, coordinates):
 
     # Loading the images
     for i in range(0, len(imageLinks)):
+        # Loading the images
         loadedImage = Image.open(imageLinks[i]).convert("RGB")
 
+        # Cropping the images by the coordinates
         croppedImage = crop(loadedImage, coordinates[i])
 
+        # Resizing the images
         loadedImages.append(resize(croppedImage))
 
     # Defining the transform to tensor (converts to tensor and scale pixels to [0,1])
     toTensor = transforms.ToTensor()
-
-    resize = Resize(imageSize=IMAGE_SIZE)
 
     # Defining empty list to hold transformed images
     transformedImages = []

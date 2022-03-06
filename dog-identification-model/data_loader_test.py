@@ -1,3 +1,4 @@
+import torch
 from torch.utils.data import Dataset
 import random
 import os
@@ -70,7 +71,7 @@ class DogsDataSet_Test(Dataset):
                 ][['xmin', 'ymin', 'xmax', 'ymax']]
 
             # Defining label (i.e. they are the same)
-            label = 0
+            label = 0.0
         else:
             # Choosing the dog to use as the different dog
             # Making sure we are not using the same dog as above
@@ -100,10 +101,10 @@ class DogsDataSet_Test(Dataset):
                 (self.boxes['image'] == f"img_{img2Image}.jpg")
                 ][['xmin', 'ymin', 'xmax', 'ymax']]
 
-            label = 1
+            label = 1.0
 
         img1 = self.transform(img1, img1Box.values[0])
         img2 = self.transform(img2, img2Box.values[0])
 
-        return img1, img2, label
+        return img1, img2, torch.Tensor([label])
 

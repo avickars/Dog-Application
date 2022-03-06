@@ -3,6 +3,8 @@ import torch
 sig = torch.nn.Sigmoid()
 relu = torch.nn.Sigmoid()
 
+crossEntropy = torch.nn.BCELoss()
+
 def l2(v1, v2):
     return torch.sqrt(
         torch.sum(
@@ -25,4 +27,14 @@ def triplet_loss(anchorOutput, positiveOutput, negativeOutput, margin):
     totalLoss = torch.sum(loss)
 
     return totalLoss
+
+def cross_entropy_loss(img1, img2, label):
+    distance = sigmoidL2(img1,img2)
+
+    label = label.reshape(label.shape[0])
+
+    loss = crossEntropy(distance, label)
+
+
+    return loss
 
