@@ -81,8 +81,8 @@ Now, to train the Dog Comparator model we required multiple pictures of many ind
   
   \item Passed every image into the Dog Extractor Model:
     \begin{itemize}
-      \item Verify if the image contained a dog
-      \item Verify if the image contained only one dog
+      \item Verify the image contained a dog
+      \item Verify the image contained only one dog
       \item Record the bounding box coordinates of the dog
     \end{itemize}
     If either of the conditions in the first two bullets were not met, the image was discarded.
@@ -98,16 +98,57 @@ Within this section we discuss the approaches used in each model.  For all three
 
 \subsection{Dog Extractor}
 
+To develop the Dog Extractor model, we employed two approaches to develop a dog localization model with the latter achieving success.  However, in the interest of completeness we present both approaches.  It should be noted that in the interest of reducing repetitiveness we will not explain the concepts used in object localization models.  Rather we will refer the reader to our own sources of information.
+
 \subsubsection{Initial Approach}
+
+In our first approach we created an object localization model using a variant of the YoloV2 model presented in "YOLO9000 Better, Faster, Stronger" by Joseph Redmon and Ali Farhadi using transfer learning.   To start we created new anchor boxes that are custom to the dogs data-set.  Our hope was having new anchor boxes custom to dogs could result in improved accuracy.  To do this, we computed the height and width of every bounding box contained in the cleaned "Open Images" data set as discussed above.  We then normalize the height and width of the bounding boxes by dividing by the height and width of the images respectively to constrain them to a $[0,1]$ range.  The results are plotted below in Figure \ref{fig:x height_v_width}.
+
+\newpage
+
+\begin{figure}[h]
+\centering
+	\includegraphics[scale=0.8]{final-report-images/box_height_v_width.png}
+\caption{Height vs Width of Normalized Bounding Boxes}
+\label{fig:x height_v_width}
+\end{figure}
+
+\noindent We can see that there is no obvious clusters that would suggest appropriate anchor boxes.  To solve this, we use the approach taken by Redmon and Farhadi and compute anchor boxes using k-means cluster using the intersection over union (IOU) as the measure of distance between clusters.  The results of the clustering is shown in left image of Figure \ref{fig:x cluster_results} where the number of clusters versus the average IOU between every bounding box and its respective cluster is plotted.  We choose an approximate elbow of seven and plot the resulting cluster memberships in the right image of Figure \ref{fig:x cluster_results}.  Using these results, we use the the seven clusters centroids as the anchor boxes in our model.
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.6]{final-report-images/cluster_results.png}
+\caption{K-Means Cluster Results (Left) & Cluster Visualisation using 7 Clusters (Right)}
+\label{fig:x cluster_results}
+\end{figure}
+
+To create the model, we employed transfer learning.  We used the feature extractor from the pre-trained PyTorch implementation of VGG 19 as the feature extractor in our model due to its significant similarity to the DarkNet 19 model devised by Redmon and Farhadi, and then added additional layers as described by Redmon and Farhadi  The model used is presented below in Figure \ref{fig:x yolo}
+
+\begin{figure}[h]
+\centering
+	\includegraphics[scale=1]{final-report-images/yolo.png}
+\caption{YOLO V2 Implementation}
+\label{fig:x yolo}
+\end{figure}
+
+\newpage \noindent Lastly, before training each image was resized to a 416 by 416 image.  This was done because it creates 13 by 13 grid in output where each grid cell corresponds to a grid on the original image.  Thus, our final output was a 13 by 13 by 35 vector that gave 1183 bounding box predictions with respect to the pre-created anchor boxes (CITATION).
+
+Unfortunately, we concede that we made a significant error in our choice of model  We found that attempting to train a model of this size with a GPU that had only 8 GB of memory was a poor choice.  This was particularly evident because even though we froze the layers in the feature extractor, training from scratch the additional layers was extremely difficult due to insufficient memory.  To be succinct, due to the large size of the network we were forced to have a batch size of only 1.  Combined with exploding gradients that we encountered during training that forced us to either clip the gradient or keep a very low learning rate made training exceptionally difficult.   We strongly suspect that by utilizing a GPU with additional memory, these problems could be been better handled by increasing the batch size to help increase the training speed.  However, as students we do not have access to a GPU with increased memory size except for expensive cloud resources and the decision was made to not utilize this due to the potential for significant costs.  It is for these reasons that we shifted to a more complete model.
 
 \subsubsection{Final Approach}
 
+In our second approach to creating a dog localisation model, we employed transfer learning using a pre-trained Faster RCNN (CITATION) model using PyTorch with a feature extractor trained on the ResNet 50 data-set (CITATION) to act as the back bone of the network.  We adjusted the output of the model from predicting a multitude of classes to only 2 so that it acted as an object localization model.  To be succinct the model was adjusted to predict only the background class and the dog class.  We then trained the model on the cleaned "Open Images" data-set for 10 additional epochs with an initial learning rate of 0.005 and a decay of 0.1 every 3 epochs, as well as a momentum value of 0.9.  We note that PyTorch's tutorial on object detection (CITATION) was very helpful here and we give all credit accordingly.  During training we concerned ourselves only with the validation Mean Average Precision that we coded and computed over an IOU threshold range from 0.5 to 0.95.  We denote these values as (MAP 0.5:0.95.  During training we saved the model weights only when the MAP 0.5:0.95 increased.  The MAP 0.5:0.95 is plotted below in Figure over 10 epochs.
+
+
+
 \subsection{Dog Classifier}
 
+\newpage
 
 \section{Data Product}
 
-To answer the questions stated above, we use the work done by Mougeit, Li and Jia and use similar VGG model to compare dogs and we also incorporate the work done by Lai, Tu and Yanushkevich and use additional models to improve accuracy.  We further extend this by using the entire body of a dog instead of the face to improve accuracy.  To utulize this work in a production environment, we have created an android application (app) to act as user interface to allow for easy image upload, and have packaged the models into a Flask API (API) to perform matchings between lost and found dogs. We also use an AWS S3 bucket and a Relational Database System (RDS) to store images and image metadata respectively.  This system is visualized below in Figure \ref{fig:x app system}.
+To answer the questions stated above, we use the work done by Mougeit, Li and Jia and use similar VGG model to compare dogs and we also incorporate the work done by Lai, Tu and Yanushkevich and use additional models to improve accuracy.  We further extend this by using the entire body of a dog instead of the face to improve accuracy.  To utilize this work in a production environment, we have created an android application (app) to act as user interface to allow for easy image upload, and have packaged the models into a Flask API (API) to perform matchings between lost and found dogs. We also use an AWS S3 bucket and a Relational Database System (RDS) to store images and image metadata respectively.  This system is visualized below in Figure \ref{fig:x app system}.
 
 \begin{figure}[h]
 \centering
@@ -144,7 +185,7 @@ At a lower level we will now explain how the entire system works as visualized i
 An attentive reader will notice that we discuss only the submission of lost dogs.  This is done to minimize confusion.  If the user submits a found dog the pipeline is identical except that the dog is instead marked as found and is compared against dogs marked as lost.  This completes the pipeline contained within the application.  However, each model will be discussed in detail individually in the sections below.
 
 
-\subsection{Dog Comparator}
+
 
 
 
