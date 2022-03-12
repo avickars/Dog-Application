@@ -57,31 +57,35 @@ class Pets(db.Model):
                           db.ForeignKey("user.id"), nullable=False,
                           index=True)
     image_url = db.Column(db.String(80), nullable=False)
-    breed= db.Column(db.String(80), nullable=False)
-    weight = db.Column(db.Float, nullable=False)
-    height = db.Column(db.Float)
-    pet_name = db.Column(db.String)
+    is_lost = db.Column(db.Integer)
     dog_extractor = db.Column(db.JSON)
+    dog_identification = db.Column(db.JSON)
 
 
-    def _init_(self, user_id, image_url, breed, weight, height, pet_name, dog_extractor):
+    def _init_(self, user_id, image_url, is_lost, dog_extractor, dog_identification):
         self.user_id = user_id
         self.image_url = image_url
-        self.breed = breed
-        self.weight = weight
-        self.height = height
-        self.pet_name = pet_name
+        self.is_lost = is_lost
         self.dog_extractor = dog_extractor
+        self.dog_identification = dog_identification
 
 
 # JSON Schema
 class PetsSchema(ma.Schema):
     class Meta:
         fields = (
-            'user_id', 'image_url', 'breed', 'weight', 'height', 'pet_name')
+            'user_id', 'image_url', 'is_lost', 'dog_extractor', 'dog_identification')
+
+
+# JSON Schema
+class PetsSchemaUp(ma.Schema):
+    class Meta:
+        fields = (
+            'id', 'image_url', 'dog_identification')
 
 pets_schema = PetsSchema()
 pets_s_schema = PetsSchema(many=True)
+pets_up_schema = PetsSchemaUp(many=True)
 
 
 if __name__ == "_main_":
