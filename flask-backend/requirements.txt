@@ -1,9 +1,7 @@
-Flask==1.1.4
-flask-marshmallow==0.14.0
-Flask-SQLAlchemy==2.5.1
-torch==1.10.2
-torchvision==0.11.3
-marshmallow-sqlalchemy==0.27.0
-boto3==1.21.2
-markupsafe==2.1.0
-psycopg2==2.9.3
+Flask
+flask-marshmallow
+Flask-SQLAlchemy
+marshmallow-sqlalchemy
+markupsafe
+psycopg2-binary
+python-decouple
