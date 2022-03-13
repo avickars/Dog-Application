@@ -1,0 +1,2 @@
+web: gunicorn --chdir app:app
+worker: celery -A app.celery worker --loglevel=INFO
