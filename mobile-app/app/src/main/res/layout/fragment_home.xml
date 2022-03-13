@@ -58,7 +58,7 @@
             <ImageView
                 android:id="@+id/img_upload"
                 android:scaleType="centerCrop"
-                android:src="@drawable/login_image"
+                android:src="@drawable/gallery"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
         </androidx.cardview.widget.CardView>
@@ -69,7 +69,6 @@
 
     <FrameLayout
         android:layout_weight="1"
-        android:background="@color/purple_500"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -82,10 +81,43 @@
             android:layout_width="200dp"
             android:layout_height="200dp">
 
-            <TextView
-                android:id="@+id/tv_data"
+            <LinearLayout
+                android:gravity="center"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="wrap_content">
+
+                <FrameLayout
+                    android:layout_width="250dp"
+                    android:layout_height="250dp">
+
+                    <ImageView
+                        android:id="@+id/img_d_op"
+                        android:padding="80dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/big_data"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:visibility="gone"
+                        android:id="@+id/animation_view"
+                        android:layout_width="250dp"
+                        android:layout_height="250dp"
+                        app:lottie_loop="false"
+                        app:lottie_autoPlay="true" />
+
+                </FrameLayout>
+
+
+                <TextView
+                    android:id="@+id/tv_data"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+            </LinearLayout>
+
+
         </androidx.cardview.widget.CardView>
 
 

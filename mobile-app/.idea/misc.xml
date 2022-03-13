@@ -13,6 +13,7 @@
         <entry key="app/src/main/res/layout/activity_register.xml" value="0.22780797101449277" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.16183136899365366" />
         <entry key="app/src/main/res/layout/fragment_dashboard.xml" value="0.16183136899365366" />
+        <entry key="app/src/main/res/layout/fragment_found_dog.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.16183136899365366" />
         <entry key="app/src/main/res/layout/fragment_notifications.xml" value="0.16183136899365366" />
         <entry key="app/src/main/res/layout/notification.xml" value="0.16183136899365366" />

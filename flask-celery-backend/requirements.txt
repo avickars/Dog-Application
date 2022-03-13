@@ -5,5 +5,5 @@ torch==1.10.2
 torchvision==0.11.3
 marshmallow-sqlalchemy==0.27.0
 boto3==1.21.2
-markupsafe==2.1.0
-psycopg2==2.9.3
+markupsafe
+psycopg2

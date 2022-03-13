@@ -67,6 +67,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:20.1.0'
     implementation 'com.google.firebase:firebase-inappmessaging-display:20.1.1'
     implementation 'com.google.firebase:firebase-inappmessaging-display-ktx:20.1.1'
+    implementation 'com.airbnb.android:lottie:5.0.2'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
 //    implementation 'com.android.databinding:compiler:3.5.1'
 

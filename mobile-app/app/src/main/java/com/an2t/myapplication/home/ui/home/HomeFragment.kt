@@ -1,13 +1,15 @@
 package com.an2t.myapplication.home.ui.home
 
 import android.Manifest
-import android.R.attr.data
 import android.app.Activity
+import android.app.PendingIntent
 import android.app.ProgressDialog
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -20,21 +22,26 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.airbnb.lottie.LottieAnimationView
 import com.an2t.myapplication.R
 import com.an2t.myapplication.databinding.FragmentHomeBinding
+import com.an2t.myapplication.home.HomeActivity
 import com.an2t.myapplication.model.ImageResponse
+import com.an2t.myapplication.model.Output
 import com.an2t.myapplication.network.RetrofitClient
 import com.an2t.myapplication.network.ServiceAPI
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.fragment_home.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -61,6 +68,8 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
 
     lateinit var imageUploaded: ImageView
     lateinit var tv_data: TextView
+    lateinit var animationView: LottieAnimationView
+    lateinit var d_op : ImageView
 
     //lateinit var mLVM: MainVM
     lateinit var bitmap: Bitmap
@@ -80,7 +89,9 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
         iniProgress()
         val btnUploadCamera: Button = binding.btnUploadCamera
         val btnUploadGallery: Button = binding.btnUploadGallery
+        animationView = binding.animationView
         imageUploaded = binding.imgUpload
+        d_op = binding.imgDOp
         tv_data = binding.tvData
 
         btnUploadCamera.setOnClickListener {
@@ -263,6 +274,9 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
                     val p4 = RequestBody.create("text/plain".toMediaTypeOrNull(), "aa")
                     val p5 = RequestBody.create("text/plain".toMediaTypeOrNull(), "uMnKWqWzulKYkmEiqBnJQqcQplqaHQ")
 
+                    d_op.visibility = View.VISIBLE
+                    animationView.visibility = View.GONE
+
                     mPD.show()
                     mSAPI.uploadImage(
                         p , p1 , p2 , p3 , p4 , p5
@@ -311,6 +325,10 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
                 val p4 = RequestBody.create("text/plain".toMediaTypeOrNull(), "aa")
                 val p5 = RequestBody.create("text/plain".toMediaTypeOrNull(), "uMnKWqWzulKYkmEiqBnJQqcQplqaHQ")
 
+
+                d_op.visibility = View.VISIBLE
+                animationView.visibility = View.GONE
+
                 mPD.show()
                 mSAPI.uploadImage(
                     p , p1 , p2 , p3 , p4 , p5
@@ -339,23 +357,100 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
         _binding = null
     }
 
+
+
+
     override fun onResponse(
         call: Call<ImageResponse>,
         response: Response<ImageResponse>
     ) {
+
+        d_op.visibility = View.GONE
+        animationView.visibility = View.VISIBLE
         mPD.dismiss()
         val res_data = response.body()
+
+        Picasso.get().load(res_data?.url).into(object : com.squareup.picasso.Target {
+            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                TODO("not implemented")
+            }
+
+            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+//                imageUploaded.setImageBitmap(bitmap)
+                sendNotification(bitmap, res_data?.outputs)
+            }
+
+            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
+
+        })
+
         Picasso.get()
             .load(res_data?.url)
             .placeholder(R.drawable.login_image)
             .error(R.drawable.login_image)
             .into(imageUploaded)
+
+        res_data?.outputs?.let {
+                o->
+            if(o[0].boxes?.isEmpty() == true){
+                animationView.setAnimation(R.raw.error)
+                animationView.playAnimation()
+            }else {
+                animationView.setAnimation(R.raw.success)
+                animationView.playAnimation()
+            }
+        }
+
         tv_data.text = res_data?.outputs.toString()
+
     }
 
     override fun onFailure(call: Call<ImageResponse>, t: Throwable) {
+        d_op.visibility = View.VISIBLE
+        animationView.visibility = View.GONE
         mPD.dismiss()
         Toast.makeText(context , ""+t.message , Toast.LENGTH_LONG).show()
     }
+
+
+    private val CHANNEL_ID = "channel_id_example_01"
+    private val notificationId = 101
+
+    private fun sendNotification(img_url: Bitmap?, outputs: List<Output>?) {
+        context?.let {
+            val intent = Intent(activity, HomeActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+
+            val pendingIntent = PendingIntent.getActivity(it,0,intent,0)
+
+                val bitmapLargeIcon = BitmapFactory.decodeResource(activity?.applicationContext?.resources,
+                    R.drawable.home_purple
+                )
+
+
+            var found = "We found the bounding boxes. It seems the picture contains Dog!"
+
+            outputs?.let {
+                    o->
+                if(o[0].boxes?.isEmpty() == true){
+                    found = "We couldn't the bounding boxes. It seems the picture doesn't contain Dog!"
+                }
+            }
+                val builder = NotificationCompat.Builder(it, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+                    .setContentTitle("Finder Update!")
+                    .setContentText(found)
+                    .setLargeIcon(bitmapLargeIcon)
+                    .setStyle(NotificationCompat.BigPictureStyle().bigPicture(img_url))
+                    .setContentIntent(pendingIntent)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+
+                with(NotificationManagerCompat.from(it)){
+                    notify(notificationId, builder.build())
+                }
+        }
+    }
+
 
 }

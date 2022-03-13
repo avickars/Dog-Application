@@ -48,7 +48,6 @@ class UserSessionSchema(ma.Schema):
 user_session_schema = UserSessionSchema()
 user_session_s_schema = UserSessionSchema(many=True)
 
-
 class Pets(db.Model):
     __tablename__ = 'pets'
 
