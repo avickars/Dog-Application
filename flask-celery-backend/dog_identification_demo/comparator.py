@@ -1,7 +1,7 @@
 # Loading in functions
-from main.dog_identification_demo.transforms import load_and_transform
-from main.dog_identification_demo.model import DogIdentificationModel
-from main.dog_identification_demo.sigmoidL2 import sigmoidL2
+from .transforms import load_and_transform
+from .model import DogIdentificationModel
+from .sigmoidL2 import sigmoidL2
 # Loading libraries
 import os
 import torch

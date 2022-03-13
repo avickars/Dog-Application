@@ -117,6 +117,8 @@ class NotificationsFragment : Fragment() {
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle("Example Title")
                 .setContentInfo("Example Description")
+                .setContentText("Hello")
+                .setSubText("asdasdasd")
                 .setLargeIcon(bitmapLargeIcon)
                 .setStyle(NotificationCompat.BigPictureStyle().bigPicture(bitmap))
                 .setContentIntent(pendingIntent)

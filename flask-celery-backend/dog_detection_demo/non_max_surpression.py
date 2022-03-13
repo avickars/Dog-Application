@@ -1,4 +1,4 @@
-from main.dog_detection_demo.iou import IOU
+from .iou import IOU
 import torch
 
 class NonMaxSurpression(object):

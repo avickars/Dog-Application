@@ -1,7 +1,12 @@
 # Loading in functions
-from main.dog_detection_demo.non_max_surpression import NonMaxSurpression
-from main.dog_detection_demo.model import DogDetectorModel
-from main.dog_detection_demo.image_to_tensor import to_tensor
+from .non_max_surpression import NonMaxSurpression
+from .model import DogDetectorModel
+from .image_to_tensor import to_tensor
+
+# from dog_detection_demo.non_max_surpression import NonMaxSurpression
+# from dog_detection_demo.model import DogDetectorModel
+# from dog_detection_demo.image_to_tensor import to_tensor
+
 import os
 # Loading libraries
 import torch

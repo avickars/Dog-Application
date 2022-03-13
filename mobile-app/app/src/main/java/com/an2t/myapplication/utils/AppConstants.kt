@@ -6,7 +6,7 @@ class AppConstants {
         val REFRESH_TOKEN = "refresh_token"
         val BASE_URL_HEROKU = "https://dog-finder-app-1.herokuapp.com/v1/"
         val BASE_URL_EC2 = "http://52.27.29.173:5000/v1/"
-        val BASE_URL_LOCAL = "http://192.75.241.172:5000/v1/"
+        val BASE_URL_LOCAL = "http://192.75.240.60:5000/v1/"
 //        flask run --host=192.75.240.33
     }
 }
