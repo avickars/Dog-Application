@@ -16,16 +16,37 @@ from flask_sqlalchemy import SQLAlchemy
 from dog_detection_demo.extractor import dog_extractor
 from dog_identification_demo.comparator import dog_comparator, sigmoid
 from flask_celery import make_celery
+from decouple import config
+
+
+if config("AWS_ACCESS_KEY_ID", default='') != '':
+
+    AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID", default='')
+    AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY", default='')
+    REGION_NAME = config("REGION_NAME", default='')
+
+    CELERY_BROKER_URL = config('CELERY_BROKER_URL', default='')
+    CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND', default='')
+    SQLALCHEMY_DATABASE_URI = config('SQLALCHEMY_DATABASE_URI', default='')
+
+else:
+
+    AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+    AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+    REGION_NAME = os.environ['REGION_NAME']
+
+    CELERY_BROKER_URL = os.environ['CELERY_BROKER_URL']
+    CELERY_RESULT_BACKEND = os.environ['CELERY_RESULT_BACKEND']
+    SQLALCHEMY_DATABASE_URI = os.environ['SQLALCHEMY_DATABASE_URI']
 
 basedir = os.getcwd()
 
 app = Flask(__name__)
 
-app.config['CELERY_BROKER_URL'] = os.environ['CELERY_BROKER_URL']
-app.config['CELERY_RESULT_BACKEND'] = os.environ['CELERY_RESULT_BACKEND']
-
+app.config['CELERY_BROKER_URL'] = CELERY_BROKER_URL
+app.config['CELERY_RESULT_BACKEND'] = CELERY_RESULT_BACKEND
+app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['POSTGRES_AWS_DB']
 
 
 
@@ -242,9 +263,9 @@ def upload_lost_pet_image(*args, **kwargs):
     cwd = os.getcwd()
     img.save(img_name)
 
-    client = boto3.client('s3', region_name='us-west-2',
-                          aws_access_key_id=os.environ['AWS_ID'],
-                          aws_secret_access_key=os.environ['AWS_SECRET'])
+    client = boto3.client('s3', region_name=REGION_NAME,
+                          aws_access_key_id=AWS_ACCESS_KEY_ID,
+                          aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
     client.upload_file(
         Bucket=bucket,
         Filename=img_name,
@@ -268,5 +289,5 @@ def upload_lost_pet_image(*args, **kwargs):
 if __name__ == '__main__':
     app.run()
 
-
+#  pip freeze > requirements.txt
 #  celery -A app.celery worker --loglevel=INFO
