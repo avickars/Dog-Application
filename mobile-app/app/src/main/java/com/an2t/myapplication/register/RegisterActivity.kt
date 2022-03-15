@@ -1,5 +1,6 @@
 package com.an2t.myapplication.register
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -11,7 +12,10 @@ import androidx.lifecycle.ViewModelProviders
 import com.an2t.myapplication.R
 import com.an2t.myapplication.home.HomeActivity
 import com.an2t.myapplication.model.LoginReq
+import com.an2t.myapplication.model.LoginRes
 import com.an2t.myapplication.model.RegReq
+import com.an2t.myapplication.model.RegRes
+import com.an2t.myapplication.utils.AppConstants
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -44,10 +48,17 @@ class RegisterActivity : AppCompatActivity() {
                 val email = et_email.text.toString().trim()
                 val password = et_password.text.toString().trim()
                 val device_type = "MOBILE"
-                val loginReq = RegReq(device_type, email, password)
+                val loginReq = RegReq(device_type, email, password, getFCMToken())
                 mLVM.callRegisterAPI(loginReq)
             }
         }
+    }
+
+    private fun getFCMToken(): String {
+        val sharedPreference =
+            getSharedPreferences(AppConstants.SHARED_PREF_DOG_APP, Context.MODE_PRIVATE)
+        val fcm_t = sharedPreference?.getString(AppConstants.FCM_TOKEN, "")
+        return fcm_t!!
     }
 
     private fun _observe() {
@@ -55,6 +66,7 @@ class RegisterActivity : AppCompatActivity() {
             Observer { l_res ->
                 l_res?.let {
                     if (it.status!!) {
+                        saveRefreshToken(it)
                         val i = Intent(this, HomeActivity::class.java)
                         startActivity(i)
                     } else {
@@ -64,6 +76,11 @@ class RegisterActivity : AppCompatActivity() {
             })
     }
 
+    private fun saveRefreshToken(it: RegRes) {
+        val editor = getSharedPreferences(AppConstants.SHARED_PREF_DOG_APP, MODE_PRIVATE).edit()
+        editor.putString(AppConstants.REFRESH_TOKEN, it.refreshToken)
+        editor.apply()
+    }
 
     fun validateRegister() : Boolean {
         val email = et_email.text.toString().trim()

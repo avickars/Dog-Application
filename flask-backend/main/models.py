@@ -3,22 +3,20 @@ from main import db, ma
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(80), unique=True, nullable=False)
-    phone = db.Column(db.String(80), nullable=False)
     password = db.Column(db.String(80), nullable=False)
+    fcm_token = db.Column(db.String(300), nullable=False)
 
-    def _init_(self, name, email, phone, password):
-        self.name = name
+    def _init_(self, email, password, fcm_token):
         self.email = email
-        self.phone = phone
         self.password = password
+        self.fcm_token = fcm_token
 
 
 # JSON Schema
 class UserSchema(ma.Schema):
     class Meta:
-        fields = ('id','email','name','phone', 'password')
+        fields = ('id','email', 'fcm_token')
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)

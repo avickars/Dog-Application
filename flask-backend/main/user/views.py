@@ -3,7 +3,7 @@ import random
 import string
 from flask import request, jsonify
 from sqlalchemy import delete
-from main.models import db, User, users_schema, UserSession
+from main.models import db, User, users_schema, UserSession, user_schema
 from main.user.middleware import handle_all_exceptions
 from . import user
 
@@ -26,16 +26,29 @@ def register():
         return jsonify(_error)
 
     _user = User(
-        name=register_data['name'],
         email=register_data['email'],
-        phone=register_data['phone'],
-        password=register_data['password'])
+        fcm_token=register_data['fcm_token'],
+        password=register_data['password'],
+    )
     db.session.add(_user)
+    db.session.flush()
+    db.session.commit()
+
+    letters = string.ascii_letters
+    refresh_token = ''.join(random.choice(letters) for i in range(30))
+
+    _user_session = UserSession(
+        refresh_token=refresh_token,
+        user_id=_user.id,
+        device_type="MOBILE"
+    )
+    db.session.add(_user_session)
     db.session.commit()
 
     _data = {
         "status": True,
         "message": "User registered successfully!",
+        "refresh_token": refresh_token
     }
     return jsonify(_data)
 
@@ -45,11 +58,13 @@ def login():
     login_data = request.data
     login_data = json.loads(login_data)
 
+
     email = login_data['email']
     password = login_data['password']
     device_type = login_data['device_type']
+    fcm_token = login_data['fcm_token'],
 
-    _res = db.session.query(User.id).filter_by(email=email, password=password).first()
+    _res = db.session.query(User.id, User.fcm_token).filter_by(email=email, password=password).first()
 
     if _res is None:
         _error = {
@@ -68,6 +83,9 @@ def login():
         user_id=_user_id,
         device_type=device_type
         )
+
+    User.query.filter_by(id=_user_id).update(
+        dict(fcm_token=fcm_token))
 
     db.session.add(_user_session)
     db.session.commit()

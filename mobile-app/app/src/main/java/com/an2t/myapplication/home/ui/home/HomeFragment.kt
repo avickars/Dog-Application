@@ -10,7 +10,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -20,31 +19,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.airbnb.lottie.LottieAnimationView
 import com.an2t.myapplication.R
 import com.an2t.myapplication.databinding.FragmentHome1Binding
-import com.an2t.myapplication.databinding.FragmentHomeBinding
 import com.an2t.myapplication.home.HomeActivity
 import com.an2t.myapplication.home.ui.home.adapters.MainMatchAdapter
-import com.an2t.myapplication.home.ui.home.adapters.MatchResultsAdapter
-import com.an2t.myapplication.home.ui.notifications.NotificationAdapter
 import com.an2t.myapplication.model.ImageResponse
 import com.an2t.myapplication.model.Output
 import com.an2t.myapplication.network.RetrofitClient
 import com.an2t.myapplication.network.ServiceAPI
 import com.an2t.myapplication.utils.AppConstants
 import com.an2t.myapplication.utils.AppConstants.Companion.BASE_URL_MODEL
-import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.fragment_home.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -146,12 +136,24 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
             adapter = matchResultsAdapter
         }
 
-        val sharedPreference =  activity?.getSharedPreferences(AppConstants.SHARED_PREF_DOG_APP, Context.MODE_PRIVATE)
-        val refresh_token = sharedPreference?.getString(AppConstants.REFRESH_TOKEN,"")
-        homeViewModel.callMatchRecords(refresh_token!!)
+        val refresh_token = getRefreshToken()
+        val fcm_token = getFCMToken()
+        homeViewModel.callMatchRecords(refresh_token, fcm_token)
     }
 
+    private fun getFCMToken(): String {
+        val sharedPreference =
+            activity?.getSharedPreferences(AppConstants.SHARED_PREF_DOG_APP, Context.MODE_PRIVATE)
+        val fcm_t = sharedPreference?.getString(AppConstants.FCM_TOKEN, "")
+        return fcm_t!!
+    }
 
+    private fun getRefreshToken(): String {
+        val sharedPreference =
+            activity?.getSharedPreferences(AppConstants.SHARED_PREF_DOG_APP, Context.MODE_PRIVATE)
+        val refresh_token = sharedPreference?.getString(AppConstants.REFRESH_TOKEN, "")
+        return refresh_token!!
+    }
 
 
     fun openGallery() {
@@ -305,12 +307,12 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
                     }else {
                         contentType = "application/pdf"
                     }
-
+                    val refresh_token = getRefreshToken()
                     val propertyImage = RequestBody.create(contentType.toMediaTypeOrNull(), file)
                     val p = MultipartBody.Part.createFormData("image", file.name, propertyImage)
 
                     val p1 = RequestBody.create("text/plain".toMediaTypeOrNull(), "1")
-                    val p2 = RequestBody.create("text/plain".toMediaTypeOrNull(), "uMnKWqWzulKYkmEiqBnJQqcQplqaHQ")
+                    val p2 = RequestBody.create("text/plain".toMediaTypeOrNull(), refresh_token)
 
                     mPD.show()
                     mSAPI.uploadImage(
@@ -352,11 +354,11 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
                 }else {
                     contentType = "application/pdf"
                 }
-
+                val refresh_token = getRefreshToken()
                 val propertyImage = RequestBody.create(contentType.toMediaTypeOrNull(), file)
                 val p = MultipartBody.Part.createFormData("image", file.name, propertyImage)
                 val p1 = RequestBody.create("text/plain".toMediaTypeOrNull(), "1")
-                val p2 = RequestBody.create("text/plain".toMediaTypeOrNull(), "uMnKWqWzulKYkmEiqBnJQqcQplqaHQ")
+                val p2 = RequestBody.create("text/plain".toMediaTypeOrNull(), refresh_token)
 
 
 //                d_op.visibility = View.VISIBLE

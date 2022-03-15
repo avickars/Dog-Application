@@ -1,5 +1,6 @@
 package com.an2t.myapplication.login
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -14,6 +15,8 @@ import com.an2t.myapplication.home.HomeActivity
 import com.an2t.myapplication.model.LoginReq
 import com.an2t.myapplication.model.LoginRes
 import com.an2t.myapplication.register.RegisterActivity
+import com.an2t.myapplication.utils.AppConstants
+import com.an2t.myapplication.utils.AppConstants.Companion.REFRESH_TOKEN
 import com.an2t.myapplication.utils.AppConstants.Companion.SHARED_PREF_DOG_APP
 
 
@@ -49,7 +52,7 @@ class LoginActivity : AppCompatActivity() {
                 val email = et_email.text.toString().trim()
                 val password = et_password.text.toString().trim()
                 val device_type = "MOBILE"
-                val loginReq = LoginReq(device_type, email, password)
+                val loginReq = LoginReq(device_type, email, password, getFCMToken())
                 mLVM.callLogin(loginReq)
             }
         }
@@ -57,6 +60,13 @@ class LoginActivity : AppCompatActivity() {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    private fun getFCMToken(): String {
+        val sharedPreference =
+            getSharedPreferences(AppConstants.SHARED_PREF_DOG_APP, Context.MODE_PRIVATE)
+        val fcm_t = sharedPreference?.getString(AppConstants.FCM_TOKEN, "")
+        return fcm_t!!
     }
 
     private fun _observe() {
@@ -77,7 +87,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun saveRefreshToken(it: LoginRes) {
         val editor = getSharedPreferences(SHARED_PREF_DOG_APP, MODE_PRIVATE).edit()
-        editor.putString("refresh_token", it.refreshToken)
+        editor.putString(REFRESH_TOKEN, it.refreshToken)
         editor.apply()
     }
 

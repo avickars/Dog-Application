@@ -58,7 +58,7 @@ class HomeActivity : AppCompatActivity() {
     private fun removeRefreshToken() {
         val editor = getSharedPreferences(AppConstants.SHARED_PREF_DOG_APP, MODE_PRIVATE).edit()
         editor.apply {
-            clear()
+            remove(AppConstants.REFRESH_TOKEN)
             apply()
         }
     }

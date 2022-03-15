@@ -5,7 +5,8 @@ import com.google.gson.annotations.SerializedName
 data class LoginReq(
     val device_type: String,
     val email: String,
-    val password: String
+    val password: String,
+    val fcm_token: String
 )
 
 data class LoginRes(
@@ -20,11 +21,13 @@ data class LoginRes(
 data class RegReq(
     val device_type: String?,
     val email: String?,
-    val password: String?
+    val password: String?,
+    val fcm_token: String
 )
 
 data class CommonReq(
     val refresh_token: String?,
+    val fcm_token: String
 )
 
 data class RegRes(

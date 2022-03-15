@@ -24,8 +24,8 @@ class HomeViewModel : ViewModel() {
     }
 
     @SuppressLint("CheckResult")
-    fun callMatchRecords(token: String) {
-        _s.getAllUserUploadRecords(CommonReq(token))
+    fun callMatchRecords(token: String, fcm_token: String) {
+        _s.getAllUserUploadRecords(CommonReq(token,fcm_token))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe (
