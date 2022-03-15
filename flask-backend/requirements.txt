@@ -5,3 +5,4 @@ marshmallow-sqlalchemy
 markupsafe
 psycopg2-binary
 python-decouple
+gunicorn

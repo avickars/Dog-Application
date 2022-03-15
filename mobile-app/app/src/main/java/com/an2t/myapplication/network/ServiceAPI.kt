@@ -26,4 +26,7 @@ interface ServiceAPI {
         @Part("lost") lost: RequestBody,
         @Part("refresh_token") refresh_token: RequestBody,
         ) : Call<ImageResponse>
+
+    @POST("pets/getAllUserUploadRecords")
+    fun getAllUserUploadRecords(@Body req : CommonReq) : Observable<Response<AllLostUploadRecords>>
 }

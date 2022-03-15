@@ -1,13 +1,45 @@
 package com.an2t.myapplication.home.ui.home
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.an2t.myapplication.model.AllLostUploadRecords
+import com.an2t.myapplication.model.CommonReq
+import com.an2t.myapplication.model.LoginReq
+import com.an2t.myapplication.model.LoginRes
+import com.an2t.myapplication.network.RetrofitClient
+import com.an2t.myapplication.network.ServiceAPI
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 class HomeViewModel : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
+    val l_res = MutableLiveData<AllLostUploadRecords?>()
+    var _s: ServiceAPI
+
+    init {
+        val _r = RetrofitClient.instance
+        _s = _r.create(ServiceAPI::class.java)
     }
-    val text: LiveData<String> = _text
+
+    @SuppressLint("CheckResult")
+    fun callMatchRecords(token: String) {
+        _s.getAllUserUploadRecords(CommonReq(token))
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe (
+                {res ->
+                    when (res.code()) {
+                        200 -> {
+                            l_res.value = res.body()
+                        }
+                        else -> {
+                        }
+                    }
+                }, {e ->
+                    print(e)
+                })
+    }
+
 }

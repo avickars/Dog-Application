@@ -3,19 +3,20 @@ package com.an2t.myapplication.home.ui.home.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.an2t.myapplication.R
-import java.util.ArrayList
+import com.an2t.myapplication.model.Match
+import com.squareup.picasso.Picasso
 
 
 class MainMatchAdapter() : RecyclerView.Adapter<MainMatchAdapter.MainMatchViewHolder>()  {
 
-    private var mainResList: List<Int>? = null
+    private var mainResList: List<Match>? = null
 
-    fun setListData(notiList: List<Int>) {
+    fun setListData(notiList: List<Match>) {
         this.mainResList = notiList
     }
 
@@ -26,23 +27,27 @@ class MainMatchAdapter() : RecyclerView.Adapter<MainMatchAdapter.MainMatchViewHo
 
     override fun onBindViewHolder(holder: MainMatchViewHolder, position: Int) {
         // Getting element from names list at this position
-        val element = mainResList?.get(position)
+        val o = mainResList?.get(position)
         // Updating the text of the txtName with this element
-        holder.tv_res_title.text = "App Name"
+//        holder.tv_res_title.text = o?.imageUrl
+
+        Picasso.get()
+            .load(o?.imageUrl)
+            .placeholder(R.drawable.gallery)
+            .error(R.drawable.gallery)
+            .into(holder.iv_img_main_dog)
+
 
         var matchResultsAdapter: MatchResultsAdapter
-
-        holder.rv_res.apply {
-            layoutManager = LinearLayoutManager(holder.rv_res.context, LinearLayoutManager.HORIZONTAL, false)
-            matchResultsAdapter = MatchResultsAdapter()
-            adapter = matchResultsAdapter
-        }
-
-        val listData = ArrayList<Int>()
-        for (i in 1..100) listData.add(1)
-        matchResultsAdapter.apply {
-            setListData(listData)
-            notifyDataSetChanged()
+        o?.finalOutput?.let {
+            val lm = LinearLayoutManager(holder.rv_res.context, LinearLayoutManager.HORIZONTAL, false)
+            lm.reverseLayout = true
+            lm.stackFromEnd = true
+            holder.rv_res.apply {
+                layoutManager = lm
+                matchResultsAdapter = MatchResultsAdapter(it)
+                adapter = matchResultsAdapter
+            }
         }
         // Adding an OnClickLister to the holder.itemView
         holder.itemView.setOnClickListener {
@@ -60,5 +65,6 @@ class MainMatchAdapter() : RecyclerView.Adapter<MainMatchAdapter.MainMatchViewHo
     class MainMatchViewHolder(view : View): RecyclerView.ViewHolder(view) {
         val tv_res_title = view.findViewById(R.id.tv_res_title) as TextView
         val rv_res = view.findViewById(R.id.rv_res) as RecyclerView
+        val iv_img_main_dog = view.findViewById(R.id.iv_img_main_dog) as ImageView
     }
 }

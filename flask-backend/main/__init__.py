@@ -11,6 +11,7 @@ if config("SQLALCHEMY_DATABASE_URI", default='') != '':
     SQLALCHEMY_DATABASE_URI = config('SQLALCHEMY_DATABASE_URI', default='')
 
 else:
+    # Done
     SQLALCHEMY_DATABASE_URI = os.environ['SQLALCHEMY_DATABASE_URI']
 
 basedir = os.getcwd()

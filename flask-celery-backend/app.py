@@ -191,7 +191,8 @@ def run_models_in_background(img_pth, img_name, user_id, url, is_lost):
         fetch_pets = db_session.query(Pets).filter_by(is_lost=find_status)
         db_session.close()
         all_pets = pets_up_schema.dump(fetch_pets)
-        stacked_compare = []
+
+        similar_dogs = []
         if len(all_pets) > 0:
             for each_val in all_pets:
                 comparison = sigmoid(torch.FloatTensor(comparator_outputs),
@@ -200,10 +201,12 @@ def run_models_in_background(img_pth, img_name, user_id, url, is_lost):
                 comparison = comparison[0]
                 each_val['c_score'] = comparison
                 del each_val['dog_identification']
-                stacked_compare.append(each_val)
-            similar_dogs = pd.DataFrame(stacked_compare)
-            sorted_similar_dogs = similar_dogs.sort_values(by=['c_score']).head(3)
-            display = sorted_similar_dogs.to_dict('records')
+                similar_dogs.append(each_val)
+
+            similar_dogs = pd.DataFrame.from_records(similar_dogs)
+            similar_dogs = similar_dogs.sort_values(by=['c_score'], ascending=False)
+            similar_dogs = similar_dogs.head(5)
+            similar_dogs = similar_dogs.to_dict('records')
             os.remove(img_name)
 
         # DB entry after first model response
@@ -213,14 +216,14 @@ def run_models_in_background(img_pth, img_name, user_id, url, is_lost):
             is_lost=int(is_lost),
             dog_extractor=extractor_outputs,
             dog_identification=comparator_outputs,
-            final_output=stacked_compare
+            final_output=similar_dogs
         )
         db_session.add(pets)
         db_session.commit()
         db_session.close()
         data = {
             "status": True,
-            "stacked_comparision": stacked_compare,
+            "stacked_comparision": similar_dogs,
             "image_url": url
         }
         return {"data" : data}

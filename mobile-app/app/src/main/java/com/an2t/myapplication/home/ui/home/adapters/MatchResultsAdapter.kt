@@ -7,15 +7,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.an2t.myapplication.R
+import com.an2t.myapplication.model.FinalOutput
+import com.squareup.picasso.Picasso
+import kotlin.math.roundToLong
 
 
-class MatchResultsAdapter() : RecyclerView.Adapter<MatchResultsAdapter.MatchResultsViewHolder>()  {
-
-    private var matchResList: List<Int>? = null
-
-    fun setListData(notiList: List<Int>) {
-        this.matchResList = notiList
-    }
+class MatchResultsAdapter(val matchResList: List<FinalOutput>) : RecyclerView.Adapter<MatchResultsAdapter.MatchResultsViewHolder>()  {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MatchResultsViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.match_res_sub_item,parent, false)
@@ -24,16 +21,14 @@ class MatchResultsAdapter() : RecyclerView.Adapter<MatchResultsAdapter.MatchResu
 
     override fun onBindViewHolder(holder: MatchResultsViewHolder, position: Int) {
         // Getting element from names list at this position
-        val element = matchResList?.get(position)
+        val o = matchResList.get(position)
         // Updating the text of the txtName with this element
-        holder.tv_title_res.text = "App Name"
-
-//        Picasso.get()
-//            .load("")
-//            .placeholder(R.drawable.login_image)
-//            .error(R.drawable.login_image)
-//            .into(holder.iv_match_img)
-
+        holder.tv_title_res.text = String.format("%.3f", o.cScore)
+        Picasso.get()
+            .load(o.imageUrl)
+            .placeholder(R.drawable.gallery)
+            .error(R.drawable.gallery)
+            .into(holder.iv_match_img)
 
         // Adding an OnClickLister to the holder.itemView
 //        holder.itemView.setOnClickListener {
@@ -44,7 +39,7 @@ class MatchResultsAdapter() : RecyclerView.Adapter<MatchResultsAdapter.MatchResu
 
     override fun getItemCount(): Int {
         if (matchResList == null) return 0
-        return matchResList?.size!!
+        return matchResList?.size
     }
 
 
