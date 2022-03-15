@@ -1,0 +1,2 @@
+* * * * *  bash /home/ubuntu/Dog-Application/flask-celery-backend/autostart_app.sh
+* * * * *  bash /home/ubuntu/Dog-Application/flask-celery-backend/autostart_celery.sh

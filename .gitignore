@@ -1,0 +1,10 @@
+flask-celery-backend/.env
+flask-celery-backend/__pycache__/
+flask-celery-backend/env_name/
+flask-celery-backend/dog_detection_demo/__pycache__/
+flask-celery-backend/dog_detection_demo/model.pt
+flask-celery-backend/dog_identification_model/__pycache__/
+flask-celery-backend/dog_identification_model/dog-identification-model.pt
+flask-backend/main/__pycache__/
+flask-backend/main/pets/__pycache__/
+flask-backend/main/user/__pycache__/
