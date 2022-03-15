@@ -17,6 +17,9 @@ from dog_detection_demo.extractor import dog_extractor
 from dog_identification_demo.comparator import dog_comparator, sigmoid
 from flask_celery import make_celery
 from decouple import config
+from sqlalchemy.sql.schema import Column
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 
 if config("AWS_ACCESS_KEY_ID", default='') != '':
@@ -41,7 +44,17 @@ else:
 
 basedir = os.getcwd()
 
+
+
 app = Flask(__name__)
+db = SQLAlchemy(app)
+
+def create_app():
+    app = Flask(__name__)
+    db.init_app(app)
+    return app
+
+
 
 app.config['CELERY_BROKER_URL'] = CELERY_BROKER_URL
 app.config['CELERY_RESULT_BACKEND'] = CELERY_RESULT_BACKEND
@@ -49,70 +62,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
-
-db = SQLAlchemy(app)
+# db = SQLAlchemy(app)
 ma = Marshmallow(app)
-celery = make_celery(app)
-
-@celery.task(name="main.run_models_in_background")
-def run_models_in_background(img_pth, img_name, user_id, url, is_lost):
-
-    extractor_outputs = dog_extractor(img_pth)
-    if extractor_outputs[0]['boxes'] == []:
-        os.remove(img_name)
-        data = {
-            "status": True,
-            "dog_extractor": None,
-            "dog_identification": None,
-            "image_url": None
-
-        }
-
-        return jsonify(data)
-    comparator_outputs = dog_comparator(img_pth, extractor_outputs[0]['boxes'])
-
-    if int(is_lost) == 1:
-        find_status = 0
-    else:
-        find_status = 1
-
-    fetch_pets = db.session.query(Pets).filter_by(is_lost=find_status)
-    all_pets = pets_up_schema.dump(fetch_pets)
-    stacked_comparision = []
-    for each_val in all_pets:
-        comparison = sigmoid(torch.FloatTensor(comparator_outputs),
-                             torch.FloatTensor(each_val['dog_identification']))
-        comparison = comparison.tolist()
-        comparison = comparison[0]
-        each_val['c_score'] = comparison
-        del each_val['dog_identification']
-        stacked_comparision.append(each_val)
-    similar_dogs = pd.DataFrame(stacked_comparision)
-    sorted_similar_dogs = similar_dogs.sort_values(by=['c_score']).head(3)
-    display = sorted_similar_dogs.to_dict('records')
-    os.remove(img_name)
-
-    # DB entry after first model response
-    pets = Pets(
-        user_id=user_id,
-        image_url=url,
-        is_lost=int(is_lost),
-        dog_extractor=extractor_outputs,
-        dog_identification=comparator_outputs,
-        final_output=display
-    )
-    db.session.add(pets)
-    db.session.commit()
-    data = {
-        "status": True,
-        "dog_extractor": extractor_outputs,
-        "dog_identification": comparator_outputs,
-        "stacked_comparision": display,
-        "image_url": url
-    }
-    return {"data" : data}
-
-# App Models
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -199,6 +150,83 @@ class PetsSchemaUp(ma.Schema):
 pets_schema = PetsSchema()
 pets_s_schema = PetsSchema(many=True)
 pets_up_schema = PetsSchemaUp(many=True)
+
+# file: proj/db.py
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session
+from sqlalchemy.orm import sessionmaker
+
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URI, convert_unicode=True,
+    pool_recycle=3600, pool_size=10)
+db_session = scoped_session(sessionmaker(
+    autocommit=False, autoflush=False, bind=engine))
+
+
+celery = make_celery(app,db)
+
+@celery.task(name="main.run_models_in_background", tasks=SqlAlchemyTask)
+def run_models_in_background(img_pth, img_name, user_id, url, is_lost):
+    app = create_app()
+    with app.app_context():
+        extractor_outputs = dog_extractor(img_pth)
+        if extractor_outputs[0]['boxes'] == []:
+            os.remove(img_name)
+            data = {
+                "status": True,
+                "dog_extractor": None,
+                "dog_identification": None,
+                "image_url": None
+
+            }
+
+            return jsonify(data)
+        comparator_outputs = dog_comparator(img_pth, extractor_outputs[0]['boxes'])
+
+        if int(is_lost) == 1:
+            find_status = 0
+        else:
+            find_status = 1
+
+        fetch_pets = db_session.query(Pets).filter_by(is_lost=find_status)
+        db_session.close()
+        all_pets = pets_up_schema.dump(fetch_pets)
+        stacked_comparision = []
+        for each_val in all_pets:
+            comparison = sigmoid(torch.FloatTensor(comparator_outputs),
+                                 torch.FloatTensor(each_val['dog_identification']))
+            comparison = comparison.tolist()
+            comparison = comparison[0]
+            each_val['c_score'] = comparison
+            del each_val['dog_identification']
+            stacked_comparision.append(each_val)
+        similar_dogs = pd.DataFrame(stacked_comparision)
+        sorted_similar_dogs = similar_dogs.sort_values(by=['c_score']).head(3)
+        display = sorted_similar_dogs.to_dict('records')
+        os.remove(img_name)
+
+        # DB entry after first model response
+        pets = Pets(
+            user_id=user_id,
+            image_url=url,
+            is_lost=int(is_lost),
+            dog_extractor=extractor_outputs,
+            dog_identification=comparator_outputs,
+            final_output=stacked_comparision
+        )
+        db_session.add(pets)
+        db_session.commit()
+        db_session.close()
+        data = {
+            "status": True,
+            "dog_extractor": extractor_outputs,
+            "dog_identification": comparator_outputs,
+            # "stacked_comparision": display,
+            "image_url": url
+        }
+        return {"data" : data}
+
+# App Models
 
 
 def logged_in(f):
@@ -287,7 +315,7 @@ def upload_lost_pet_image(*args, **kwargs):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True, port=5001, host='10.0.0.69')
 
 #  pip freeze > requirements.txt
 #  celery -A app.celery worker --loglevel=INFO

@@ -1,16 +1,16 @@
 package com.an2t.myapplication.network
 import com.an2t.myapplication.model.*
+import com.an2t.myapplication.utils.AppConstants
 import io.reactivex.Observable
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.Multipart
-import retrofit2.http.POST
-import retrofit2.http.Part
+import retrofit2.http.*
 
 interface ServiceAPI {
+
+
     @POST("auth/login")
     fun login(@Body user : LoginReq) : Observable<Response<LoginRes>>
 
@@ -19,13 +19,11 @@ interface ServiceAPI {
 
 
     @Multipart
-    @POST("pets/")
+    @POST
     fun uploadImage(
+        @Url  url: String = AppConstants.BASE_URL_MODEL,
         @Part image: MultipartBody.Part?,
-        @Part("breed") breed: RequestBody,
-        @Part("weight") weight: RequestBody,
-        @Part("height") height: RequestBody,
-        @Part("pet_name") pet_name: RequestBody,
+        @Part("lost") lost: RequestBody,
         @Part("refresh_token") refresh_token: RequestBody,
         ) : Call<ImageResponse>
 }

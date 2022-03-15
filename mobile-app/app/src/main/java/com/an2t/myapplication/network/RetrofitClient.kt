@@ -1,7 +1,8 @@
 package com.an2t.myapplication.network
 
-import com.an2t.myapplication.utils.AppConstants.Companion.BASE_URL_EC2
-import com.an2t.myapplication.utils.AppConstants.Companion.BASE_URL_LOCAL
+
+import com.an2t.myapplication.utils.AppConstants.Companion.BASE_URL_HEROKU
+
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -23,7 +24,7 @@ object RetrofitClient {
                     .build()
 
                 ourInstance = Retrofit.Builder()
-                    .baseUrl(BASE_URL_LOCAL)
+                    .baseUrl(BASE_URL_HEROKU)
                     .client(_c)
                     .addConverterFactory(GsonConverterFactory.create())
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
