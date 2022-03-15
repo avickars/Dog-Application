@@ -23,6 +23,10 @@ data class RegReq(
     val password: String?
 )
 
+data class CommonReq(
+    val refresh_token: String?,
+)
+
 data class RegRes(
     @SerializedName("message")
     val message: String?,
@@ -49,4 +53,33 @@ data class Output(
     val labels: List<Double>?,
     @SerializedName("scores")
     val scores: List<Double>?
+)
+
+data class AllLostUploadRecords(
+    @SerializedName("match_list")
+    val matchList: List<Match>?,
+    @SerializedName("status")
+    val status: Boolean?
+)
+
+data class FinalOutput(
+    @SerializedName("c_score")
+    val cScore: Double?,
+    @SerializedName("id")
+    val id: Int?,
+    @SerializedName("image_url")
+    val imageUrl: String?,
+    @SerializedName("user_id")
+    val userId: Int?
+)
+
+data class Match(
+    @SerializedName("final_output")
+    val finalOutput: List<FinalOutput>?,
+    @SerializedName("image_url")
+    val imageUrl: String?,
+    @SerializedName("is_lost")
+    val isLost: Int?,
+    @SerializedName("user_id")
+    val userId: Int?
 )

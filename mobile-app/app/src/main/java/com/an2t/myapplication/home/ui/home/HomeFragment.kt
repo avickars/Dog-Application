@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.PendingIntent
 import android.app.ProgressDialog
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -40,6 +41,7 @@ import com.an2t.myapplication.model.ImageResponse
 import com.an2t.myapplication.model.Output
 import com.an2t.myapplication.network.RetrofitClient
 import com.an2t.myapplication.network.ServiceAPI
+import com.an2t.myapplication.utils.AppConstants
 import com.an2t.myapplication.utils.AppConstants.Companion.BASE_URL_MODEL
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -73,15 +75,11 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
     internal lateinit var mSAPI: ServiceAPI
     lateinit var mPD: ProgressDialog
 
-//    lateinit var imageUploaded: ImageView
-//    lateinit var tv_data: TextView
-//    lateinit var animationView: LottieAnimationView
-//    lateinit var d_op : ImageView
-
-    //lateinit var mLVM: MainVM
     lateinit var bitmap: Bitmap
 
     private lateinit var matchResultsAdapter: MainMatchAdapter
+
+    private lateinit var homeViewModel:HomeViewModel
 
 
     override fun onCreateView(
@@ -89,7 +87,7 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val homeViewModel =
+        homeViewModel =
             ViewModelProvider(this).get(HomeViewModel::class.java)
 
         _binding = FragmentHome1Binding.inflate(inflater, container, false)
@@ -115,6 +113,20 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
 
     private fun _observe() {
         mSAPI = RetrofitClient.instance.create(ServiceAPI::class.java)
+
+        homeViewModel.l_res.observe(viewLifecycleOwner) {
+            l_res ->
+            l_res?.status?.let {
+                if(it){
+                    l_res.matchList?.let {
+                        matchResultsAdapter.apply {
+                            setListData(it)
+                            notifyDataSetChanged()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun iniProgress() {
@@ -134,13 +146,13 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
             adapter = matchResultsAdapter
         }
 
-        val listData = ArrayList<Int>()
-        for (i in 1..100) listData.add(1)
-        matchResultsAdapter.apply {
-            setListData(listData)
-            notifyDataSetChanged()
-        }
+        val sharedPreference =  activity?.getSharedPreferences(AppConstants.SHARED_PREF_DOG_APP, Context.MODE_PRIVATE)
+        val refresh_token = sharedPreference?.getString(AppConstants.REFRESH_TOKEN,"")
+        homeViewModel.callMatchRecords(refresh_token!!)
     }
+
+
+
 
     fun openGallery() {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
@@ -299,8 +311,6 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
 
                     val p1 = RequestBody.create("text/plain".toMediaTypeOrNull(), "1")
                     val p2 = RequestBody.create("text/plain".toMediaTypeOrNull(), "uMnKWqWzulKYkmEiqBnJQqcQplqaHQ")
-//                    d_op.visibility = View.VISIBLE
-//                    animationView.visibility = View.GONE
 
                     mPD.show()
                     mSAPI.uploadImage(
@@ -381,63 +391,19 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
         _binding = null
     }
 
-
-
-
     override fun onResponse(
         call: Call<ImageResponse>,
         response: Response<ImageResponse>
     ) {
-
-
         mPD.dismiss()
         val res_data = response.body()
 
         res_data?.status?.let {
             Toast.makeText(context , "Your request has been submtited successfully. We ll get back to you with results in some time." , Toast.LENGTH_LONG).show()
         }
-
-//        d_op.visibility = View.GONE
-//        animationView.visibility = View.VISIBLE
-//
-//        Picasso.get().load(res_data?.url).into(object : com.squareup.picasso.Target {
-//            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-//
-//            }
-//
-//            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-////                imageUploaded.setImageBitmap(bitmap)
-//                sendNotification(bitmap, res_data?.outputs)
-//            }
-//
-//            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
-//
-//        })
-//
-//        Picasso.get()
-//            .load(res_data?.url)
-//            .placeholder(R.drawable.login_image)
-//            .error(R.drawable.login_image)
-//            .into(imageUploaded)
-//
-//        res_data?.outputs?.let {
-//                o->
-//            if(o[0].boxes?.isEmpty() == true){
-//                animationView.setAnimation(R.raw.error)
-//                animationView.playAnimation()
-//            }else {
-//                animationView.setAnimation(R.raw.success)
-//                animationView.playAnimation()
-//            }
-//        }
-//
-//        tv_data.text = res_data?.outputs.toString()
-
     }
 
     override fun onFailure(call: Call<ImageResponse>, t: Throwable) {
-//        d_op.visibility = View.VISIBLE
-//        animationView.visibility = View.GONE
         mPD.dismiss()
         Toast.makeText(context , ""+t.message , Toast.LENGTH_LONG).show()
     }
@@ -481,6 +447,5 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
                 }
         }
     }
-
 
 }
