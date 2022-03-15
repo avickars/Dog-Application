@@ -40,7 +40,7 @@ class OpenImagesDataset(Dataset):
             return 5000
         else:
             return 1000
-        return len(self.imageList)
+        # return len(self.imageList)
     
     def __getitem__(self, index):
         # Creating the path of the iamge

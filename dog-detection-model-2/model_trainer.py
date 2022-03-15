@@ -59,4 +59,6 @@ def trainer(model, optimizer, dataLoader, epoch):
 
     meanLoss = sum(allLosses)/len(allLosses)
 
-    loop.set_description(f"EPOCH: {epoch} | Classifier Loss {lossDict['loss_classifier']} | Bbox Loss: {lossDict['loss_box_reg']} | Objectness Loss {lossDict['loss_objectness']} | Mean Loss {meanLoss}")
+    print(f"EPOCH: {epoch} | Classifier Loss {lossDict['loss_classifier']} | Bbox Loss: {lossDict['loss_box_reg']} | Objectness Loss {lossDict['loss_objectness']} | Mean Loss {meanLoss}")
+
+    return meanLoss

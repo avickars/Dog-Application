@@ -20,23 +20,23 @@ def evaluator(model, dataLoader, epoch):
     with torch.no_grad():
 
         # Executing each batch
-        # for batchIndex, (index, negativeImgIndex, positiveImg, anchorImg, negativeImg) in loop:
-        for batchIndex, (negativeImg, positiveImg, label) in loop:
+        for batchIndex, (index, negativeImgIndex, positiveImg, anchorImg, negativeImg) in loop:
+        # for batchIndex, (negativeImg, positiveImg, label) in loop:
             # Moving everything to training device
             positiveImg = positiveImg.to(DEVICE)
-            # anchorImg = anchorImg.to(DEVICE)
+            anchorImg = anchorImg.to(DEVICE)
             negativeImg = negativeImg.to(DEVICE)
 
-            label = label.to(DEVICE, torch.float)
+            # label = label.to(DEVICE, torch.float)
 
             # Computing the model output
             positiveImgEncoding = model(positiveImg)
-            # anchorImgEncoding = model(anchorImg)
+            anchorImgEncoding = model(anchorImg)
             negativeImgEncoding = model(negativeImg)
 
             # Summing to total the loss of all types
-            # lossTotal = triplet_loss(anchorImgEncoding, positiveImgEncoding, negativeImgEncoding, MARGIN)
-            lossTotal = cross_entropy_loss(positiveImgEncoding, negativeImgEncoding, label)
+            lossTotal = triplet_loss(anchorImgEncoding, positiveImgEncoding, negativeImgEncoding, MARGIN)
+            # lossTotal = cross_entropy_loss(positiveImgEncoding, negativeImgEncoding, label)
 
             allLosses.append(lossTotal.item())
 
