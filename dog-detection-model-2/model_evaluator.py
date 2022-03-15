@@ -10,11 +10,6 @@ def evaluator(model, dataLoader):
     # Defining non max surpressor
     nms = NonMaxSurpression()
 
-    # Getting the number of threads available
-    n_threads = torch.get_num_threads()
-
-    torch.set_num_threads(1)
-    
     iou_types = ["bbox"]
 
     coco = convert_to_coco_api(dataLoader.dataset)
