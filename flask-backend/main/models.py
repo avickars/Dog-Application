@@ -59,21 +59,23 @@ class Pets(db.Model):
     is_lost = db.Column(db.Integer)
     dog_extractor = db.Column(db.JSON)
     dog_identification = db.Column(db.JSON)
+    final_output= db.Column(db.JSON)
 
 
-    def _init_(self, user_id, image_url, is_lost, dog_extractor, dog_identification):
+    def _init_(self, user_id, image_url, is_lost, dog_extractor, dog_identification, final_output):
         self.user_id = user_id
         self.image_url = image_url
         self.is_lost = is_lost
         self.dog_extractor = dog_extractor
         self.dog_identification = dog_identification
+        self.final_output = final_output
 
 
 # JSON Schema
 class PetsSchema(ma.Schema):
     class Meta:
         fields = (
-            'user_id', 'image_url', 'is_lost', 'dog_extractor', 'dog_identification')
+            'user_id', 'image_url', 'is_lost', 'final_output')
 
 
 # JSON Schema
