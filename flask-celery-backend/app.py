@@ -145,7 +145,7 @@ class PetsSchema(ma.Schema):
 class PetsSchemaUp(ma.Schema):
     class Meta:
         fields = (
-            'id', 'image_url', 'dog_identification')
+            'user_id', 'id', 'image_url', 'dog_identification')
 
 pets_schema = PetsSchema()
 pets_s_schema = PetsSchema(many=True)
@@ -165,7 +165,7 @@ db_session = scoped_session(sessionmaker(
 
 celery = make_celery(app,db)
 
-@celery.task(name="main.run_models_in_background", tasks=SqlAlchemyTask)
+@celery.task(name="main.run_models_in_background")
 def run_models_in_background(img_pth, img_name, user_id, url, is_lost):
     app = create_app()
     with app.app_context():
@@ -191,19 +191,20 @@ def run_models_in_background(img_pth, img_name, user_id, url, is_lost):
         fetch_pets = db_session.query(Pets).filter_by(is_lost=find_status)
         db_session.close()
         all_pets = pets_up_schema.dump(fetch_pets)
-        stacked_comparision = []
-        for each_val in all_pets:
-            comparison = sigmoid(torch.FloatTensor(comparator_outputs),
-                                 torch.FloatTensor(each_val['dog_identification']))
-            comparison = comparison.tolist()
-            comparison = comparison[0]
-            each_val['c_score'] = comparison
-            del each_val['dog_identification']
-            stacked_comparision.append(each_val)
-        similar_dogs = pd.DataFrame(stacked_comparision)
-        sorted_similar_dogs = similar_dogs.sort_values(by=['c_score']).head(3)
-        display = sorted_similar_dogs.to_dict('records')
-        os.remove(img_name)
+        stacked_compare = []
+        if len(all_pets) > 0:
+            for each_val in all_pets:
+                comparison = sigmoid(torch.FloatTensor(comparator_outputs),
+                                     torch.FloatTensor(each_val['dog_identification']))
+                comparison = comparison.tolist()
+                comparison = comparison[0]
+                each_val['c_score'] = comparison
+                del each_val['dog_identification']
+                stacked_compare.append(each_val)
+            similar_dogs = pd.DataFrame(stacked_compare)
+            sorted_similar_dogs = similar_dogs.sort_values(by=['c_score']).head(3)
+            display = sorted_similar_dogs.to_dict('records')
+            os.remove(img_name)
 
         # DB entry after first model response
         pets = Pets(
@@ -212,16 +213,14 @@ def run_models_in_background(img_pth, img_name, user_id, url, is_lost):
             is_lost=int(is_lost),
             dog_extractor=extractor_outputs,
             dog_identification=comparator_outputs,
-            final_output=stacked_comparision
+            final_output=stacked_compare
         )
         db_session.add(pets)
         db_session.commit()
         db_session.close()
         data = {
             "status": True,
-            "dog_extractor": extractor_outputs,
-            "dog_identification": comparator_outputs,
-            # "stacked_comparision": display,
+            "stacked_comparision": stacked_compare,
             "image_url": url
         }
         return {"data" : data}
