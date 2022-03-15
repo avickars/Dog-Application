@@ -19,4 +19,7 @@
     <string name="send_notification">Send notification</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="upload_pic_using">Upload your dogs picture</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
 </resources>

@@ -26,14 +26,21 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.airbnb.lottie.LottieAnimationView
 import com.an2t.myapplication.R
+import com.an2t.myapplication.databinding.FragmentHome1Binding
 import com.an2t.myapplication.databinding.FragmentHomeBinding
 import com.an2t.myapplication.home.HomeActivity
+import com.an2t.myapplication.home.ui.home.adapters.MainMatchAdapter
+import com.an2t.myapplication.home.ui.home.adapters.MatchResultsAdapter
+import com.an2t.myapplication.home.ui.notifications.NotificationAdapter
 import com.an2t.myapplication.model.ImageResponse
 import com.an2t.myapplication.model.Output
 import com.an2t.myapplication.network.RetrofitClient
 import com.an2t.myapplication.network.ServiceAPI
+import com.an2t.myapplication.utils.AppConstants.Companion.BASE_URL_MODEL
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_home.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -51,7 +58,7 @@ import java.util.*
 //import com.an2t.myapplication.home1.databinding.FragmentHomeBinding
 class HomeFragment : Fragment(), Callback<ImageResponse> {
 
-    private var _binding: FragmentHomeBinding? = null
+    private var _binding: FragmentHome1Binding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -66,13 +73,15 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
     internal lateinit var mSAPI: ServiceAPI
     lateinit var mPD: ProgressDialog
 
-    lateinit var imageUploaded: ImageView
-    lateinit var tv_data: TextView
-    lateinit var animationView: LottieAnimationView
-    lateinit var d_op : ImageView
+//    lateinit var imageUploaded: ImageView
+//    lateinit var tv_data: TextView
+//    lateinit var animationView: LottieAnimationView
+//    lateinit var d_op : ImageView
 
     //lateinit var mLVM: MainVM
     lateinit var bitmap: Bitmap
+
+    private lateinit var matchResultsAdapter: MainMatchAdapter
 
 
     override fun onCreateView(
@@ -83,16 +92,16 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
         val homeViewModel =
             ViewModelProvider(this).get(HomeViewModel::class.java)
 
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        _binding = FragmentHome1Binding.inflate(inflater, container, false)
         val root: View = binding.root
 
         iniProgress()
         val btnUploadCamera: Button = binding.btnUploadCamera
         val btnUploadGallery: Button = binding.btnUploadGallery
-        animationView = binding.animationView
-        imageUploaded = binding.imgUpload
-        d_op = binding.imgDOp
-        tv_data = binding.tvData
+//        animationView = binding.animationView
+//        imageUploaded = binding.imgUpload
+//        d_op = binding.imgDOp
+//        tv_data = binding.tvData
 
         btnUploadCamera.setOnClickListener {
             openCamera()
@@ -111,6 +120,26 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
     private fun iniProgress() {
         mPD = ProgressDialog(activity)
         mPD.setMessage("Uploading Image...")
+    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        _binding?.rvShowMatchResults!!.apply {
+            layoutManager = LinearLayoutManager(activity)
+//            val decoration = DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
+//            addItemDecoration(decoration)
+            matchResultsAdapter = MainMatchAdapter()
+            adapter = matchResultsAdapter
+        }
+
+        val listData = ArrayList<Int>()
+        for (i in 1..100) listData.add(1)
+        matchResultsAdapter.apply {
+            setListData(listData)
+            notifyDataSetChanged()
+        }
     }
 
     fun openGallery() {
@@ -268,18 +297,15 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
                     val propertyImage = RequestBody.create(contentType.toMediaTypeOrNull(), file)
                     val p = MultipartBody.Part.createFormData("image", file.name, propertyImage)
 
-                    val p1 = RequestBody.create("text/plain".toMediaTypeOrNull(), "bb")
-                    val p2 = RequestBody.create("text/plain".toMediaTypeOrNull(), "60")
-                    val p3 = RequestBody.create("text/plain".toMediaTypeOrNull(), "100")
-                    val p4 = RequestBody.create("text/plain".toMediaTypeOrNull(), "aa")
-                    val p5 = RequestBody.create("text/plain".toMediaTypeOrNull(), "uMnKWqWzulKYkmEiqBnJQqcQplqaHQ")
-
-                    d_op.visibility = View.VISIBLE
-                    animationView.visibility = View.GONE
+                    val p1 = RequestBody.create("text/plain".toMediaTypeOrNull(), "1")
+                    val p2 = RequestBody.create("text/plain".toMediaTypeOrNull(), "uMnKWqWzulKYkmEiqBnJQqcQplqaHQ")
+//                    d_op.visibility = View.VISIBLE
+//                    animationView.visibility = View.GONE
 
                     mPD.show()
                     mSAPI.uploadImage(
-                        p , p1 , p2 , p3 , p4 , p5
+                        BASE_URL_MODEL,
+                        p , p1 , p2
                     ).enqueue(this)
                 }
 //                val selectedImageUri: Uri = intent?.data
@@ -319,19 +345,17 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
 
                 val propertyImage = RequestBody.create(contentType.toMediaTypeOrNull(), file)
                 val p = MultipartBody.Part.createFormData("image", file.name, propertyImage)
-                val p1 = RequestBody.create("text/plain".toMediaTypeOrNull(), "bb")
-                val p2 = RequestBody.create("text/plain".toMediaTypeOrNull(), "60")
-                val p3 = RequestBody.create("text/plain".toMediaTypeOrNull(), "100")
-                val p4 = RequestBody.create("text/plain".toMediaTypeOrNull(), "aa")
-                val p5 = RequestBody.create("text/plain".toMediaTypeOrNull(), "uMnKWqWzulKYkmEiqBnJQqcQplqaHQ")
+                val p1 = RequestBody.create("text/plain".toMediaTypeOrNull(), "1")
+                val p2 = RequestBody.create("text/plain".toMediaTypeOrNull(), "uMnKWqWzulKYkmEiqBnJQqcQplqaHQ")
 
 
-                d_op.visibility = View.VISIBLE
-                animationView.visibility = View.GONE
+//                d_op.visibility = View.VISIBLE
+//                animationView.visibility = View.GONE
 
                 mPD.show()
                 mSAPI.uploadImage(
-                    p , p1 , p2 , p3 , p4 , p5
+                    BASE_URL_MODEL,
+                    p , p1,p2
                 ).enqueue(this)
 
 
@@ -365,49 +389,55 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
         response: Response<ImageResponse>
     ) {
 
-        d_op.visibility = View.GONE
-        animationView.visibility = View.VISIBLE
+
         mPD.dismiss()
         val res_data = response.body()
 
-        Picasso.get().load(res_data?.url).into(object : com.squareup.picasso.Target {
-            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                TODO("not implemented")
-            }
-
-            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-//                imageUploaded.setImageBitmap(bitmap)
-                sendNotification(bitmap, res_data?.outputs)
-            }
-
-            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
-
-        })
-
-        Picasso.get()
-            .load(res_data?.url)
-            .placeholder(R.drawable.login_image)
-            .error(R.drawable.login_image)
-            .into(imageUploaded)
-
-        res_data?.outputs?.let {
-                o->
-            if(o[0].boxes?.isEmpty() == true){
-                animationView.setAnimation(R.raw.error)
-                animationView.playAnimation()
-            }else {
-                animationView.setAnimation(R.raw.success)
-                animationView.playAnimation()
-            }
+        res_data?.status?.let {
+            Toast.makeText(context , "Your request has been submtited successfully. We ll get back to you with results in some time." , Toast.LENGTH_LONG).show()
         }
 
-        tv_data.text = res_data?.outputs.toString()
+//        d_op.visibility = View.GONE
+//        animationView.visibility = View.VISIBLE
+//
+//        Picasso.get().load(res_data?.url).into(object : com.squareup.picasso.Target {
+//            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+//
+//            }
+//
+//            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+////                imageUploaded.setImageBitmap(bitmap)
+//                sendNotification(bitmap, res_data?.outputs)
+//            }
+//
+//            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
+//
+//        })
+//
+//        Picasso.get()
+//            .load(res_data?.url)
+//            .placeholder(R.drawable.login_image)
+//            .error(R.drawable.login_image)
+//            .into(imageUploaded)
+//
+//        res_data?.outputs?.let {
+//                o->
+//            if(o[0].boxes?.isEmpty() == true){
+//                animationView.setAnimation(R.raw.error)
+//                animationView.playAnimation()
+//            }else {
+//                animationView.setAnimation(R.raw.success)
+//                animationView.playAnimation()
+//            }
+//        }
+//
+//        tv_data.text = res_data?.outputs.toString()
 
     }
 
     override fun onFailure(call: Call<ImageResponse>, t: Throwable) {
-        d_op.visibility = View.VISIBLE
-        animationView.visibility = View.GONE
+//        d_op.visibility = View.VISIBLE
+//        animationView.visibility = View.GONE
         mPD.dismiss()
         Toast.makeText(context , ""+t.message , Toast.LENGTH_LONG).show()
     }

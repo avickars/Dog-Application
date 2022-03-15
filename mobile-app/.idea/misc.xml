@@ -15,7 +15,10 @@
         <entry key="app/src/main/res/layout/fragment_dashboard.xml" value="0.16183136899365366" />
         <entry key="app/src/main/res/layout/fragment_found_dog.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.16183136899365366" />
+        <entry key="app/src/main/res/layout/fragment_home1.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/fragment_notifications.xml" value="0.16183136899365366" />
+        <entry key="app/src/main/res/layout/match_res_item.xml" value="0.19628286491387126" />
+        <entry key="app/src/main/res/layout/match_res_sub_item.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/notification.xml" value="0.16183136899365366" />
         <entry key="app/src/main/res/layout/notification_item.xml" value="0.16183136899365366" />
         <entry key="app/src/main/res/xml/network_security_config.xml" value="0.16183136899365366" />
@@ -31,7 +34,7 @@
   <component name="VisualizationToolProject">
     <option name="state">
       <ProjectState>
-        <option name="scale" value="0.25445037841796875" />
+        <option name="scale" value="0.16183136899365366" />
       </ProjectState>
     </option>
   </component>
