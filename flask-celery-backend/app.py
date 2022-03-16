@@ -17,6 +17,7 @@ from dog_detection_demo.extractor import dog_extractor
 from dog_identification_demo.comparator import dog_comparator, sigmoid
 from flask_celery import make_celery
 from decouple import config
+import requests
 from sqlalchemy.sql.schema import Column
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -68,20 +69,18 @@ ma = Marshmallow(app)
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(80), unique=True, nullable=False)
-    phone = db.Column(db.String(80), nullable=False)
     password = db.Column(db.String(80), nullable=False)
+    fcm_token = db.Column(db.String(300), nullable=False)
 
-    def _init_(self, name, email, phone, password):
-        self.name = name
+    def _init_(self, email,  password, fcm_token):
         self.email = email
-        self.phone = phone
         self.password = password
+        self.fcm_token = fcm_token
 
 class UserSchema(ma.Schema):
     class Meta:
-        fields = ('id','email','name','phone', 'password')
+        fields = ('id','email', 'password')
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
@@ -165,6 +164,44 @@ db_session = scoped_session(sessionmaker(
 
 celery = make_celery(app,db)
 
+
+def sendNotificationToLostDogUser(user_id, db_session):
+
+    _res = db_session.query(User.id, User.fcm_token).filter_by(id=user_id).first()
+    db_session.close()
+
+    if _res is not None:
+        fcm_token = _res[1]
+        _headers = {
+            "Content-Type": "application/json",
+            'Authorization': "key=AAAAM9hqUJ4:APA91bGuUaPEC6EcsTZBBCcQD29CZ-tG9dSx0rXsklvB_DZSXr6HX4Q9EkNJYW-1BHLoLVijWE8sSE8AM9S8am0KU0tnHofU5v0a57_nmQyOR_6ybl_ZqEXGu94m5Dv6igkJDSWWhOS6"
+        }
+
+        b_data = {
+            "to": fcm_token,
+            "notification": {
+                "title": "Check this Mobile (title)",
+                "body": "Rich Notification testing (body)",
+                "mutable_content": True,
+                "sound": "Tri-tone"
+            },
+            "data": {
+                "url": "<url of media image>",
+                "dl": "<deeplink action on tap of notification>"
+            }
+        }
+        fb_url = 'https://fcm.googleapis.com/fcm/send'
+        response = requests.post(fb_url,
+                                 data=json.dumps(b_data), headers=_headers)
+
+        if response.status_code == 200:
+            message = "Notification sent to the user!"
+        else:
+            message = "Some error occurred while sending notification"
+        return message
+
+
+
 @celery.task(name="main.run_models_in_background")
 def run_models_in_background(img_pth, img_name, user_id, url, is_lost):
     app = create_app()
@@ -226,7 +263,8 @@ def run_models_in_background(img_pth, img_name, user_id, url, is_lost):
             "stacked_comparision": similar_dogs,
             "image_url": url
         }
-        return {"data" : data}
+        noti_message = sendNotificationToLostDogUser(user_id, db_session)
+        return {"data" : data, "notification_response": noti_message}
 
 # App Models
 

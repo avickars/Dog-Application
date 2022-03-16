@@ -10,3 +10,4 @@ psycopg2-binary
 celery
 python-decouple
 pandas
+requests
