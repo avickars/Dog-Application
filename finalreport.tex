@@ -19,17 +19,17 @@
 
 \newpage
 \section{Motivation and Background}
-As the most common house pet in the world by a large margin, lost dogs are a frequent problem around the world; dogs are family and as a result losing a dog even for a minute can be one of the scariest times of a persons life.  With this is mind, it stands to reason their is no shortage of interest in new techniques for finding a lost dog.  Of course, there are a variety classical of methods for finding a lost dog.  These include posting lost posters on telephone poles near ones location, posting adds on Craiglist and social media sites as well as leveraging web applications such as the "BC SPCA Pet Search" run by the British Columbia Society for the Prevention of Cruelty to Animals (BCSPCA).  However, all of these methods require creating some form of a eye catching poster that have been used in so many different forms that they have lost their intended affect.  As a result, a new method is needed.  Thus, in this paper we will present a data pipeline implemented as an Android Application that leverages three separate convolutional neural networks to match dogs marked as lost with dogs marked as found and vice versa by computing the similarity between lost and found dogs and subsequently returning the results.
+As the most common house pet by a large margin, lost dogs are a frequent problem around the world.  With this is mind, it stands to reason their is no shortage of interest in new techniques for finding a lost dog.  Of course, there are a variety classical of methods that include posting flyers on telephone poles, posting adds on Craiglist and social media sites as well as leveraging web applications such as the "BC SPCA Pet Search" that run by the British Columbia Society for the Prevention of Cruelty to Animals (BC SPCA).  However, all of these methods require creating some form of an eye catching poster or description that have been used in so many different forms that they have lost their intended affect.  As a result, a new method is needed.  Thus, in this paper we will present a data pipeline implemented as an Android Application that leverages three separate convolutional neural networks to match lost dogs with found dogs and vice versa by computing the similarity between lost and found dogs and subsequently returning the most similar results to the user.
 
 To measure the success of our pipeline we devised a test by randomly designating 1000 dogs from the test portion of our custom data-set as "lost", and randomly designating 100 of these "lost" dogs as "found", and subsequently applied our data pipeline on these dogs.  We found that using our current hyper-parameters, our model matched the "lost" dogs with the "found" 100\% of the time (ADD REAL STAT HERE).  Our data collecting, processing procedures, models are all presented, and the source code has been made publicly available.
 
 \section{Related Work}
-While dog-identification is a sub-class of the heavily researched facial recognition area, dog-identification remains extremely undeveloped.  However, there are two related works that we discuss here.  The first is "A Deep Learning Approach for Dog Face Verification and Recognition" (CITATION)  by  Guillaume Mougeit, Dewei Li and Shuai Jia.  In "A Deep Learning Approach for Dog Face Verification and Recognition", Mougeit, Li and Jia present "VGG-like and "ResNet-like" (page 422) models to encode the image of a dog to $\mathbb{R}^n$ and compute the Euclidean distance between the encoding of two images to produce a probability.  This probability is used to perform face verication to determine if two dogs are the same.  To quantify the accuracy of their models they generated 2500 positive pairs and 2500 negative pairs images of various dog faces.  In this scenario positive indicates the images represent the same dog and negative indicates the images represent different dogs.  Their models made the correct decision 92\% and 91\% of the time for each model respectively.
+	While dog-identification is a sub-class of the heavily researched facial recognition area, dog-identification remains extremely undeveloped.  However, there are two related works that we discuss here.  The first is "A Deep Learning Approach for Dog Face Verification and Recognition" (CITATION)  by  Guillaume Mougeit, Dewei Li and Shuai Jia.  In "A Deep Learning Approach for Dog Face Verification and Recognition", Mougeit, Li and Jia present "VGG-like and "ResNet-like" (page 422) models to encode the image of a dog to $\mathbb{R}^n$ and compute the Euclidean distance between the encoding of two images to produce measure of the similarity between the images of two dogs.  This probability is used to perform face verification to determine if two dogs are the same.  To quantify the accuracy of their models they generated 2500 positive pairs and 2500 negative pairs images of various dog faces.  In this scenario positive indicates the images represent the same dog and negative indicates the images represent different dogs.  Their models made the correct decision 92\% and 91\% of the time for each model respectively.
 
-The second work is "Dog Identification using Soft Biometrics and Neural Networks" (CITATION) by Kenneth Lai, Xinyuan Tu and Svetlana Yanushkevich.  In "Dog Identification using Soft Biometrics and Neural Networks", Lai, Tu and Yanushkevich present an approach to increase the accuracy in dog-identification that is inspiration behind the work presented here, and all credit is given to them with respect to similarities between works.  Lai, Tu and Yanushkevich developed an dog detection model, a breed classification model, and dog-identification model that work together in the order specified.   The dog detection model determines the bounding box of the face of a dog and can be used to crop the image accordingly.  The breed classification model like other models of this type, simply determines the likely breed of the dog.  Finally, the dog-identification model functions in the same way as that of  Mougeit, Li and Jia (CITATION) and encodes the image of a dog to $\mathbb{R}^n$ and the Euclidean distance between the encodings of two dogs is used to quantiy the similarity between the dogs.  By first cropping the image, and determining the breed of the dog, the number of comparisons that are made using the dog-identification model is significantly reduced and improves the face verification accuracy.  However, we do not list accuracy of the models as the dog-identification model is trained on the "Flickr-dog" dataset that contains only 374 images made up of just two breeds.  As a result, our results are incomparable.
+	The second work is "Dog Identification using Soft Biometrics and Neural Networks" (CITATION) by Kenneth Lai, Xinyuan Tu and Svetlana Yanushkevich.  In this paper, Lai, Tu and Yanushkevich present an approach to increase the accuracy in dog-identification that is the inspiration behind the work presented here, and all credit is given to them with respect to the similarities between our works.  Lai, Tu and Yanushkevich developed a dog detection model, a breed classification model, and a dog-identification model that work together in the order specified.   The dog detection model determines the bounding box of the face of a dog and can be used to crop the image accordingly.  The breed classification model like other models of this type, simply determines the most likely breed of the dog.  Finally, the dog-identification model functions in the same way as the models created  Mougeit, Li and Jia (CITATION) presented above.  By first cropping the image, and determining the breed of the dog, the number of comparisons that are made using the dog-identification model is significantly reduced and improves the face verification accuracy.  However, we do not list accuracy of the models as the dog-identification model is trained on the "Flickr-dog" dataset that contains only 374 images made up of just two breeds.  As a result, our findings are incomparable.
 
 \section{Problem Statement}
-It should be noted that in both related works discussed above, the dog-identification or face-verification models leverage only the face of a dog.  That is the entire body of the dog is cropped and only the face is given to the model.  This presents a problem or deficiency in two ways.  The first is that by training the model on a data set that appears to be highly curated and contains only front facing dog faces, the crucial assumption is made that all applicable images of dogs all contain the dog's face in a relatively front facing fashion.  This is obviously not the case.  As any dog owner knows, convincing your dog two look at the camera is a non-trivial task and that the majority of their photos are of the dog in an appealing position with their face obscured.  An example of this is shown in Figure \ref{fig:x dog no face} below.  The second, is the by cropping the image to only the dogs face we theorize that valuable 
+	It should be noted that in both papers discussed above, the dog-identification models only use the face of a dog.  That is the entire body of the dog is cropped out and only the face is given to the model.  This presents a problem or deficiency in two ways.  The first is that by training the model on a data set that appears to be highly curated and contains only front facing dog faces, the crucial assumption is made that all applicable images of dogs all contain the dog's face in a relatively front facing fashion.  This is obviously not the case.  As any dog owner knows, convincing your dog two look at the camera is a non-trivial task and that the majority of their photos are of the dog in an appealing position with their face obscured.  An example of this is shown in Figure \ref{fig:x dog no face} below.  
 
 
 \begin{figure}[h]
@@ -38,7 +38,7 @@ It should be noted that in both related works discussed above, the dog-identific
 \caption{An Example of a Dog with their Face Obscured}
 \label{fig:x dog no face}
 \end{figure}
-The second, is the by cropping the image to only the dogs face we theorize that valuable information is lost.  In the case of face verification in humans,only examining the face is reasonable and desirable because humans change clothes.  However, dogs do not.  We certainly note that there are cases where dogs do where clothes but these cases are infrequent.  Thus, we theorize that by leveraging a dogs entire dog we may see an improvement in the accuracy of the dog-identification model relative to work done by  Lai, Tu and Yanushkevich because the model could leverage additional characteristics such as the size of the dog.  This is illustrated in Figures \ref{fig:similar faces} and \ref{fig:different bodies} where in Figure 2 we see two dogs with similar faces.  One could forgive a model for classifying these dogs as the same.  But as shown in Figure 3 we can clearly see that are not.  By leveraging the entire body of dog, this miss-classification should be eliminated.
+The second, is the by cropping the image to only the dogs face we theorize that valuable information is lost.  In the case of face verification in humans, only examining the face is desirable because humans change clothes.  However, dogs do not.  We certainly note that there are cases where dogs do wear clothes but these cases are infrequent.  Thus, we theorize that by leveraging a dogs entire dog we may see an improvement in the accuracy of the dog-identification model relative to work done by  Lai, Tu and Yanushkevich because the model could leverage additional characteristics such as the size of the dog.  This is illustrated in Figures \ref{fig:similar faces} and \ref{fig:different bodies} where in Figure 2 we see two dogs with similar faces.  One could forgive a model for classifying these dogs as the same.  But as shown in Figure 3 we can clearly see that are not.  By leveraging the entire body of dog, this miss-classification should be eliminated.
 
 \begin{figure}[h]
 \centering
@@ -59,96 +59,15 @@ The second, is the by cropping the image to only the dogs face we theorize that 
 Thus, we can now present the key problems this project aims to answer:
 
 \begin{enumerate}
-  \item By leveraging the entire body of a dog, can we construct an dog-identification model that can accurately determine if two dogs are the same or note?  Furthermore, by incorporating the entire body of a dog, can we achieve a better accuracy than that achieved by Mougeit, Li and Jia?
+  \item By leveraging the entire body of a dog, can we construct an dog-identification model that can accurately determine if two dogs are the same or not?  Furthermore, by incorporating the entire body of a dog, can we achieve a better accuracy than that achieved by Mougeit, Li and Jia?
   \item By removing the restriction of curated front facing dogs, can we construct a pipeline that can accurately match lost dogs with found dogs and vice versa? 
 \end{enumerate}
 
-\section{Data Science Pipeline}
-
-To answer the questions stated above, we use the work done by Mougeit, Li and Jia and constructed a similar VGG model to compare dogs and we also incorporate the work done by Lai, Tu and Yanushkevich and construct a dog-detection model and a breed classification to improve accuracy.  In future references we refer to the these models as the Dog Comparator, the Dog Classifier and the Dog Extractor respectively.   We can now break down the data science pipeline into individual components with respect to the data used to develop each model respectively.
-
-For the Dog Extractor model, we utilize the "Open Images" data-set that contains thousands of images of dogs with corresponding bounding boxes.  While this data is already relatively clean, we discard all grey-scale images, and convert all images not already in RGB format to RGB.  The decision was made to discard grey-scale images because our expectation is that in the production environment of our Data Product that is discussed below, the vast majority of images will be colour images.  After cleaning this left 19 995 training images, 1568 validation images , and 4791 test images.
-
-For the Dog Classifier Model ---------------------
-
-Now, to train the Dog Comparator model we required multiple pictures of many individual dogs where each picture contained the entire body of the dog.  We found that there was no data-set that met these requirements.  We note that the "Stanford Dog Dataset" exists that contains multiple imags of 1425 individual dogs.  However, each image contained only the face of a dog and the images appeared to be highly curated.  Which as discussed above, we feel is undesirable.  To solve this we scraped the trove of images on Petfinder.com that at the time of writing lists over 100 000 for adoption across the world where almost every dog has multiple images.  However, scraping the images presented a challenge because the links to every dog are dynamically generated.  To be succinct, scraping the HTML of the web page containing the grid of available dogs using Python's request package was not sufficient because during download the URLs pointing to each available dog would not be included due to their dynamic creation.  To solve this, we split the scraping into two parts.  We first created a Selenium application in Python that scrapes the URLs pointing to each individual dog.  Then, using these URLs we scraped and downloaded the images for every dog and also recorded additional information such as name, breed, age, size etc.  This resulted in images for 9729 dogs with 0 - 6 images for every dog.  Once the data was downloaded, we applied the following cleaning process on the images of every dog:
-
-\begin{enumerate}
-  
-  \item If the dog has 1 or a less images, we discarded the dog and its images
-  
-  \item Confirm every image was in RGB format or convert it to RGB format.  Otherwise the image was discarded.
-  
-  \item Passed every image into the Dog Extractor Model:
-    \begin{itemize}
-      \item Verify the image contained a dog
-      \item Verify the image contained only one dog
-      \item Record the bounding box coordinates of the dog
-    \end{itemize}
-    If either of the conditions in the first two bullets were not met, the image was discarded.
-    
-  \item If after the previous step, the Dog had 1 or less images we discarded the dog and its images.
-  
-\end{enumerate}
-
-\noindent After cleaning we were left with 8349 dogs with 2 - 6 images for every dog.  The data set was then divided into a Train, Validation and Test split of 70\%, 10\%, and 20\% respectively.  This gave a total of 6679 training dogs, 501 validation dogs and 1169 testing dogs respectively.  We do note that we did not account for the actual number of dog images contained in each split.  This is because during the training and testing process we only considered the images on a dog by dog bases.  This will become more clear in the presentation of the Dog Comparator model below.
-
-\section{Methodology}
-Within this section we discuss the approaches used in each model.  For all three models, we present the architecture used in and their respective results.  We also perform a deep analysis into their strength and weaknesses.  With respect to the first model, the Dog Extractor model we discuss the two approaches taken and their failure and success respectively.
-
-\subsection{Dog Extractor}
-
-To develop the Dog Extractor model, we employed two approaches to develop a dog localization model with the latter achieving success.  However, in the interest of completeness we present both approaches.  It should be noted that in the interest of reducing repetitiveness we will not explain the concepts used in object localization models.  Rather we will refer the reader to our own sources of information.
-
-\subsubsection{Initial Approach}
-
-In our first approach we created an object localization model using a variant of the YoloV2 model presented in "YOLO9000 Better, Faster, Stronger" by Joseph Redmon and Ali Farhadi using transfer learning.   To start we created new anchor boxes that are custom to the dogs data-set.  Our hope was having new anchor boxes custom to dogs could result in improved accuracy.  To do this, we computed the height and width of every bounding box contained in the cleaned "Open Images" data set as discussed above.  We then normalize the height and width of the bounding boxes by dividing by the height and width of the images respectively to constrain them to a $[0,1]$ range.  The results are plotted below in Figure \ref{fig:x height_v_width}.
-
-\newpage
-
-\begin{figure}[h]
-\centering
-	\includegraphics[scale=0.8]{final-report-images/box_height_v_width.png}
-\caption{Height vs Width of Normalized Bounding Boxes}
-\label{fig:x height_v_width}
-\end{figure}
-
-\noindent We can see that there is no obvious clusters that would suggest appropriate anchor boxes.  To solve this, we use the approach taken by Redmon and Farhadi and compute anchor boxes using k-means cluster using the intersection over union (IOU) as the measure of distance between clusters.  The results of the clustering is shown in left image of Figure \ref{fig:x cluster_results} where the number of clusters versus the average IOU between every bounding box and its respective cluster is plotted.  We choose an approximate elbow of seven and plot the resulting cluster memberships in the right image of Figure \ref{fig:x cluster_results}.  Using these results, we use the the seven clusters centroids as the anchor boxes in our model.
-
-
-\begin{figure}[h]
-\centering
-\includegraphics[scale=0.6]{final-report-images/cluster_results.png}
-\caption{K-Means Cluster Results (Left) & Cluster Visualisation using 7 Clusters (Right)}
-\label{fig:x cluster_results}
-\end{figure}
-
-To create the model, we employed transfer learning.  We used the feature extractor from the pre-trained PyTorch implementation of VGG 19 as the feature extractor in our model due to its significant similarity to the DarkNet 19 model devised by Redmon and Farhadi, and then added additional layers as described by Redmon and Farhadi  The model used is presented below in Figure \ref{fig:x yolo}
-
-\begin{figure}[h]
-\centering
-	\includegraphics[scale=1]{final-report-images/yolo.png}
-\caption{YOLO V2 Implementation}
-\label{fig:x yolo}
-\end{figure}
-
-\newpage \noindent Lastly, before training each image was resized to a 416 by 416 image.  This was done because it creates 13 by 13 grid in output where each grid cell corresponds to a grid on the original image.  Thus, our final output was a 13 by 13 by 35 vector that gave 1183 bounding box predictions with respect to the pre-created anchor boxes (CITATION).
-
-Unfortunately, we concede that we made a significant error in our choice of model  We found that attempting to train a model of this size with a GPU that had only 8 GB of memory was a poor choice.  This was particularly evident because even though we froze the layers in the feature extractor, training from scratch the additional layers was extremely difficult due to insufficient memory.  To be succinct, due to the large size of the network we were forced to have a batch size of only 1.  Combined with exploding gradients that we encountered during training that forced us to either clip the gradient or keep a very low learning rate made training exceptionally difficult.   We strongly suspect that by utilizing a GPU with additional memory, these problems could be been better handled by increasing the batch size to help increase the training speed.  However, as students we do not have access to a GPU with increased memory size except for expensive cloud resources and the decision was made to not utilize this due to the potential for significant costs.  It is for these reasons that we shifted to a more complete model.
-
-\subsubsection{Final Approach}
-
-In our second approach to creating a dog localisation model, we employed transfer learning using a pre-trained Faster RCNN (CITATION) model using PyTorch with a feature extractor trained on the ResNet 50 data-set (CITATION) to act as the back bone of the network.  We adjusted the output of the model from predicting a multitude of classes to only 2 so that it acted as an object localization model.  To be succinct the model was adjusted to predict only the background class and the dog class.  We then trained the model on the cleaned "Open Images" data-set for 10 additional epochs with an initial learning rate of 0.005 and a decay of 0.1 every 3 epochs, as well as a momentum value of 0.9.  We note that PyTorch's tutorial on object detection (CITATION) was very helpful here and we give all credit accordingly.  During training we concerned ourselves only with the validation Mean Average Precision that we coded and computed over an IOU threshold range from 0.5 to 0.95.  We denote these values as (MAP 0.5:0.95.  During training we saved the model weights only when the MAP 0.5:0.95 increased.  The MAP 0.5:0.95 is plotted below in Figure over 10 epochs.
-
-
-
-\subsection{Dog Classifier}
-
-\newpage
-
 \section{Data Product}
 
-To answer the questions stated above, we use the work done by Mougeit, Li and Jia and use similar VGG model to compare dogs and we also incorporate the work done by Lai, Tu and Yanushkevich and use additional models to improve accuracy.  We further extend this by using the entire body of a dog instead of the face to improve accuracy.  To utilize this work in a production environment, we have created an android application (app) to act as user interface to allow for easy image upload, and have packaged the models into a Flask API (API) to perform matchings between lost and found dogs. We also use an AWS S3 bucket and a Relational Database System (RDS) to store images and image metadata respectively.  This system is visualized below in Figure \ref{fig:x app system}.
+	To answer the questions stated above, we use the work done by Mougeit, Li and Jia and use a similar VGG model to compare dogs and we also incorporate the work done by Lai, Tu and Yanushkevich and create a dog localization model and breed classification model to improve accuracy.   We further extend this by using the entire body of a dog instead of the face with the intention to improve accuracy.  In future references we refer to the these models as the Dog Comparator, the Dog Extractor and the Dog Classifier respectively.  However, before elaborating on each individual model, we will first present the Data Product to give the reader context as to how the models work together.
+
+	To utilize this work in a production environment, we have created an android application (app) to act as user interface to allow for easy image upload, and have packaged the models into a Flask API (API) to match lost and found dogs. We also use an AWS S3 bucket and a Relational Database System (RDS) to store images and image metadata respectively.  This system is visualized below in Figure \ref{fig:x app system}.
 
 \begin{figure}[h]
 \centering
@@ -157,8 +76,7 @@ To answer the questions stated above, we use the work done by Mougeit, Li and Ji
 \label{fig:x app system}
 \end{figure}
 
-At a lower level we will now explain how the entire system works as visualized in Figure: \ref{fig:x app pipeline}.  Initially, if a user has lost a dog, they will submit a photo and as well as their contact information and location via the app.  The app will then submit this information to the API.  Once a submission has been made to the API, the dog finder pipeline is triggered.  The following steps outline this pipeline:
-
+At a lower level if the user has lost a dog, they will submit a photo and as well as their contact information and location via the app.  The app will then submit this information to the API.  Once a submission has been made to the API, the dog finder pipeline that is visualized below in Figure: \ref{fig:x app pipeline} is triggered.  The following steps outline this pipeline:
 \newpage
 
 \begin{figure}[h]
@@ -172,18 +90,115 @@ At a lower level we will now explain how the entire system works as visualized i
   
   \item Once a lost dog has been submitted, the image is passed to the "Dog Extractor" model that computes the coordinates of the bounding box of the dog.  This model also acts as a quality control by validating the image to ensure that the image contains a dog, and contains only one dog.  If these conditions are not met, an error is returned to the user.
   
-  \item After validation, the original image is saved into an S3 bucket, and the related information such as the users contact information, location and the coordinates of the bounding box is inserted into a RDS.
+  \item After validation, the original image is saved into an S3 bucket, and the related information such as the users contact information, location and the coordinates of the bounding box are inserted into a PostGre relational database system (RDS).
   
   \item The original image is then cropped using the computed bounding box coordinates, and passed into the "Dog Classifier" model that computes the top $k$ most likely breeds.  This information is inserted into the RDS.
   
-  \item We then query the dogs marked as found according to breed and location, and compare against the lost dog by passing the cropped image of each dog respectively into the "Dog Comparator" model.  The top $n$ results are returned to the user.
+  \item The cropped image is also passed into the Dog Comparator model that creates a five dimensional encoding of the image.
+  
+  \item We then query the encodings of the dogs marked as found according to breed and location, and compare against the lost dog by computing the euclidean distance between the encodings of the lost dog and the found dogs.  The sigmoid function is applied to the distance value to constrain the it fall within $[0,1]$ or in other words, a probability.  The $n$ most similar dogs are returned to the user.
   
   \item If a match is confirmed by the user, the corresponding lost and found dogs are removed from the RDS and S3 bucket.  Otherwise, the lost dog is left in the system for future comparisons.
   
 \end{enumerate}
 
+
+
 An attentive reader will notice that we discuss only the submission of lost dogs.  This is done to minimize confusion.  If the user submits a found dog the pipeline is identical except that the dog is instead marked as found and is compared against dogs marked as lost.  This completes the pipeline contained within the application.  However, each model will be discussed in detail individually in the sections below.
 
+\section{Data Science Pipeline}
+
+Now that the Data Product has been adequately explained, we can delve into each model.  We being first with the Data Science Pipeline to describe the data used by each model respectively.  For the Dog Extractor model, we utilized the "Open Images" (SOURCE) data-set that contains thousands of images of dogs with corresponding bounding boxes.  While this data is already relatively clean, we discarded all grey-scale images, and converted all images to RGB format.  The decision was made to discard grey-scale images because our expectation is that in the production environment of our Data Product, the vast majority of images will be colour images.  After cleaning this left 19 995 training images, 1568 validation images , and 4791 test images.
+
+For the Dog Classifier Model ---------------------
+
+Now, to train the Dog Comparator model we required multiple pictures of many individual dogs where each picture contained the entire body of the dog.  However, we found that there was no data-set that met these requirements.  We note that the "Stanford Dog Data-set" exists that contains multiple images of 1425 individual dogs.  However, each image contained only the face of a dog and the images appeared to be highly curated.  To be succinct the majority of the images were front facing in similar positions which as discussed above is undesirable.  To solve this we scraped the trove of images on Petfinder.com that at the time of writing lists over 100 000 dogs for adoption across the world where almost every dog has multiple images.  However, scraping the images presented a challenge because the links to every dog are dynamically generated.  This meant scraping the HTML of the web page containing the grid of available dogs using Python's request package was not sufficient because during download the URLs pointing to each available dog would not be included due to their dynamic creation.  To solve this, we split the scraping into two parts.  We first created a Selenium application in Python that scraped the URLs pointing to each individual dog.  Then, using these URLs we scraped and downloaded the images for every dog and also recorded additional information such as name, breed, age, size etc.  This resulted in images for 9729 dogs with 0 - 6 images for every dog.  Once the data was downloaded, we applied the following cleaning process on the images of every dog:
+\begin{enumerate}
+  
+  \item If the dog has 1 or a less images, we discarded the dog and its images
+  
+  \item Confirmed every image was in RGB format or convert it to RGB format.  Otherwise the image was discarded.
+  
+  \item Passed every image into the Dog Extractor Model:
+    \begin{itemize}
+      \item Verified the image contained a dog
+      \item Verified the image contained only one dog
+      \item Recorded the bounding box coordinates of the dog
+    \end{itemize}
+    If either of the conditions in the first two bullets were not met, the image was discarded.
+    
+  \item If after the previous step, the Dog had 1 or less images we discarded the dog and its images.
+  
+\end{enumerate}
+
+\noindent After cleaning we were left with 8349 dogs with 2 - 6 images for every dog.  The data set was then divided into a Train, Validation and Test split of 70\%, 10\%, and 20\% respectively.  This gave a total of 6679 training dogs, 501 validation dogs and 1169 testing dogs respectively.  We do note that we did not account for the actual number of dog images contained in each split.  This is because during the training and testing process we only considered the images on a dog by dog bases.  This will become more clear in the presentation of the Dog Comparator model below.
+
+\section{Methodology}
+Now that the data-sets used have been outlined, the approaches used in each model can be discussed.  For all three models, we present the architecture used in and their respective results.  We also perform a deep analysis into their strength and weaknesses.  
+
+\subsection{Dog Extractor}
+
+To develop the Dog Extractor model, we investigated multiple approaches that included developing an original implementation of a transfer learning approach to Yolo V2 (CITATION).  However, we found a significant limiting factor to be a lack of GPU memory.  To be succinct, we trained the Dog Extractor model on an RTX 3070 with only 8 GB of memory.  Because we wanted to use larger and more complex models to achieve high degrees of accuracy, our models would train very slowly due to the requirement of having a very small batch size during training because of memory limitations.  This necessitated the requirement to utilize a largely pre-trained model via transfer learning and only make small adjustments with minimal amounts of additional training.  To achieve this we employed transfer learning using a pre-trained Faster RCNN (CITATION) model using PyTorch with a feature extractor trained on the ResNet 50 data-set (CITATION) to act as the back bone of the network.  We adjusted the output of the model from predicting a multitude of classes to only two so that it acted as an dog localization model.  To be succinct the model was adjusted to predict only the background class and the dog class.  We then trained the model on the cleaned "Open Images" data-set for 10 additional epochs with an initial learning rate of 0.005 and a decay of 0.1 every 3 epochs, as well as a momentum value of 0.9.  Due to memory limitations, our batch size was set to one.  We note that PyTorch's tutorial on object detection (CITATION) was very helpful here and we give all credit accordingly.  During training we concerned ourselves only with the validation Mean Average Precision because we are concerned only with a single class.  We coded and computed the MAP over an IOU threshold range from 0.5 to 0.95 in increments of 0.05, and computed the mean.  We denote this value as MAP 0.5:0.95.  During training we saved the model weights only when the MAP 0.5:0.95 increased and achieved a best validation MAP 0.5:0.95 of 0.73 during training using an object score threshold of 0.6 and an IOU threshold of 0.5 in non max suppression (NMS).  The MAP 0.5:0.95 is plotted below in Figure \ref{fig:x epoch_v_map} over 10 epochs. 
+
+\begin{figure}[h]
+\centering
+	\includegraphics[scale=0.7]{final-report-images/epoch_v_map.png}
+\caption{Epoch vs. MAP 0.5:0.95}
+\label{fig:x epoch_v_map}
+\end{figure}
+
+\newpage
+
+Note if the reader is unfamiliar with NMS we outline the algorithm below:  \\
+
+% \hspace*{0.1cm}%
+\begin{minipage}{1\textwidth}%
+  \noindent \textbf{Input:} List of bounding box proposals and object score pairs.  Each pair gives the coordinates of box surrounding the object and the confidence that the bounding box contains a dog respectively. \\
+  
+  \noindent \textbf{Output:} Filtered list of bounding box proposals and object score pairs \\
+  
+  \noindent \textbf{Algorithm:} \\
+\end{minipage}%
+
+\begin{enumerate}
+
+  \item Initialize empty list, lets call it list B.
+
+  \item Order the bounding boxes and object score pairs according to the object score in descending order.
+  
+  \item Discard any pairs whose object score is less than the pre-defined object threshold.  Bounding boxes with an object score lower than this threshold likely do not bound anything.
+  
+  \item While there are still bounding boxes and object score pairs on the list:
+        \begin{itemize}
+             \item Pop the first pair off the list and record it in list B.
+            
+             \item Compute the intersection over union (IOU) between the pair just popped off the list, and all remaining pairs on the list.
+             \item If the resulting IOUs are greater than the predefined IOU threshold, discard the corresponding pairs.  The bounding boxes of these pairs likely bound the same dog.
+        \end{itemize}
+  
+
+  
+\end{enumerate}
+
+To improve the accuracy of the model we tune the object score and IOU thresholds used in NMS.  To do this we used a brute force approach by applying NMS on the model output on the validation data over a grid of object score and IOU thresholds and then compute MAP 0.5:0.95 on the results.  We use a large grid of that ranges from 0.05 to 0.95 for both thresholds.  The results are visualized below in Figure \ref{fig:x object v iou}.  
+
+\begin{figure}[h]
+\centering
+	\includegraphics[scale=0.7]{final-report-images/map0.5to0.95.png}
+\caption{Object vs. IOU Threshold MAP 0.5:0.95}
+\label{fig:x object v iou}
+\end{figure}
+
+\noindent We achieve the maximum MAP 0.5:0.95 of 0.75 in the top right corner of the plot using an object threshold of 0.05, and an IOU threshold of 0.9.  However, we consider the consequences of using such extreme thresholds.  By using such a low object threshold, almost any bounding box the model produces will be include regardless of how strongly or rather how uncertain the model is that there is a dog in the bounding box.  This will increase the number of false positives the model produces.  In a similar fashion, because using a strong IOU threshold of 0.9, any pair of bounding boxes must achieve an IOU greater than 0.9 to classified as bounding the same dog.  This will again increase the false positive rate.  To combat this, we deviate from the optimum thresholds, and increase the object threshold to 0.5 and decrease the IOU threshold to 0.75.  This combination achieves an MAP 0.5:0.95 of 0.74.  A very small decrease of just 0.01.  Finally, using our chosen thresholds, the model achieves an MAP 0.5:0.95 of 0.74 on the test data indicating the model performs very well.
+
+
+
+\subsection{Dog Classifier}
+
+\subsection{Dog Comparator}
+
+
+\newpage
 
 
 
