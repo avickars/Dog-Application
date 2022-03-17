@@ -151,7 +151,6 @@ To develop the Dog Extractor model, we investigated multiple approaches that inc
 
 Note if the reader is unfamiliar with NMS we outline the algorithm below:  \\
 
-% \hspace*{0.1cm}%
 \begin{minipage}{1\textwidth}%
   \noindent \textbf{Input:} List of bounding box proposals and object score pairs.  Each pair gives the coordinates of box surrounding the object and the confidence that the bounding box contains a dog respectively. \\
   
@@ -196,9 +195,87 @@ To improve the accuracy of the model we tune the object score and IOU thresholds
 \subsection{Dog Classifier}
 
 \subsection{Dog Comparator}
+To create the dog comparator model that assesses the similarity between two dogs, we leveraged the pre-trained feature extractor from the VGG 19 classifier (CITATION) and added three additional layers.  This is visualized in Figure \ref{fig:x comparator} below.
 
+\begin{figure}[h]
+\centering
+	\includegraphics[scale=0.4]{final-report-images/dog_comparator.png}
+\caption{Dog Comparator Model Architecture}
+\label{fig:x comparator}
+\end{figure}
+
+\noindent An attentive reader will notice the large decrease in dimension in the first dense layer.  This was done to accommodate GPU memory limitations so that the batch size could be increased during training.   
+
+Now, with respect to training we used the following process to generate a single batch element: \\
+
+\begin{minipage}{1\textwidth}%
+  \noindent \textbf{Input:} Index of a dog in the data-set \\
+  
+  \noindent \textbf{Output:} Positive Image, Negative Image, and Anchor Image \\
+  
+  \noindent \textbf{Algorithm:} \\
+\end{minipage}%
+
+\begin{enumerate}
+
+  \item Randomly choose two different images of the indexed dog.  Assign one image as the positive image and anchor image respectively. 
+
+  \item Randomly select a different dog, and randomly select an image.  Assign this image as the negative image.
+  
+  \item Return the positive, anchor and negative images.
+
+\end{enumerate}
+
+Each image was then passed through the model and the triplet loss was computed that can be defined as $L(P, A, N) = ReLU(\sigma(Dist(P, A)) - \sigma(Dist(P, N)) + M)$ where $P, A$ and $N$ are the positive, anchor and negative images respectively, $Dist()$ is the euclidean distance between their encodings and $M$ is the margin that was set to 0.9.  The model was trained for 41 epochs with a learning rate of 0.01 that decayed by 0.1 every four epochs.  The training and validation losses are vizualized below in Figure \ref{fig:x epoch_v_map} 
 
 \newpage
+
+\begin{figure}[h]
+\centering
+	\includegraphics[scale=0.7]{final-report-images/triplet_training.png}
+\caption{Dog Comparator Model Training Using a Triplet Loss Function}
+\label{fig:x epoch_v_map}
+\end{figure}
+Now, since the model simply encodes the image into a five dimensional space it should be noted how the model is used assess the similarity between two dogs.  This is done by computing the euclidean distance between the encodings of two images and then applying the sigmoid function to the computed value.  Lets call this the similarity value.  If two dogs are very similar, their encodings should be relatively close together in the five dimensional space.  As a result, the distance between them and the similarity value should be close to zero.  In contrast, if two dogs are very dissimilar the distance between them should be large and the resulting similarity value should be close to one.  However, because we did not constrain the training data to only front facing dog faces all images even of the same dogs are generally dissimilar.  As a result, we found that similar dogs tended to have a similarity value near or slightly above 0.5 while dissimilar dogs have a normal similarity value near one.  This is reflected in the optimum classification threshold discussed below.
+
+To assess how well the dog comparator model works independently, we first computed the optimum classification threshold by computing the approximate $knee$ of the ROC curve on the validation data to minimize the false positive rate and maximize the true positive rate.  The ROC curve is vizualized below in Figure \ref{fig:x val roc curve}.  We chose a classification threshold of 0.79.
+
+\begin{figure}[h]
+\centering
+	\includegraphics[scale=0.7]{final-report-images/roc_curve_validation_triplet.png}
+\caption{Validation ROC Curve Using a Triplet Loss Function}
+\label{fig:x val roc curve}
+\end{figure}
+
+\noindent This resulted in a strong test accuracy and F1 score of approximately 0.87 respectively.  However, we noticed that after examining the similarity values of the model on the validation data, we found it did not do well in dividing the comparisons that contained the same dog and comparisons that contained different dogs.  This is vizualized below in the line plot contained in Figure \ref{fig:x triplet lineplot} where we can see fairly significantly overlap between both groups.
+
+\begin{figure}[h]
+\centering
+	\includegraphics[scale=0.7]{final-report-images/triplet_lineplot.png}
+\caption{Line Plot of Similarity Scores Using a Triplet Loss Function}
+\label{fig:x triplet lineplot}
+\end{figure}
+To remedy this, we retrained our model for 49 epochs with the same learning rates as above using a cross entropy loss, and adjusted the individual batch elements to randomly be either be two images of the same dog, or two images of different dogs.  Using the same methodology, we determined the optimum classification threshold to be 0.67.  This resulted in a modest increase in test accuracy and F1 score to 0.89 for each respectively.  This improvement can be seen in the line plot of the similarity scores of the new model applied on the validation data that is shown in Figure \ref{fig:x triplet lineplot}.  We can clearly see an improved divide between the two groups.
+
+\begin{figure}[h]
+\centering
+	\includegraphics[scale=0.7]{final-report-images/crossentropy_lineplot.png}
+\caption{Line Plot of Similarity Scores Using a Cross Entropy Loss Function}
+\label{fig:x triplet lineplot}
+\end{figure}
+The accuracy of $89\%$ is highly comparable compared to models created by Mougeit, Li and Jia that had an accuracy $91\%$ and $92\%$.  However, we note that while our model features a $3\%$ decrease in accuracy, we allow for a far more diverse set of images by not applying our model solely on front facing images of dog faces.
+
+However, an observant read will note that by using images from two randomly selected dog during both the training and testing processes differing between dogs is an easy task for the model.  This is because dogs of different breeds tend to be obviously dissimilar and as a result telling them apart is easy.  To account for this, we perform additional testing of our model by testing the performance of the model over different dogs that are known to be similar.
+
+To do this we further cleaned the data from Petfinder.com and parsed the available breeds.  To be succinct, the breed was available for most dogs in the data-set but it could be in many forms such as "German shepherd dog" and "terrier" where capitalization was not consistent and inconsequential words like "dog" were contained in the breed.  Furthermore, the data-set contained mixed breeds that were in the form of "German shepherd & terrier".  This meant that the breeds needed to be standardized.  We did this by first converting all strings to lowercase, removing useless words such as "mixed", "breed", and "dog" and splitting the breed into two strings using '&' to account for mixed breeds.  We then compared all breeds contained in our data-set to the standardized list of 120 breeds contained in the "Stanford Dogs Data-set" (CITATION) by computing the cross product between them and computing the Jaccard similarity between the two.  We then filtered out any pairs that had a similarity less than 0.75.  By doing this, we successfully standardized the breeds contained in the data-set.  Using the standardized breeds, we adjusted the generation of a single batch element during training and testing by modifying the case when two images of different dogs are produced to produce two different dogs of the same breed.  Thus producing two similar dogs.  The model was then tested on the augmented test data, and achieved a significantly decreased but still respectable classification accuracy and F1 score of 0.79 and 0.77 respectively.   To attempt to improve this we trained the model for an additional four epochs on the augmented training data and saw no improvement.  
+    
+Upon further inspection, we found a crucial flaw in the data.  The data is biased towards the most popular dog breeds.  Popular Dog breeds such as Labrador Retrievers and Chihuahuas are over-represented in the data, while less popular breeds like Saint Bernards and English Setters are underrepresented.  We theorize that by performing additional training on the augmented training data we only further biased the model towards these dogs.  Unfortunately, we are not able to account for this flaw in the data.  This is because in other data-sets, one could augment the data by adding random samples from the underrepresented groups with an additional degree of random variation as well.  However, in this case this we are unable to do this without creating two significant issues.  The first, is that by adding random samples of the underrepresented breeds we risk over-fitting the model to specific dogs.  We suspect this would occur because some of the underrepresented breeds have only a few instances and thus adding random samples of these breeds would require randomly sampling the same dogs many times.  The second, is by adding some degree of variation to the images of the randomly sampled dogs the images would likely be distorted significantly.  It should be noted that there is a possible solution to this.  We theorize that unique images of underrepresented breeds could be generated using a generative adversarial network.  However, this is outside the scope of this project.
+
+\section{Methodology}
+
+\section{Lessons Learn}
+
+\section{Summary}
 
 
 
