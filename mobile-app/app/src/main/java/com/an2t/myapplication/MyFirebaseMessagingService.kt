@@ -1,19 +1,21 @@
 package com.an2t.myapplication
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.ClipDescription
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.app.RemoteInput
 import com.an2t.myapplication.home.HomeActivity
+import com.an2t.myapplication.model.NotificationResponse
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import java.net.URL
+
 
 const val CHANNEL_ID = "channel_id"
 const val CHANNEL_NAME = "com.an2t.myapplication"
@@ -22,26 +24,36 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
 
     override fun onMessageReceived(rm: RemoteMessage) {
         super.onMessageReceived(rm)
-        if(rm.notification != null){
-            val noti = rm.notification
-            noti?.title?.let {t->
-                noti.body?.let {b->
-                    generateNotification(t, b)
-                }
-            }
+        rm.data.values.let {
+            val l = rm.data.values.toList()
+            val n_res =
+                NotificationResponse(l[0], l[2], l[1], l[3])
+            generateNotification(n_res)
         }
     }
 
-    fun getRemoteView(title : String, description: String) : RemoteViews {
-        return RemoteViews("com.an2t.myapplication", R.layout.notification)
-            .apply{
-                setTextViewText(R.id.title,title)
-                setTextViewText(R.id.desc,description)
-                setImageViewResource(R.id.img_logo,R.drawable.home_purple)
-            }
+    @SuppressLint("RemoteViewLayout")
+    fun getRemoteView(n_res: NotificationResponse) : RemoteViews {
+
+        val rv = RemoteViews("com.an2t.myapplication", R.layout.notification)
+
+        val ac_img = URL(n_res.ac_img)
+        val ac_bit = BitmapFactory.decodeStream(ac_img.openConnection().getInputStream())
+
+        val match_img = URL(n_res.m_img)
+        val match_bit = BitmapFactory.decodeStream(match_img.openConnection().getInputStream())
+
+        rv.apply{
+            setTextViewText(R.id.title,n_res.title)
+            setTextViewText(R.id.desc,n_res.message)
+            setImageViewBitmap(R.id.img_logo, ac_bit)
+            setImageViewBitmap(R.id.img_match, match_bit)
+        }
+        return rv
+
     }
 
-    fun generateNotification(title : String, message: String){
+    fun generateNotification(n_res : NotificationResponse){
         val intent = Intent(this, HomeActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
@@ -54,7 +66,8 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
             .setVibrate(longArrayOf(1000,1000,1000,1000))
             .setOnlyAlertOnce(true)
             .setContentIntent(pendingIntent)
-            .setContent(getRemoteView(title, message))
+            .setCustomContentView(getRemoteView(n_res))
+            .setCustomBigContentView(getRemoteView(n_res))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
 
 

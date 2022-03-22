@@ -16,6 +16,7 @@ import io.reactivex.schedulers.Schedulers
 class HomeViewModel : ViewModel() {
 
     val l_res = MutableLiveData<AllLostUploadRecords?>()
+    val show_err = MutableLiveData<String?>()
     var _s: ServiceAPI
 
     init {
@@ -38,7 +39,7 @@ class HomeViewModel : ViewModel() {
                         }
                     }
                 }, {e ->
-                    print(e)
+                    show_err.value = e.message
                 })
     }
 
