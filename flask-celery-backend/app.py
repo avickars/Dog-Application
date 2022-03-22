@@ -165,7 +165,7 @@ db_session = scoped_session(sessionmaker(
 celery = make_celery(app,db)
 
 
-def sendNotificationToLostDogUser(user_id, db_session):
+def sendNotificationToLostDogUser(user_id, db_session, count, ac_img, mat_img):
 
     _res = db_session.query(User.id, User.fcm_token).filter_by(id=user_id).first()
     db_session.close()
@@ -179,17 +179,15 @@ def sendNotificationToLostDogUser(user_id, db_session):
 
         b_data = {
             "to": fcm_token,
-            "notification": {
-                "title": "Check this Mobile (title)",
-                "body": "Rich Notification testing (body)",
-                "mutable_content": True,
-                "sound": "Tri-tone"
-            },
             "data": {
-                "url": "<url of media image>",
-                "dl": "<deeplink action on tap of notification>"
+                "title": "Here is a good news for you!",
+                "message": f"We found {count} match results of your lost dog!",
+                "actual_image": ac_img,
+                "match_img": mat_img
             }
         }
+
+        print(b_data)
         fb_url = 'https://fcm.googleapis.com/fcm/send'
         response = requests.post(fb_url,
                                  data=json.dumps(b_data), headers=_headers)
@@ -258,13 +256,19 @@ def run_models_in_background(img_pth, img_name, user_id, url, is_lost):
         db_session.add(pets)
         db_session.commit()
         db_session.close()
+
+        similar_dog_url = url
+
+        if len(similar_dogs) > 0:
+            similar_dog_url = similar_dogs[0]['image_url']
+
         data = {
             "status": True,
             "stacked_comparision": similar_dogs,
             "image_url": url
         }
-        noti_message = sendNotificationToLostDogUser(user_id, db_session)
-        return {"data" : data, "notification_response": noti_message}
+        noti_message = sendNotificationToLostDogUser(user_id, db_session, len(similar_dogs), url, similar_dog_url)
+        return {"data":data, "notification_response": noti_message}
 
 # App Models
 

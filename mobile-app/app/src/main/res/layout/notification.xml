@@ -1,40 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="60dp">
+    android:padding="16dp"
+    android:layout_height="wrap_content">
 
-
-    <ImageView
-        android:id="@+id/img_logo"
-        android:src="@drawable/home_purple"
-        android:layout_width="60dp"
-        android:layout_height="60dp"/>
-
-    <LinearLayout
-        android:layout_marginStart="16dp"
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@id/img_logo"
-        android:orientation="vertical"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/title"
-            android:textSize="24sp"
-            android:text="@string/app_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
 
-        <TextView
-            android:id="@+id/desc"
-            android:textSize="16sp"
-            android:text="@string/app_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+        <ImageView
+            android:id="@+id/img_logo"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/home_purple" />
 
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/ll_view"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@id/img_logo"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
+            <TextView
+                android:id="@+id/title"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:text="@string/app_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
+            <TextView
+                android:id="@+id/desc"
+                android:textSize="16sp"
+                android:text="@string/app_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
+        </LinearLayout>
 
-</RelativeLayout>
+    </RelativeLayout>
+
+    <ImageView
+        android:layout_marginTop="16dp"
+        android:id="@+id/img_match"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:src="@drawable/home_purple" />
+</LinearLayout>

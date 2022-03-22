@@ -19,6 +19,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -64,6 +65,7 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
     internal lateinit var cam_uri_photo: Uri
     internal lateinit var mSAPI: ServiceAPI
     lateinit var mPD: ProgressDialog
+    lateinit var mPB_show: ProgressBar
 
     lateinit var bitmap: Bitmap
 
@@ -86,6 +88,7 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
         iniProgress()
         val btnUploadCamera: Button = binding.btnUploadCamera
         val btnUploadGallery: Button = binding.btnUploadGallery
+        mPB_show = binding.pbShow
 //        animationView = binding.animationView
 //        imageUploaded = binding.imgUpload
 //        d_op = binding.imgDOp
@@ -107,6 +110,7 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
         homeViewModel.l_res.observe(viewLifecycleOwner) {
             l_res ->
             l_res?.status?.let {
+                hideProgress()
                 if(it){
                     l_res.matchList?.let {
                         matchResultsAdapter.apply {
@@ -116,6 +120,17 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
                     }
                 }
             }
+        }
+
+
+        homeViewModel.show_err.observe(viewLifecycleOwner) {
+                message ->
+            hideProgress()
+            Toast.makeText(
+                activity,
+                message.toString(),
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -128,6 +143,7 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        showProgress()
         _binding?.rvShowMatchResults!!.apply {
             layoutManager = LinearLayoutManager(activity)
 //            val decoration = DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
@@ -139,6 +155,16 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
         val refresh_token = getRefreshToken()
         val fcm_token = getFCMToken()
         homeViewModel.callMatchRecords(refresh_token, fcm_token)
+    }
+
+    private fun hideProgress() {
+        mPB_show.visibility = View.GONE
+        _binding?.rvShowMatchResults?.visibility = View.VISIBLE
+    }
+
+    private fun showProgress() {
+        mPB_show.visibility = View.VISIBLE
+        _binding?.rvShowMatchResults?.visibility = View.GONE
     }
 
     private fun getFCMToken(): String {
