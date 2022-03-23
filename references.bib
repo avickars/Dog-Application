@@ -1,0 +1,130 @@
+@inproceedings{MougeotGuillaume2019ADLA,
+series = {Lecture Notes in Computer Science},
+issn = {0302-9743},
+abstract = {Recently, deep learning methods for biometrics identification have mainly focused on human face identification and have proven their efficiency. However, little research have been performed on animal biometrics identification. In this paper, a deep learning approach for dog face verification and recognition is proposed and evaluated. Due to the lack of available datasets and the complexity of dog face shapes this problem is harder than human identification. The first publicly available dataset is thus composed, and a deep convolutional neural network coupled with the triplet loss is trained on this dataset. The model is then evaluated on a verification problem, on a recognition problem and on clustering dog faces. For an open-set of 48 different dogs, it reaches an accuracy of 92% on a verification task and a rank-5 accuracy of 88% on a one-shot recognition task. The model can additionally cluster pictures of these unknown dogs. This work could push zoologists to further investigate these new kinds of techniques for animal identification or could help pet owners to find their lost animal. The code and the dataset of this project are publicly available (https://github.com/GuillaumeMougeot/DogFaceNet).},
+pages = {418--430},
+volume = {11672},
+publisher = {Springer International Publishing},
+booktitle = {PRICAI 2019: Trends in Artificial Intelligence},
+isbn = {3030298930},
+year = {2019},
+title = {A Deep Learning Approach for Dog Face Verification and Recognition},
+copyright = {Springer Nature Switzerland AG 2019},
+language = {eng},
+address = {Cham},
+author = {Mougeot, Guillaume and Li, Dewei and Jia, Shuai},
+keywords = {Dog face identification ; Dog face recognition ; Pet animal identification},
+}
+
+@inproceedings{LaiKenneth2019DIuS,
+issn = {2161-4407},
+abstract = {This paper addresses the problem of biometric identification of animals, specifically dogs. We apply advanced machine learning models such as deep neural network on the photographs of pets in order to determine the pet identity. In this paper, we explore the possibility of using different types of "soft" biometrics, such as breed, height, or gender, in fusion with "hard" biometrics such as photographs of the pet's face. We apply the principle of transfer learning on different Convolutional Neural Networks, in order to create a network designed specifically for breed classification. The proposed network is able to achieve an accuracy of 90.80% and 91.29% when differentiating between the two dog breeds, for two different datasets. Without the use of "soft" biometrics, the identification rate of dogs is 78.09% but by using a decision network to incorporate "soft" biometrics, the identification rate can achieve an accuracy of 84.94%.},
+pages = {1--8},
+publisher = {IEEE},
+booktitle = {2019 International Joint Conference on Neural Networks (IJCNN)},
+isbn = {9781728119854},
+year = {2019},
+title = {Dog Identification using Soft Biometrics and Neural Networks},
+copyright = {http://arxiv.org/licenses/nonexclusive-distrib/1.0},
+language = {eng},
+author = {Lai, Kenneth and Tu, Xinyuan and Yanushkevich, Svetlana},
+keywords = {Biometrics (access control) ; Computer Science - Computer Vision and Pattern Recognition ; Databases ; Detectors ; Dogs ; Ear ; Face ; Neural networks},
+}
+
+@online{nms,
+    title     = "Open Images Dataset V6",
+    url       = "https://towardsdatascience.com/non-maximum-suppression-nms-93ce178e177c",
+    urldate = {2022-03-22}
+}
+
+@online{TorchVision,
+    title     = "TorchVision Object Detection Fine-Tuning Tutorial",
+    url       = "https://pytorch.org/tutorials/intermediate/torchvision_tutorial.html",
+    urldate = {2022-03-22}
+}
+
+@online{openimages,
+    title     = "Non Max Supression",
+    url       = "https://storage.googleapis.com/openimages/web/index.html",
+    urldate = {2022-03-22}
+}
+
+@online{stanforddogs,
+    title     = "Stanford Dogs Data-set",
+    url       = "http://vision.stanford.edu/aditya86/ImageNetDogs/",
+    urldate = {2022-03-22}
+}
+
+@online{coco,
+    title     = "COCO Data-Set",
+    url       = "https://cocodataset.org/#home",
+    urldate = {2022-03-22}
+}
+
+@article{RedmonJoseph2016YBFS,
+abstract = {We introduce YOLO9000, a state-of-the-art, real-time object detection system
+that can detect over 9000 object categories. First we propose various
+improvements to the YOLO detection method, both novel and drawn from prior
+work. The improved model, YOLOv2, is state-of-the-art on standard detection
+tasks like PASCAL VOC and COCO. At 67 FPS, YOLOv2 gets 76.8 mAP on VOC 2007. At
+40 FPS, YOLOv2 gets 78.6 mAP, outperforming state-of-the-art methods like
+Faster RCNN with ResNet and SSD while still running significantly faster.
+Finally we propose a method to jointly train on object detection and
+classification. Using this method we train YOLO9000 simultaneously on the COCO
+detection dataset and the ImageNet classification dataset. Our joint training
+allows YOLO9000 to predict detections for object classes that don't have
+labelled detection data. We validate our approach on the ImageNet detection
+task. YOLO9000 gets 19.7 mAP on the ImageNet detection validation set despite
+only having detection data for 44 of the 200 classes. On the 156 classes not in
+COCO, YOLO9000 gets 16.0 mAP. But YOLO can detect more than just 200 classes;
+it predicts detections for more than 9000 different object categories. And it
+still runs in real-time.},
+year = {2016},
+title = {YOLO9000: Better, Faster, Stronger},
+copyright = {http://arxiv.org/licenses/nonexclusive-distrib/1.0},
+language = {eng},
+author = {Redmon, Joseph and Farhadi, Ali},
+keywords = {Computer Science - Computer Vision and Pattern Recognition},
+}
+
+@article{DBLP:journals/corr/RenHG015,
+  author    = {Shaoqing Ren and
+               Kaiming He and
+               Ross B. Girshick and
+               Jian Sun},
+  title     = {Faster {R-CNN:} Towards Real-Time Object Detection with Region Proposal
+               Networks},
+  journal   = {CoRR},
+  volume    = {abs/1506.01497},
+  year      = {2015},
+  url       = {http://arxiv.org/abs/1506.01497},
+  eprinttype = {arXiv},
+  eprint    = {1506.01497},
+  timestamp = {Mon, 13 Aug 2018 16:46:02 +0200},
+  biburl    = {https://dblp.org/rec/journals/corr/RenHG015.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{SimonyanKaren2014VDCN,
+abstract = {In this work we investigate the effect of the convolutional network depth on
+its accuracy in the large-scale image recognition setting. Our main
+contribution is a thorough evaluation of networks of increasing depth using an
+architecture with very small (3x3) convolution filters, which shows that a
+significant improvement on the prior-art configurations can be achieved by
+pushing the depth to 16-19 weight layers. These findings were the basis of our
+ImageNet Challenge 2014 submission, where our team secured the first and the
+second places in the localisation and classification tracks respectively. We
+also show that our representations generalise well to other datasets, where
+they achieve state-of-the-art results. We have made our two best-performing
+ConvNet models publicly available to facilitate further research on the use of
+deep visual representations in computer vision.},
+year = {2014},
+title = {Very Deep Convolutional Networks for Large-Scale Image Recognition},
+copyright = {http://arxiv.org/licenses/nonexclusive-distrib/1.0},
+language = {eng},
+author = {Simonyan, Karen and Zisserman, Andrew},
+keywords = {Computer Science - Computer Vision and Pattern Recognition},
+}
+
+
+
