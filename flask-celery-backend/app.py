@@ -122,15 +122,19 @@ class Pets(db.Model):
     dog_extractor = db.Column(db.JSON)
     dog_identification = db.Column(db.JSON)
     final_output = db.Column(db.JSON)
+    lat = db.Column(db.Float)
+    lng = db.Column(db.Float)
 
 
-    def _init_(self, user_id, image_url, is_lost, dog_extractor, dog_identification, final_output):
+    def _init_(self, user_id, image_url, is_lost, dog_extractor, dog_identification, final_output, lat, lng):
         self.user_id = user_id
         self.image_url = image_url
         self.is_lost = is_lost
         self.dog_extractor = dog_extractor
         self.dog_identification = dog_identification
         self.final_output = final_output
+        self.lat = lat
+        self.lng = lng
 
 
 # JSON Schema
@@ -144,7 +148,7 @@ class PetsSchema(ma.Schema):
 class PetsSchemaUp(ma.Schema):
     class Meta:
         fields = (
-            'user_id', 'id', 'image_url', 'dog_identification')
+            'user_id', 'id', 'image_url', 'dog_identification', 'lat', 'lng')
 
 pets_schema = PetsSchema()
 pets_s_schema = PetsSchema(many=True)
@@ -165,7 +169,7 @@ db_session = scoped_session(sessionmaker(
 celery = make_celery(app,db)
 
 
-def sendNotificationToLostDogUser(user_id, db_session):
+def sendNotificationToLostDogUser(user_id, db_session, count, ac_img, mat_img):
 
     _res = db_session.query(User.id, User.fcm_token).filter_by(id=user_id).first()
     db_session.close()
@@ -179,17 +183,15 @@ def sendNotificationToLostDogUser(user_id, db_session):
 
         b_data = {
             "to": fcm_token,
-            "notification": {
-                "title": "Check this Mobile (title)",
-                "body": "Rich Notification testing (body)",
-                "mutable_content": True,
-                "sound": "Tri-tone"
-            },
             "data": {
-                "url": "<url of media image>",
-                "dl": "<deeplink action on tap of notification>"
+                "title": "Here is a good news for you!",
+                "message": f"We found {count} match results of your lost dog!",
+                "actual_image": ac_img,
+                "match_img": mat_img
             }
         }
+
+        print(b_data)
         fb_url = 'https://fcm.googleapis.com/fcm/send'
         response = requests.post(fb_url,
                                  data=json.dumps(b_data), headers=_headers)
@@ -203,7 +205,7 @@ def sendNotificationToLostDogUser(user_id, db_session):
 
 
 @celery.task(name="main.run_models_in_background")
-def run_models_in_background(img_pth, img_name, user_id, url, is_lost):
+def run_models_in_background(img_pth, img_name, user_id, url, is_lost, lat, lng):
     app = create_app()
     with app.app_context():
         extractor_outputs = dog_extractor(img_pth)
@@ -214,7 +216,6 @@ def run_models_in_background(img_pth, img_name, user_id, url, is_lost):
                 "dog_extractor": None,
                 "dog_identification": None,
                 "image_url": None
-
             }
 
             return jsonify(data)
@@ -253,18 +254,26 @@ def run_models_in_background(img_pth, img_name, user_id, url, is_lost):
             is_lost=int(is_lost),
             dog_extractor=extractor_outputs,
             dog_identification=comparator_outputs,
-            final_output=similar_dogs
+            final_output=similar_dogs,
+            lat=float(lat),
+            lng=float(lng)
         )
         db_session.add(pets)
         db_session.commit()
         db_session.close()
+
+        similar_dog_url = url
+
+        if len(similar_dogs) > 0:
+            similar_dog_url = similar_dogs[-1]['image_url']
+
         data = {
             "status": True,
             "stacked_comparision": similar_dogs,
             "image_url": url
         }
-        noti_message = sendNotificationToLostDogUser(user_id, db_session)
-        return {"data" : data, "notification_response": noti_message}
+        noti_message = sendNotificationToLostDogUser(user_id, db_session, len(similar_dogs), url, similar_dog_url)
+        return {"data":data, "notification_response": noti_message}
 
 # App Models
 
@@ -350,7 +359,10 @@ def upload_lost_pet_image(*args, **kwargs):
     }
 
     is_lost = request.form.get('lost', 0)
-    run_models_in_background.delay(img_pth, img_name, user_id, url, is_lost)
+    lat = request.form.get('lat', '49.191855')
+    lng = request.form.get('lng', '-122.867152')
+
+    run_models_in_background.delay(img_pth, img_name, user_id, url, is_lost, lat, lng)
     return jsonify(data)
 
 

@@ -30,6 +30,19 @@ data class CommonReq(
     val fcm_token: String
 )
 
+
+data class NotificationResponse(
+    @SerializedName("title")
+    val title: String,
+    @SerializedName("message")
+    val message: String,
+    @SerializedName("actual_image")
+    val ac_img: String,
+    @SerializedName("match_img")
+    val m_img: String
+)
+
+
 data class RegRes(
     @SerializedName("message")
     val message: String?,
