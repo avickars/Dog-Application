@@ -122,15 +122,19 @@ class Pets(db.Model):
     dog_extractor = db.Column(db.JSON)
     dog_identification = db.Column(db.JSON)
     final_output = db.Column(db.JSON)
+    lat = db.Column(db.Float)
+    lng = db.Column(db.Float)
 
 
-    def _init_(self, user_id, image_url, is_lost, dog_extractor, dog_identification, final_output):
+    def _init_(self, user_id, image_url, is_lost, dog_extractor, dog_identification, final_output, lat, lng):
         self.user_id = user_id
         self.image_url = image_url
         self.is_lost = is_lost
         self.dog_extractor = dog_extractor
         self.dog_identification = dog_identification
         self.final_output = final_output
+        self.lat = lat
+        self.lng = lng
 
 
 # JSON Schema
@@ -144,7 +148,7 @@ class PetsSchema(ma.Schema):
 class PetsSchemaUp(ma.Schema):
     class Meta:
         fields = (
-            'user_id', 'id', 'image_url', 'dog_identification')
+            'user_id', 'id', 'image_url', 'dog_identification', 'lat', 'lng')
 
 pets_schema = PetsSchema()
 pets_s_schema = PetsSchema(many=True)
@@ -201,7 +205,7 @@ def sendNotificationToLostDogUser(user_id, db_session, count, ac_img, mat_img):
 
 
 @celery.task(name="main.run_models_in_background")
-def run_models_in_background(img_pth, img_name, user_id, url, is_lost):
+def run_models_in_background(img_pth, img_name, user_id, url, is_lost, lat, lng):
     app = create_app()
     with app.app_context():
         extractor_outputs = dog_extractor(img_pth)
@@ -212,7 +216,6 @@ def run_models_in_background(img_pth, img_name, user_id, url, is_lost):
                 "dog_extractor": None,
                 "dog_identification": None,
                 "image_url": None
-
             }
 
             return jsonify(data)
@@ -251,7 +254,9 @@ def run_models_in_background(img_pth, img_name, user_id, url, is_lost):
             is_lost=int(is_lost),
             dog_extractor=extractor_outputs,
             dog_identification=comparator_outputs,
-            final_output=similar_dogs
+            final_output=similar_dogs,
+            lat=float(lat),
+            lng=float(lng)
         )
         db_session.add(pets)
         db_session.commit()
@@ -354,7 +359,10 @@ def upload_lost_pet_image(*args, **kwargs):
     }
 
     is_lost = request.form.get('lost', 0)
-    run_models_in_background.delay(img_pth, img_name, user_id, url, is_lost)
+    lat = request.form.get('lat', '49.191855')
+    lng = request.form.get('lng', '-122.867152')
+
+    run_models_in_background.delay(img_pth, img_name, user_id, url, is_lost, lat, lng)
     return jsonify(data)
 
 
