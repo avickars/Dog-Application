@@ -29,11 +29,12 @@
             android:id="@+id/btn_upload_camera"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:text="@string/camera"
+            android:text="@string/submit_picture"
             />
 
 
         <Button
+            android:visibility="gone"
             android:layout_marginStart="8dp"
             android:layout_weight="1"
             android:id="@+id/btn_upload_gallery"

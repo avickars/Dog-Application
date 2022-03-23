@@ -32,7 +32,9 @@ import com.an2t.myapplication.R
 import com.an2t.myapplication.databinding.FragmentHome1Binding
 import com.an2t.myapplication.home.HomeActivity
 import com.an2t.myapplication.home.ui.home.adapters.MainMatchAdapter
+import com.an2t.myapplication.maps.GalleryOrCameraFragment
 import com.an2t.myapplication.maps.MapsFragment
+import com.an2t.myapplication.maps.SelectLostOrFoundFragment
 import com.an2t.myapplication.model.ImageResponse
 import com.an2t.myapplication.model.Output
 import com.an2t.myapplication.network.RetrofitClient
@@ -53,7 +55,9 @@ import java.util.*
 
 
 //import com.an2t.myapplication.home1.databinding.FragmentHomeBinding
-class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionListener {
+class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionListener,
+    MapsFragment.OnLocationFetched , GalleryOrCameraFragment.OnGalleryOrCameraSelected,
+    SelectLostOrFoundFragment.OnSelectLostOrFound {
 
     private var _binding: FragmentHome1Binding? = null
 
@@ -71,11 +75,13 @@ class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionLi
     lateinit var mPD: ProgressDialog
     lateinit var mPB_show: ProgressBar
 
+
+
     lateinit var bitmap: Bitmap
 
     private lateinit var matchResultsAdapter: MainMatchAdapter
 
-    private lateinit var homeViewModel:HomeViewModel
+    private lateinit var homeViewModel: HomeViewModel
 
 
     override fun onCreateView(
@@ -99,20 +105,16 @@ class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionLi
 //        tv_data = binding.tvData
 
         btnUploadCamera.setOnClickListener {
-//            _openMapsBottomSheet()
             askUserToShareLocation()
-//            openCamera()
         }
-        btnUploadGallery.setOnClickListener {
-            askUserToShareLocation()
-//            _openMapsBottomSheet()
-//            openGallery()
-        }
+//        btnUploadGallery.setOnClickListener {
+//            askUserToShareLocation()
+//        }
         _observe()
         return root
     }
 
-    private fun askUserToShareLocation(){
+    private fun askUserToShareLocation() {
         context?.let {
             val builder = AlertDialog.Builder(it)
             builder.setTitle("Share location")
@@ -125,21 +127,25 @@ class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionLi
 
     }
 
+    lateinit var mapsFragment: MapsFragment
+    lateinit var galleryOrCameraFragment: GalleryOrCameraFragment
+    lateinit var selectLostOrFoundFragment: SelectLostOrFoundFragment
 
-    private fun _openMapsBottomSheet() {
-        val bottomSheetFragment = MapsFragment()
-        bottomSheetFragment.isCancelable = false
-        openBottomSheetFragment(bottomSheetFragment)
+
+
+    fun _openMapsBottomSheet() {
+        mapsFragment = MapsFragment.newInstance(this)
+        mapsFragment.isCancelable = false
+        openBottomSheetFragment(mapsFragment)
     }
 
     private fun _observe() {
         mSAPI = RetrofitClient.instance.create(ServiceAPI::class.java)
 
-        homeViewModel.l_res.observe(viewLifecycleOwner) {
-            l_res ->
+        homeViewModel.l_res.observe(viewLifecycleOwner) { l_res ->
             l_res?.status?.let {
                 hideProgress()
-                if(it){
+                if (it) {
                     l_res.matchList?.let {
                         matchResultsAdapter.apply {
                             setListData(it)
@@ -151,8 +157,7 @@ class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionLi
         }
 
 
-        homeViewModel.show_err.observe(viewLifecycleOwner) {
-                message ->
+        homeViewModel.show_err.observe(viewLifecycleOwner) { message ->
             hideProgress()
             Toast.makeText(
                 activity,
@@ -272,7 +277,8 @@ class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionLi
         cv.put(MediaStore.Images.Media.TITLE, "New Pic")
         cv.put(MediaStore.Images.Media.DESCRIPTION, "done")
         //var uri_photo = FileProvider.getUriForFile(MainActivity@this, "com.binarynumbers.gokozo.fileprovider", cam_file)
-        cam_uri_photo = activity?.contentResolver?.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv)!!
+        cam_uri_photo =
+            activity?.contentResolver?.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv)!!
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         intent.putExtra(MediaStore.EXTRA_OUTPUT, cam_uri_photo)
         startActivityForResult(intent, 111)
@@ -350,39 +356,35 @@ class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionLi
         if (resultCode == Activity.RESULT_OK && requestCode == 123) {
             try {
 
-                intent?.data?.let {
-                    uri ->
+                intent?.data?.let { uri ->
                     val path = ImageFilePath.getPath(activity, uri)
                     val file = File(path)
                     var contentType = ""
 
-                    if(!file.name.contains("pdf")){
+                    val sharedPreference =  context?.getSharedPreferences(AppConstants.SHARED_PREF_DOG_APP, Context.MODE_PRIVATE)
+                    val lat = sharedPreference?.getString(AppConstants.LAT,"")
+                    val lng = sharedPreference?.getString(AppConstants.LNG,"")
+
+                    if (!file.name.contains("pdf")) {
                         contentType = "image/${file.name.split(".")[1]}"
-                    }else {
+                    } else {
                         contentType = "application/pdf"
                     }
                     val refresh_token = getRefreshToken()
                     val propertyImage = RequestBody.create(contentType.toMediaTypeOrNull(), file)
                     val p = MultipartBody.Part.createFormData("image", file.name, propertyImage)
 
-                    val p1 = RequestBody.create("text/plain".toMediaTypeOrNull(), "1")
+                    val p1 = RequestBody.create("text/plain".toMediaTypeOrNull(), isLost.toString())
                     val p2 = RequestBody.create("text/plain".toMediaTypeOrNull(), refresh_token)
+                    val p3 = RequestBody.create("text/plain".toMediaTypeOrNull(), lat!!)
+                    val p4 = RequestBody.create("text/plain".toMediaTypeOrNull(), lng!!)
 
                     mPD.show()
                     mSAPI.uploadImage(
                         BASE_URL_MODEL,
-                        p , p1 , p2
+                        p, p1, p2, p3, p4
                     ).enqueue(this)
                 }
-//                val selectedImageUri: Uri = intent?.data
-//                bitmap = MediaStore.Images.Media.getBitmap(activity?.contentResolver, intent?.data)
-//                MediaStore.Images.Media.get
-//                if (bitmap.height > 1000) {
-//                    bitmap = bitmap.scale(1000)
-//                }
-
-//                val tempUri = getImageUri()
-
             } catch (e: IOException) {
                 print(e.toString())
             }
@@ -399,20 +401,27 @@ class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionLi
                     bitmap = bitmap.scale(1000)
                 }
 
+
+                val sharedPreference =  context?.getSharedPreferences(AppConstants.SHARED_PREF_DOG_APP, Context.MODE_PRIVATE)
+                val lat = sharedPreference?.getString(AppConstants.LAT,"")
+                val lng = sharedPreference?.getString(AppConstants.LNG,"")
+
 //                val tempUri = getImageUri()
                 val path = ImageFilePath.getPath(activity, cam_uri_photo)
                 val file = File(path)
                 var contentType = ""
-                if(!file.name.contains("pdf")){
+                if (!file.name.contains("pdf")) {
                     contentType = "image/${file.name.split(".")[1]}"
-                }else {
+                } else {
                     contentType = "application/pdf"
                 }
                 val refresh_token = getRefreshToken()
                 val propertyImage = RequestBody.create(contentType.toMediaTypeOrNull(), file)
                 val p = MultipartBody.Part.createFormData("image", file.name, propertyImage)
-                val p1 = RequestBody.create("text/plain".toMediaTypeOrNull(), "1")
+                val p1 = RequestBody.create("text/plain".toMediaTypeOrNull(), isLost.toString())
                 val p2 = RequestBody.create("text/plain".toMediaTypeOrNull(), refresh_token)
+                val p3 = RequestBody.create("text/plain".toMediaTypeOrNull(), lat!!)
+                val p4 = RequestBody.create("text/plain".toMediaTypeOrNull(), lng!!)
 
 
 //                d_op.visibility = View.VISIBLE
@@ -421,7 +430,7 @@ class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionLi
                 mPD.show()
                 mSAPI.uploadImage(
                     BASE_URL_MODEL,
-                    p , p1,p2
+                    p, p1, p2,p3, p4
                 ).enqueue(this)
 
 
@@ -431,8 +440,6 @@ class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionLi
         }
 
     }
-
-
 
 //    @Deprecated
 //    private fun getImageUri(): Uri {
@@ -455,13 +462,17 @@ class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionLi
         val res_data = response.body()
 
         res_data?.status?.let {
-            Toast.makeText(context , "Your request has been submtited successfully. We ll get back to you with results in some time." , Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                context,
+                "Your request has been submtited successfully. We ll get back to you with results in some time.",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
     override fun onFailure(call: Call<ImageResponse>, t: Throwable) {
         mPD.dismiss()
-        Toast.makeText(context , ""+t.message , Toast.LENGTH_LONG).show()
+        Toast.makeText(context, "" + t.message, Toast.LENGTH_LONG).show()
     }
 
 
@@ -474,33 +485,34 @@ class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionLi
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
 
-            val pendingIntent = PendingIntent.getActivity(it,0,intent,0)
+            val pendingIntent = PendingIntent.getActivity(it, 0, intent, 0)
 
-                val bitmapLargeIcon = BitmapFactory.decodeResource(activity?.applicationContext?.resources,
-                    R.drawable.home_purple
-                )
+            val bitmapLargeIcon = BitmapFactory.decodeResource(
+                activity?.applicationContext?.resources,
+                R.drawable.home_purple
+            )
 
 
             var found = "We found the bounding boxes. It seems the picture contains Dog!"
 
-            outputs?.let {
-                    o->
-                if(o[0].boxes?.isEmpty() == true){
-                    found = "We couldn't the bounding boxes. It seems the picture doesn't contain Dog!"
+            outputs?.let { o ->
+                if (o[0].boxes?.isEmpty() == true) {
+                    found =
+                        "We couldn't the bounding boxes. It seems the picture doesn't contain Dog!"
                 }
             }
-                val builder = NotificationCompat.Builder(it, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_launcher_foreground)
-                    .setContentTitle("Finder Update!")
-                    .setContentText(found)
-                    .setLargeIcon(bitmapLargeIcon)
-                    .setStyle(NotificationCompat.BigPictureStyle().bigPicture(img_url))
-                    .setContentIntent(pendingIntent)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+            val builder = NotificationCompat.Builder(it, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentTitle("Finder Update!")
+                .setContentText(found)
+                .setLargeIcon(bitmapLargeIcon)
+                .setStyle(NotificationCompat.BigPictureStyle().bigPicture(img_url))
+                .setContentIntent(pendingIntent)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
 
-                with(NotificationManagerCompat.from(it)){
-                    notify(notificationId, builder.build())
-                }
+            with(NotificationManagerCompat.from(it)) {
+                notify(notificationId, builder.build())
+            }
         }
     }
 
@@ -546,6 +558,40 @@ class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionLi
 
     override fun dismissBottomSheetFragment(fragment: AppCompatDialogFragment) {
         fragment.dismiss()
+    }
+
+    private fun goToGalleryOrCamera() {
+        galleryOrCameraFragment = GalleryOrCameraFragment.newInstance(this)
+        galleryOrCameraFragment.isCancelable = false
+        openBottomSheetFragment(galleryOrCameraFragment)
+    }
+
+    private fun selectLostOrFoundDog() {
+        selectLostOrFoundFragment = SelectLostOrFoundFragment.newInstance(this)
+        selectLostOrFoundFragment.isCancelable = false
+        openBottomSheetFragment(selectLostOrFoundFragment)
+    }
+
+    override fun onLocationFetchedListener() {
+        mapsFragment.dismiss()
+        selectLostOrFoundDog()
+    }
+
+    override fun onGalleryOrCameraSelectedListener(isCamera : Boolean) {
+        galleryOrCameraFragment.dismiss()
+        if (isCamera) {
+            openCamera()
+        } else {
+            openGallery()
+        }
+    }
+
+    var isLost = 1
+
+    override fun onSelectLostOrFoundListener(isLost: Int) {
+        this.isLost = isLost
+        selectLostOrFoundFragment.dismiss()
+        goToGalleryOrCamera()
     }
 
 }

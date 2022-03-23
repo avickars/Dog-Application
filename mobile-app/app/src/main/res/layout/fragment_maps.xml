@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:minHeight="500dp"
+            android:minHeight="590dp"
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -62,7 +62,20 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/map">
 
+                <ProgressBar
+                    android:elevation="1dp"
+                    android:layout_gravity="center"
+                    android:id="@+id/pb_show"
+                    android:indeterminateTint="@color/purple_200"
+                    app:layout_constraintTop_toBottomOf="@id/ll_upload_gp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/cl_content"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@android:color/white"
@@ -82,7 +95,7 @@
 
                     <Button
                         android:layout_marginHorizontal="10dp"
-                        android:id="@+id/btn_login"
+                        android:id="@+id/btn_confirm"
                         android:layout_width="0dp"
                         android:layout_height="50dp"
                         android:layout_marginTop="16dp"

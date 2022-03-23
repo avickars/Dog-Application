@@ -18,10 +18,12 @@
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.16183136899365366" />
         <entry key="app/src/main/res/layout/fragment_dashboard.xml" value="0.16183136899365366" />
         <entry key="app/src/main/res/layout/fragment_found_dog.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_gallery_or_camera.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.16183136899365366" />
         <entry key="app/src/main/res/layout/fragment_home1.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/fragment_maps.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/fragment_notifications.xml" value="0.16183136899365366" />
+        <entry key="app/src/main/res/layout/fragment_select_lost_or_found.xml" value="0.26175762044410006" />
         <entry key="app/src/main/res/layout/ic_my_location.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/match_res_item.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/match_res_sub_item.xml" value="0.19628286491387126" />
