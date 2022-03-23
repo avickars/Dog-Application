@@ -38,7 +38,8 @@ import kotlin.system.measureTimeMillis
  * create an instance of this fragment.
  */
 class MapsFragment : AppCompatDialogFragment(), OnMapReadyCallback, GoogleMap.OnCameraMoveListener,
-    GoogleMap.OnCameraIdleListener, UserLocationClient.LocationHelperCallback {
+    GoogleMap.OnCameraIdleListener, UserLocationClient.LocationHelperCallback
+    {
 
     private var mMap: GoogleMap? = null
     private var userLatLng: LatLng? = null
@@ -57,16 +58,24 @@ class MapsFragment : AppCompatDialogFragment(), OnMapReadyCallback, GoogleMap.On
     private var addressId = ""
     private var isFrom = ""
 
-    //    lateinit var  userAddressResult: UserAddressData
-//    private lateinit var updateListListener: OnUpdateAddressList
-//    private lateinit var addressUpdateListener: OnUpdateAddress
-//    private lateinit var addressUpdateErrorListener: OnAddOrUpdateAddressError
+
     private var isEditFromOrderSummary: Boolean = false
 
+    private lateinit var onLocationFetched: OnLocationFetched
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
 
+    companion object {
+        fun newInstance(
+            onLocationFetched: OnLocationFetched,
+        ) =
+            MapsFragment().apply {
+                this.onLocationFetched = onLocationFetched
+            }
+    }
+
+
+    interface OnLocationFetched {
+        fun onLocationFetchedListener()
     }
 
     override fun onCreateView(
@@ -90,8 +99,23 @@ class MapsFragment : AppCompatDialogFragment(), OnMapReadyCallback, GoogleMap.On
         binding.imgMyLocation.setOnClickListener {
             requestLocation()
         }
+
+        binding.btnConfirm.setOnClickListener { view->
+            this@MapsFragment.onLocationFetched.onLocationFetchedListener()
+        }
         setUpUserLocationHelper()
-        requestLocation()
+//        showProgress()
+//        requestLocation()
+    }
+
+    private fun hideProgress() {
+        binding.pbShow.visibility = View.GONE
+        binding.clContent.visibility = View.VISIBLE
+    }
+
+    private fun showProgress() {
+        binding.pbShow.visibility = View.VISIBLE
+        binding.clContent.visibility = View.GONE
     }
 
 
@@ -122,6 +146,7 @@ class MapsFragment : AppCompatDialogFragment(), OnMapReadyCallback, GoogleMap.On
         val userLongitude = QminSharedPreferences.getString(Constants.USER_LONGITUDE) ?: ""*/
 
         if (latitude.toString().isEmpty() || longitude.toString().isEmpty()) {
+            showProgress()
             requestLocation()
         } else {
             plotMarker(latitude.toString(), longitude.toString())
@@ -264,6 +289,9 @@ class MapsFragment : AppCompatDialogFragment(), OnMapReadyCallback, GoogleMap.On
 
     override fun onLocationUpdated(location: Location, isItLastKnownLocation: Boolean) {
         if (isItLastKnownLocation) return
+
+        hideProgress()
+
         locationHelper?.stopLocationUpdates()
         val addressList: List<Address>
         val geocoder = Geocoder(context, Locale.getDefault())

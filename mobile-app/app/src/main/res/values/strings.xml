@@ -26,4 +26,9 @@
     <string name="confirm">Confirm</string>
     <string name="select_location_message">Please move the pointer to select location of lost/found dog.</string>
     <string name="ok">Okay</string>
+    <string name="found">Found</string>
+    <string name="lost">Lost</string>
+    <string name="pick_upload_type">Pick Upload Type</string>
+    <string name="upload_from">Upload from</string>
+    <string name="submit_picture">Submit Picture</string>
 </resources>

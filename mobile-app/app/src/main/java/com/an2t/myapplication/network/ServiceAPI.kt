@@ -25,6 +25,8 @@ interface ServiceAPI {
         @Part image: MultipartBody.Part?,
         @Part("lost") lost: RequestBody,
         @Part("refresh_token") refresh_token: RequestBody,
+        @Part("lat") lat: RequestBody,
+        @Part("lng") lng: RequestBody,
         ) : Call<ImageResponse>
 
     @POST("pets/getAllUserUploadRecords")
