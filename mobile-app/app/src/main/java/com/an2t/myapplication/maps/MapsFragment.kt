@@ -1,4 +1,4 @@
-package com.an2t.myapplication
+package com.an2t.myapplication.maps
 
 import android.Manifest
 import android.content.Context
@@ -12,8 +12,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.core.content.ContextCompat
+import com.an2t.myapplication.R
 import com.an2t.myapplication.databinding.FragmentMapsBinding
+import com.an2t.myapplication.model.LoginRes
+import com.an2t.myapplication.utils.AppConstants
 import com.an2t.myapplication.utils.AppConstants.Companion.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
 import com.an2t.myapplication.utils.UserLocationClient
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -21,6 +26,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import kotlinx.android.synthetic.main.fragment_maps.*
 import kotlinx.coroutines.*
 import java.io.IOException
 import java.util.*
@@ -31,7 +37,8 @@ import kotlin.system.measureTimeMillis
  * Use the [MapsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMoveListener, GoogleMap.OnCameraIdleListener, UserLocationClient.LocationHelperCallback{
+class MapsFragment : AppCompatDialogFragment(), OnMapReadyCallback, GoogleMap.OnCameraMoveListener,
+    GoogleMap.OnCameraIdleListener, UserLocationClient.LocationHelperCallback {
 
     private var mMap: GoogleMap? = null
     private var userLatLng: LatLng? = null
@@ -44,16 +51,17 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMoveListe
     var zoomLevel = 13f
     private var locationHelper: UserLocationClient? = null
     private var isForAddressAddition: Boolean = true
-//    private lateinit var addNewAddressViewModel: AddNewAddressViewModel
+
+    //    private lateinit var addNewAddressViewModel: AddNewAddressViewModel
     private lateinit var userID: String
     private var addressId = ""
     private var isFrom = ""
-//    lateinit var  userAddressResult: UserAddressData
+
+    //    lateinit var  userAddressResult: UserAddressData
 //    private lateinit var updateListListener: OnUpdateAddressList
 //    private lateinit var addressUpdateListener: OnUpdateAddress
 //    private lateinit var addressUpdateErrorListener: OnAddOrUpdateAddressError
     private var isEditFromOrderSummary: Boolean = false
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,13 +74,24 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMoveListe
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_maps, container, false)
+//        return inflater.inflate(R.layout.fragment_maps, container, false)
+
+        binding = FragmentMapsBinding.inflate(inflater, container, false)
+        val root: View = binding.root
+        return root
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpMaps()
+
+
+        binding.imgMyLocation.setOnClickListener {
+            requestLocation()
+        }
+        setUpUserLocationHelper()
+        requestLocation()
     }
 
 
@@ -80,8 +99,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMoveListe
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
-
-
 
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -113,6 +130,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMoveListe
 
     }
 
+    private fun setUpUserLocationHelper() {
+        locationHelper = UserLocationClient(this)
+    }
+
     private fun requestLocation() {
         context?.let { context ->
             locationHelper?.requestLastKnownLocation(context)
@@ -121,7 +142,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMoveListe
     }
 
     private fun disableMap() {
-        if(!isForAddressAddition){
+        if (!isForAddressAddition) {
             mMap!!.uiSettings.isScrollGesturesEnabled = false
             mMap!!.uiSettings.isZoomGesturesEnabled = false
             mMap!!.uiSettings.isScrollGesturesEnabledDuringRotateOrZoom = false
@@ -140,7 +161,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMoveListe
             CameraPosition.Builder().target(defaultLocationOnMap).zoom(zoomLevel).build()
         mMap?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
     }
-
 
 
     override fun onCameraMove() {
@@ -204,56 +224,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMoveListe
         addressList: List<Address>?
     ) {
         if (addressList?.size != 0) {
-            var finalAddress: Address? = null
-            if (addressList?.get(0)?.postalCode == null){
-                try{
-                    for (address in addressList!!){
-                        if (address.postalCode != null) {
-                            finalAddress = address
-                        }
-                    }
-                }catch (e: Exception){
-                    finalAddress = addressList?.get(0)
-                }
-            }else {
-                finalAddress = addressList.get(0)
-            }
-            with(finalAddress) {
-//                if (this?.postalCode != null) {
-//                    with(userAddressResult) {
-//                        city = locality
-//                        country = countryName
-//                        state = adminArea
-//                        zipcode = postalCode
-//                    }
-//                    if (textInputLocation != null) {
-//                        if (this.subLocality != null && this.locality != null &&  this.postalCode != null) {
-//                            textInputLocation.edtLocation.setText(
-//                                context?.resources?.getString(
-//                                    R.string.location_template,
-//                                    if (subLocality != null) subLocality else "",
-//                                    if (locality != null) locality else "",
-//                                    postalCode
-//                                )
-//                            )
-//                        }else if (this.locality != null &&  this.postalCode != null) {
-//                            textInputLocation.edtLocation.setText(
-//                                context?.resources?.getString(
-//                                    R.string.location_template_sub,
-//                                    if (locality != null) locality else "",
-//                                    postalCode
-//                                )
-//                            )
-//                        }else if (this.postalCode != null) {
-//                            textInputLocation.edtLocation.setText(postalCode)
-//                        }
-//                    }
-//                }else {
-//                    if (textInputLocation != null) {
-//                        textInputLocation.edtLocation.setText("")
-//                    }
-//                }
-            }
+            binding.tvShowAddress.text = addressList?.get(0)?.getAddressLine(0).toString()
         }
     }
 
@@ -297,23 +268,24 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMoveListe
         val addressList: List<Address>
         val geocoder = Geocoder(context, Locale.getDefault())
 
-//        with(location){
-//            addNewAddressViewModel.saveUserLatLng(latitude.toString(), longitude.toString())
-//        }
+        plotMarker(location.latitude.toString(), location.longitude.toString())
 
-//        with(userAddressResult.latLong) {
-//            this?.latitude = location.latitude
-//            this?.longitude = location.longitude
-            plotMarker(location.latitude.toString(), location.longitude.toString())
-//        }
+        val editor = context?.getSharedPreferences(
+            AppConstants.SHARED_PREF_DOG_APP,
+            AppCompatActivity.MODE_PRIVATE
+        )?.edit()
+        editor?.putString(AppConstants.LAT, location.latitude.toString())
+        editor?.putString(AppConstants.LNG, location.longitude.toString())
+        editor?.apply()
 
-        try{
+
+        try {
             addressList = geocoder.getFromLocation(
                 location.latitude,
                 location.longitude, 6
             )
             updateLocationForm(addressList)
-        }catch (e: IOException) {
+        } catch (e: IOException) {
             e.printStackTrace()
         }
 

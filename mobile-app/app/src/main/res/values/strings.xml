@@ -23,4 +23,7 @@
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="confirm">Confirm</string>
+    <string name="select_location_message">Please move the pointer to select location of lost/found dog.</string>
+    <string name="ok">Okay</string>
 </resources>
