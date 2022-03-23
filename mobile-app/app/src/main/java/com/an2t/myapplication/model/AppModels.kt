@@ -32,9 +32,13 @@ data class CommonReq(
 
 
 data class NotificationResponse(
+    @SerializedName("title")
     val title: String,
+    @SerializedName("message")
     val message: String,
+    @SerializedName("actual_image")
     val ac_img: String,
+    @SerializedName("match_img")
     val m_img: String
 )
 

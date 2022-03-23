@@ -260,7 +260,7 @@ def run_models_in_background(img_pth, img_name, user_id, url, is_lost):
         similar_dog_url = url
 
         if len(similar_dogs) > 0:
-            similar_dog_url = similar_dogs[0]['image_url']
+            similar_dog_url = similar_dogs[-1]['image_url']
 
         data = {
             "status": True,

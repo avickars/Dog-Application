@@ -22,4 +22,5 @@
     <string name="upload_pic_using">Upload your dogs picture</string>
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>

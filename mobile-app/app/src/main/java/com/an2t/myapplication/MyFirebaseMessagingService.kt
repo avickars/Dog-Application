@@ -14,6 +14,8 @@ import com.an2t.myapplication.home.HomeActivity
 import com.an2t.myapplication.model.NotificationResponse
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.google.gson.Gson
+import org.json.JSONObject
 import java.net.URL
 
 
@@ -25,10 +27,11 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
     override fun onMessageReceived(rm: RemoteMessage) {
         super.onMessageReceived(rm)
         rm.data.values.let {
-            val l = rm.data.values.toList()
-            val n_res =
-                NotificationResponse(l[0], l[2], l[1], l[3])
-            generateNotification(n_res)
+            val params: Map<String, String> = rm.data
+            val jsonObject = JSONObject(params)
+            val notiResponse: NotificationResponse = Gson().fromJson(jsonObject.toString(), NotificationResponse::class.java)
+            generateNotification(notiResponse)
+            print(notiResponse)
         }
     }
 
