@@ -21,6 +21,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
@@ -30,12 +32,14 @@ import com.an2t.myapplication.R
 import com.an2t.myapplication.databinding.FragmentHome1Binding
 import com.an2t.myapplication.home.HomeActivity
 import com.an2t.myapplication.home.ui.home.adapters.MainMatchAdapter
+import com.an2t.myapplication.maps.MapsFragment
 import com.an2t.myapplication.model.ImageResponse
 import com.an2t.myapplication.model.Output
 import com.an2t.myapplication.network.RetrofitClient
 import com.an2t.myapplication.network.ServiceAPI
 import com.an2t.myapplication.utils.AppConstants
 import com.an2t.myapplication.utils.AppConstants.Companion.BASE_URL_MODEL
+import com.an2t.myapplication.utils.FragmentsTransactionListener
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -49,7 +53,7 @@ import java.util.*
 
 
 //import com.an2t.myapplication.home1.databinding.FragmentHomeBinding
-class HomeFragment : Fragment(), Callback<ImageResponse> {
+class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionListener {
 
     private var _binding: FragmentHome1Binding? = null
 
@@ -95,13 +99,37 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
 //        tv_data = binding.tvData
 
         btnUploadCamera.setOnClickListener {
-            openCamera()
+//            _openMapsBottomSheet()
+            askUserToShareLocation()
+//            openCamera()
         }
         btnUploadGallery.setOnClickListener {
-            openGallery()
+            askUserToShareLocation()
+//            _openMapsBottomSheet()
+//            openGallery()
         }
         _observe()
         return root
+    }
+
+    private fun askUserToShareLocation(){
+        context?.let {
+            val builder = AlertDialog.Builder(it)
+            builder.setTitle("Share location")
+            builder.setMessage("Please share your location, so that we can find your dog")
+            builder.setPositiveButton(R.string.ok) { dialog, which ->
+                _openMapsBottomSheet()
+            }
+            builder.show()
+        }
+
+    }
+
+
+    private fun _openMapsBottomSheet() {
+        val bottomSheetFragment = MapsFragment()
+        bottomSheetFragment.isCancelable = false
+        openBottomSheetFragment(bottomSheetFragment)
     }
 
     private fun _observe() {
@@ -474,6 +502,50 @@ class HomeFragment : Fragment(), Callback<ImageResponse> {
                     notify(notificationId, builder.build())
                 }
         }
+    }
+
+
+    override fun openBottomSheetFragment(fragment: AppCompatDialogFragment) {
+        try {
+            if (!activity?.supportFragmentManager?.isDestroyed!!) {
+                this.let {
+                    activity?.supportFragmentManager.let {
+                        it?.let { it1 ->
+                            fragment.show(
+                                it1,
+                                fragment.tag
+                            )
+                        }
+                    }
+                }
+            }
+        } catch (e: IllegalStateException) {
+        }
+    }
+
+
+    override fun addReplaceFragment(
+        fragment: Fragment,
+        isReplaceFragment: Boolean,
+        addToBackStack: Boolean,
+        tag: String
+    ) {
+        val fragmentTransaction = activity?.supportFragmentManager?.beginTransaction()
+        if (isReplaceFragment) {
+            fragmentTransaction?.replace(R.id.container, fragment)
+        } else {
+            fragmentTransaction?.add(R.id.container, fragment)
+        }
+        if (addToBackStack) {
+            fragmentTransaction?.addToBackStack(tag)
+        }
+        fragmentTransaction?.commit()
+        //intent.removeExtra(Constants.CARTID)
+    }
+
+
+    override fun dismissBottomSheetFragment(fragment: AppCompatDialogFragment) {
+        fragment.dismiss()
     }
 
 }

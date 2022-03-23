@@ -3,22 +3,24 @@ package com.an2t.myapplication.home
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.text.method.TextKeyListener.clear
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDialogFragment
+import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.an2t.myapplication.maps.MapsFragment
 import com.an2t.myapplication.R
 import com.an2t.myapplication.databinding.ActivityHomeBinding
 import com.an2t.myapplication.login.LoginActivity
-import com.an2t.myapplication.model.LoginReq
-import com.an2t.myapplication.model.LoginRes
 import com.an2t.myapplication.utils.AppConstants
+import com.an2t.myapplication.utils.FragmentsTransactionListener
 
 //import com.an2t.myapplication.home1.databinding.ActivityHomeBinding
 
-class HomeActivity : AppCompatActivity() {
+class HomeActivity : AppCompatActivity(), FragmentsTransactionListener {
 
     private lateinit var binding: ActivityHomeBinding
 
@@ -42,6 +44,13 @@ class HomeActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         _addListeners()
+//        _openMapsBottomSheet()
+    }
+
+    private fun _openMapsBottomSheet() {
+        val bottomSheetFragment = MapsFragment()
+        bottomSheetFragment.isCancelable = false
+        openBottomSheetFragment(bottomSheetFragment)
     }
 
 
@@ -52,6 +61,11 @@ class HomeActivity : AppCompatActivity() {
             startActivity(i)
             finish()
         }
+
+        binding.card.setOnClickListener {
+            _openMapsBottomSheet()
+        }
+
     }
 
     @SuppressLint("CommitPrefEdits")
@@ -63,5 +77,46 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
+
+    override fun openBottomSheetFragment(fragment: AppCompatDialogFragment) {
+        try {
+            if (!supportFragmentManager.isDestroyed) {
+                this.let {
+                    supportFragmentManager.let {
+                        fragment.show(
+                            it,
+                            fragment.tag
+                        )
+                    }
+                }
+            }
+        } catch (e: IllegalStateException) {
+        }
+    }
+
+
+    override fun addReplaceFragment(
+        fragment: Fragment,
+        isReplaceFragment: Boolean,
+        addToBackStack: Boolean,
+        tag: String
+    ) {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        if (isReplaceFragment) {
+            fragmentTransaction.replace(R.id.container, fragment)
+        } else {
+            fragmentTransaction.add(R.id.container, fragment)
+        }
+        if (addToBackStack) {
+            fragmentTransaction.addToBackStack(tag)
+        }
+        fragmentTransaction.commit()
+        //intent.removeExtra(Constants.CARTID)
+    }
+
+
+    override fun dismissBottomSheetFragment(fragment: AppCompatDialogFragment) {
+        fragment.dismiss()
+    }
 
 }
