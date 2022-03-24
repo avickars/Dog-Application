@@ -123,7 +123,7 @@ class Pets(db.Model):
     dog_identification = db.Column(db.JSON)
     final_output = db.Column(db.JSON)
     lat = db.Column(db.Float)
-    lng = db.Column(db.Float)
+    lng = db.Column(db.Float) 
 
 
     def _init_(self, user_id, image_url, is_lost, dog_extractor, dog_identification, final_output, lat, lng):

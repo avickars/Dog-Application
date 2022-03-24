@@ -101,5 +101,9 @@ data class Match(
     @SerializedName("is_lost")
     val isLost: Int?,
     @SerializedName("user_id")
-    val userId: Int?
+    val userId: Int?,
+    @SerializedName("lat")
+    val lat: Double?,
+    @SerializedName("lng")
+    val lng: Double?,
 )

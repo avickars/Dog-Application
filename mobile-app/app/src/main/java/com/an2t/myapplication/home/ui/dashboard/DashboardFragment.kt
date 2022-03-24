@@ -59,11 +59,6 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
 
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
-//        val textView: TextView = binding.textDashboard
-//        dashboardViewModel.text.observe(viewLifecycleOwner) {
-//            textView.text = it
-//        }
         return root
     }
 
@@ -315,15 +310,6 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
                 calculateDirections(marker)
                 print("Hello")
             }
-
-//            mMap!!.setOnInfoWindowClickListener { marker ->
-//                print("Hello")
-//            }
-
-            //Set this only once:
-
-            //Set this only once:
-//            mMap?.setOnInfoWindowClickListener(this)
         }
     }
 
@@ -335,7 +321,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
      */
     private fun setCameraView(finalOutput: FinalOutput) {
 
-        // Set a boundary to start
+//        Set a boundary to start
 //        val bottomBoundary: Double = finalOutput.lat!!.toDouble().minus(.1)
 //        val leftBoundary: Double = finalOutput.lng!!.toDouble().minus(.1)
 //        val topBoundary: Double = finalOutput.lat.toDouble() + .1
