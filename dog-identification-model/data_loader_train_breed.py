@@ -6,7 +6,7 @@ from PIL import Image
 from data_transformations import Transformations
 
 class DogsDataSet_Train(Dataset):
-    def __init__(self, dataType='train'):
+    def __init__(self, dataType='train', filterBreed = False):
         # Reading attributes
         self.dogList = pd.read_csv('attributes_breed.csv')
         self.dogList = self.dogList[self.dogList['type'] == dataType]
@@ -32,6 +32,8 @@ class DogsDataSet_Train(Dataset):
                 axis=1
             )
         ]
+
+
 
     def __len__(self):
         return len(self.dogList)

@@ -7,7 +7,7 @@ from PIL import Image
 from data_transformations import Transformations
 
 class DogsDataSet_Test(Dataset):
-    def __init__(self, dataType='train'):
+    def __init__(self, dataType='train', filterBreed = False):
         # Reading attributes
         self.dogList = pd.read_csv('attributes_breed.csv')
         self.dogList = self.dogList[self.dogList['type'] == dataType]
@@ -33,10 +33,20 @@ class DogsDataSet_Test(Dataset):
             )
         ]
 
+        if filterBreed:
+            self.breeds = self.breeds[
+                self.breeds['breedString'].apply(lambda x: x in ["{'labrador', 'retriever'}",
+                                                                 "{'shepherd', 'german'}",
+                                                                 "{'chihuahua'}"]
+                                                 )
+            ]
+
+            self.dogList = self.dogList[self.dogList['path'].isin(self.breeds['path'])]
+
+            self.dogList = self.dogList.reset_index(drop=True)
+
     def __len__(self):
         return len(self.dogList)
-
-
 
     def __getitem__(self, index):
         # Creating the path of the target dog
@@ -93,6 +103,8 @@ class DogsDataSet_Test(Dataset):
             while True:
                 availableDogs = self.breeds[self.breeds['breedString'] == selectedBreed].reset_index()
 
+                # availableDogs = availableDogs[['path']].drop_duplicates()
+
                 selectedDog = random.sample(range(0, len(availableDogs)), 1)[0]
 
                 selectedDogPath = availableDogs.iloc[selectedDog]['path']
@@ -102,6 +114,7 @@ class DogsDataSet_Test(Dataset):
                     break
 
                 i += 1
+
 
             # Creating the path of the target dog
             omg2Path = self.dogList.iloc[img2Index]['path']
