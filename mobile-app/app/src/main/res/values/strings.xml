@@ -33,4 +33,5 @@
     <string name="submit_picture">Submit Picture</string>
     <string name="uploaded_image">Input Image</string>
     <string name="matched_results">Matched results</string>
+    <string name="google_maps_api_key">AIzaSyBrPZDULnIR1fQ9H4Npt8oFp6Kx3nuGf-8</string>
 </resources>

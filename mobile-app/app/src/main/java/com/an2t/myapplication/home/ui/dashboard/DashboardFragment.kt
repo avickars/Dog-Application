@@ -1,33 +1,38 @@
 package com.an2t.myapplication.home.ui.dashboard
 
-import android.R
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.an2t.myapplication.databinding.FragmentDashboardBinding
 import com.an2t.myapplication.home.ui.home.adapters.DashMatchAdapter
-import com.an2t.myapplication.model.ClusterMarker
-import com.an2t.myapplication.model.CustomClusterManagerRender
-import com.an2t.myapplication.model.FinalOutput
-import com.an2t.myapplication.model.Match
+import com.an2t.myapplication.model.*
 import com.an2t.myapplication.utils.AppConstants
-import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.*
+import com.google.maps.DirectionsApiRequest
+import com.google.maps.GeoApiContext
+import com.google.maps.PendingResult
 import com.google.maps.android.clustering.ClusterManager
+import com.google.maps.internal.PolylineEncoding
+import com.google.maps.model.DirectionsResult
 
 
 //import com.an2t.myapplication.home1.databinding.FragmentDashboardBinding
 
 class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMoveListener,
-    GoogleMap.OnCameraIdleListener {
+    GoogleMap.OnCameraIdleListener,  GoogleMap.OnInfoWindowClickListener, GoogleMap.OnPolylineClickListener {
 
     private var mMap: GoogleMap? = null
     var zoomLevel = 12.5f
@@ -41,6 +46,8 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
 
     private lateinit var dashboardViewModel : DashboardViewModel
     private lateinit var matchResultsAdapter: DashMatchAdapter
+    private var mGeoApiContext: GeoApiContext? = null
+    private var mPolyLinesData: ArrayList<PolylineData> = ArrayList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -84,7 +91,81 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
     private fun setUpMaps() {
         val mapFragment = childFragmentManager.findFragmentById(com.an2t.myapplication.R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        if (mGeoApiContext == null) {
+            mGeoApiContext = GeoApiContext.Builder()
+                .apiKey(context?.getString(com.an2t.myapplication.R.string.google_maps_api_key))
+                .build()
+        }
     }
+
+    private fun calculateDirections(marker: Marker) {
+        print("calculateDirections: calculating directions.")
+        val destination = com.google.maps.model.LatLng(
+            marker.getPosition().latitude,
+            marker.getPosition().longitude
+        )
+        val directions = DirectionsApiRequest(mGeoApiContext)
+        directions.alternatives(true)
+        directions.origin(
+            com.google.maps.model.LatLng(
+                selectedMatch.finalOutput?.get(0)?.lat!!.toDouble(),
+                selectedMatch.finalOutput?.get(0)?.lng!!.toDouble()
+            )
+        )
+        print("calculateDirections: destination: $destination")
+        directions.destination(destination).setCallback(object : PendingResult.Callback<DirectionsResult?> {
+            override fun onFailure(e: Throwable?) {
+
+            }
+
+            override fun onResult(result: DirectionsResult?) {
+                print("onResult: routes: " + result!!.routes[0].toString())
+                print("onResult: durations: " + result!!.routes[0].legs[0].duration.toString())
+                print("onResult: distance: " + result!!.routes[0].legs[0].distance.toString())
+                print("onResult: geocodedWayPoints: " + result.geocodedWaypoints[0].toString())
+                addPolylinesToMap(result)
+            }
+
+
+        })
+    }
+
+    private fun addPolylinesToMap(result: DirectionsResult) {
+        Handler(Looper.getMainLooper()).post(Runnable {
+            print("run: result routes: " + result.routes.size)
+            if (mPolyLinesData.size > 0) {
+                for (polylineData in mPolyLinesData) {
+                    polylineData.polyline.remove()
+                }
+                mPolyLinesData.clear()
+                mPolyLinesData = ArrayList()
+            }
+            for (route in result.routes) {
+                print("run: leg: " + route.legs[0].toString())
+                val decodedPath = PolylineEncoding.decode(route.overviewPolyline.encodedPath)
+                val newDecodedPath: MutableList<LatLng> = ArrayList()
+
+                // This loops through all the LatLng coordinates of ONE polyline.
+                for (latLng in decodedPath) {
+
+//                        Log.d(TAG, "run: latlng: " + latLng.toString());
+                    newDecodedPath.add(
+                        LatLng(
+                            latLng.lat,
+                            latLng.lng
+                        )
+                    )
+                }
+                val polyline: Polyline =
+                    mMap!!.addPolyline(PolylineOptions().addAll(newDecodedPath))
+                polyline.color = ContextCompat.getColor(requireActivity(), com.an2t.myapplication.R.color.gray)
+                polyline.isClickable = true
+                mPolyLinesData.add(PolylineData(polyline, route.legs[0]))
+            }
+        })
+    }
+
 
     private fun hideProgress() {
         binding.pbShow.visibility = View.GONE
@@ -143,6 +224,13 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
         mMap = googleMap
         mMap?.setOnCameraMoveListener(this)
         mMap?.setOnCameraIdleListener(this)
+        mMap?.setOnPolylineClickListener(this)
+    }
+
+    internal class MarkerClick : GoogleMap.OnInfoWindowClickListener {
+        override fun onInfoWindowClick(marker: Marker) {
+            println(marker.title)
+        }
     }
 
     override fun onCameraMove() {
@@ -183,6 +271,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
     private lateinit var mClusterManagerRenderer : CustomClusterManagerRender
     private val mClusterMarkers: ArrayList<ClusterMarker> = ArrayList()
 
+    @SuppressLint("PotentialBehaviorOverride")
     private fun addMapMaker(fo: List<FinalOutput>) {
         if (mMap != null) {
             if (mClusterManager == null) {
@@ -197,12 +286,12 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
                 )
                 mClusterManager!!.setRenderer(mClusterManagerRenderer)
             }
+
             for (userLocation in fo) {
 
                 try {
                     var snippet = ""
                     val avatar: Int = com.an2t.myapplication.R.drawable.ic_map_pin
-
                     val newClusterMarker = ClusterMarker(
                         LatLng(
                             userLocation.lat!!.toDouble(),
@@ -221,6 +310,20 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
             }
             mClusterManager?.cluster()
             setCameraView(fo[0])
+
+            mClusterManager?.markerCollection?.setOnInfoWindowClickListener{ marker ->
+                calculateDirections(marker)
+                print("Hello")
+            }
+
+//            mMap!!.setOnInfoWindowClickListener { marker ->
+//                print("Hello")
+//            }
+
+            //Set this only once:
+
+            //Set this only once:
+//            mMap?.setOnInfoWindowClickListener(this)
         }
     }
 
@@ -234,7 +337,6 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
 
         // Set a boundary to start
 //        val bottomBoundary: Double = finalOutput.lat!!.toDouble().minus(.1)
-//
 //        val leftBoundary: Double = finalOutput.lng!!.toDouble().minus(.1)
 //        val topBoundary: Double = finalOutput.lat.toDouble() + .1
 //        val rightBoundary: Double = finalOutput.lng.toDouble() + .1
@@ -257,5 +359,25 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
 //            CameraPosition.Builder().target(defaultLocationOnMap).zoom(zoomLevel).build()
 //        mMap?.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
 //        mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mMapBoundary, 0))
+    }
+
+    override fun onInfoWindowClick(p0: Marker) {
+        print("Hello")
+    }
+
+    override fun onPolylineClick(polyline: Polyline) {
+        for (polylineData in mPolyLinesData) {
+            print("onPolylineClick: toString: " + polylineData.toString())
+            if (polyline.getId().equals(polylineData.getPolyline().getId())) {
+                polylineData.getPolyline()
+                    .setColor(ContextCompat.getColor(requireActivity(), com.an2t.myapplication.R.color.purple_200))
+                polylineData.getPolyline().setZIndex(1F)
+//                print(polylineData.leg.distance)
+            } else {
+                polylineData.getPolyline()
+                    .setColor(ContextCompat.getColor(requireActivity(), com.an2t.myapplication.R.color.gray))
+                polylineData.getPolyline().setZIndex(0F)
+            }
+        }
     }
 }
