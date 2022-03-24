@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../../../layout/custom_preview.xml" value="0.2537037037037037" />
         <entry key="../../../../Library/Android/sdk/platforms/android-32/data/res/drawable/btn_default_small.xml" value="0.137" />
         <entry key="app/src/main/res/drawable/bg_my_location.xml" value="0.137" />
         <entry key="app/src/main/res/drawable/et_background.xml" value="0.226" />
@@ -17,6 +18,8 @@
         <entry key="app/src/main/res/layout/activity_maps.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/activity_register.xml" value="0.22780797101449277" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.16183136899365366" />
+        <entry key="app/src/main/res/layout/dash_main_item.xml" value="0.19628286491387126" />
+        <entry key="app/src/main/res/layout/dash_main_sub_item.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/fragment_dashboard.xml" value="0.16183136899365366" />
         <entry key="app/src/main/res/layout/fragment_found_dog.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_gallery_or_camera.xml" value="0.25" />

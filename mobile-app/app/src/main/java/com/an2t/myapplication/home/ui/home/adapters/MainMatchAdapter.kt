@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.an2t.myapplication.R
@@ -38,14 +39,21 @@ class MainMatchAdapter() : RecyclerView.Adapter<MainMatchAdapter.MainMatchViewHo
             .into(holder.iv_img_main_dog)
 
 
-        var matchResultsAdapter: DashMatchResultsAdapter
+        var matchResultsAdapter: MatchResultsAdapter
         o?.finalOutput?.let {
-            val lm = LinearLayoutManager(holder.rv_res.context, LinearLayoutManager.HORIZONTAL, false)
-            lm.reverseLayout = true
-            lm.stackFromEnd = true
+
+            val lm =  GridLayoutManager(
+                holder.rv_res.context, // context
+                3, // span count
+                RecyclerView.VERTICAL, // orientation
+                false // reverse layout
+            )
+//            val lm = LinearLayoutManager(holder.rv_res.context, LinearLayoutManager.HORIZONTAL, false)
+//            lm.reverseLayout = true
+//            lm.stackFromEnd = true
             holder.rv_res.apply {
                 layoutManager = lm
-                matchResultsAdapter = DashMatchResultsAdapter(it)
+                matchResultsAdapter = MatchResultsAdapter(it)
                 adapter = matchResultsAdapter
             }
         }

@@ -29,7 +29,7 @@ class MatchResultsAdapter(val matchResList: List<FinalOutput>) : RecyclerView.Ad
             .error(R.drawable.gallery)
             .into(holder.iv_match_img)
 
-        // Adding an OnClickLister to the holder.itemView
+//        Adding an OnClickLister to the holder.itemView
 //        holder.itemView.setOnClickListener {
 //            // Invoking itemClickListener and passing it the position and name
 //            itemClickListener?.invoke(position, element)

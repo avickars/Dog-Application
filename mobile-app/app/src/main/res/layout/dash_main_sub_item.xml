@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:paddingHorizontal="16dp"
+    android:paddingStart="16dp"
     android:paddingVertical="8dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -11,12 +11,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_width="100dp"
+        android:layout_width="60dp"
         app:cardCornerRadius="6dp"
         android:padding="8dp"
         app:cardElevation="2dp"
         app:cardUseCompatPadding="true"
-        android:layout_height="100dp">
+        android:layout_height="60dp">
         <ImageView
             android:id="@+id/iv_match_img"
             android:scaleType="centerCrop"

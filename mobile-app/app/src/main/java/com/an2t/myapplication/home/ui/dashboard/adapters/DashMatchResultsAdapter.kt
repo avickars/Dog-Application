@@ -14,7 +14,7 @@ import com.squareup.picasso.Picasso
 class DashMatchResultsAdapter(val matchResList: List<FinalOutput>) : RecyclerView.Adapter<DashMatchResultsAdapter.MatchResultsViewHolder>()  {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MatchResultsViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.match_res_sub_item,parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.dash_main_sub_item,parent, false)
         return MatchResultsViewHolder(view)
     }
 
@@ -29,7 +29,7 @@ class DashMatchResultsAdapter(val matchResList: List<FinalOutput>) : RecyclerVie
             .error(R.drawable.gallery)
             .into(holder.iv_match_img)
 
-        // Adding an OnClickLister to the holder.itemView
+//        Adding an OnClickLister to the holder.itemView
 //        holder.itemView.setOnClickListener {
 //            // Invoking itemClickListener and passing it the position and name
 //            itemClickListener?.invoke(position, element)

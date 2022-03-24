@@ -58,22 +58,25 @@ class Pets(db.Model):
     dog_extractor = db.Column(db.JSON)
     dog_identification = db.Column(db.JSON)
     final_output= db.Column(db.JSON)
+    lat = db.Column(db.Float)
+    lng = db.Column(db.Float)
 
 
-    def _init_(self, user_id, image_url, is_lost, dog_extractor, dog_identification, final_output):
+    def _init_(self, user_id, image_url, is_lost, dog_extractor, dog_identification, final_output, lat, lng):
         self.user_id = user_id
         self.image_url = image_url
         self.is_lost = is_lost
         self.dog_extractor = dog_extractor
         self.dog_identification = dog_identification
         self.final_output = final_output
-
+        self.lat = lat
+        self.lng = lng
 
 # JSON Schema
 class PetsSchema(ma.Schema):
     class Meta:
         fields = (
-            'user_id', 'image_url', 'is_lost', 'final_output')
+            'id', 'user_id', 'image_url', 'is_lost', 'final_output', 'lat', 'lng')
 
 
 # JSON Schema
