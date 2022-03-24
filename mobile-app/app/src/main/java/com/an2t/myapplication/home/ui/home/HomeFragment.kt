@@ -31,7 +31,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.an2t.myapplication.R
 import com.an2t.myapplication.databinding.FragmentHome1Binding
 import com.an2t.myapplication.home.HomeActivity
-import com.an2t.myapplication.home.ui.home.adapters.MainMatchAdapter
+import com.an2t.myapplication.home.ui.home.adapters.DashMatchAdapter
 import com.an2t.myapplication.maps.GalleryOrCameraFragment
 import com.an2t.myapplication.maps.MapsFragment
 import com.an2t.myapplication.maps.SelectLostOrFoundFragment
@@ -79,7 +79,7 @@ class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionLi
 
     lateinit var bitmap: Bitmap
 
-    private lateinit var matchResultsAdapter: MainMatchAdapter
+    private lateinit var matchResultsAdapter: DashMatchAdapter
 
     private lateinit var homeViewModel: HomeViewModel
 
@@ -181,7 +181,7 @@ class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionLi
             layoutManager = LinearLayoutManager(activity)
 //            val decoration = DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
 //            addItemDecoration(decoration)
-            matchResultsAdapter = MainMatchAdapter()
+            matchResultsAdapter = DashMatchAdapter()
             adapter = matchResultsAdapter
         }
 

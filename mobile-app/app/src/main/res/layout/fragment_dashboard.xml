@@ -1,60 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout>
 
-    <com.github.mikephil.charting.charts.BarChart
-        android:id="@+id/chart1"
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/seekBar1" />
+        android:background="@android:color/white"
+        android:minHeight="590dp">
 
-    <SeekBar
-        android:id="@+id/seekBar2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_margin="8dp"
-        android:layout_toLeftOf="@+id/tvYMax"
-        android:layout_marginRight="5dp"
-        android:max="200"
-        android:paddingBottom="12dp" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.65" />
 
-    <SeekBar
-        android:id="@+id/seekBar1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/seekBar2"
-        android:layout_margin="8dp"
-        android:layout_marginBottom="35dp"
-        android:layout_toLeftOf="@+id/tvXMax"
-        android:layout_marginRight="5dp"
-        android:max="1500"
-        android:paddingBottom="12dp" />
 
-    <TextView
-        android:id="@+id/tvXMax"
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/seekBar1"
-        android:layout_alignParentRight="true"
-        android:text="@string/dash"
-        android:layout_marginBottom="15dp"
-        android:layout_marginRight="10dp"
-        android:gravity="right"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/guideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:context=".home.ui.dashboard.DashboardFragment" />
 
-    <TextView
-        android:id="@+id/tvYMax"
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/seekBar2"
-        android:layout_alignParentRight="true"
-        android:text="@string/dash"
-        android:layout_marginBottom="15dp"
-        android:layout_marginRight="10dp"
-        android:gravity="right"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
 
-</RelativeLayout>
+        <ImageView
+            android:id="@+id/imgMyLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@drawable/bg_my_location"
+            android:elevation="10dp"
+            android:padding="10dp"
+            app:layout_constraintBottom_toBottomOf="@id/map"
+            app:layout_constraintEnd_toEndOf="@id/map"
+            app:srcCompat="@drawable/ic_my_location" />
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/map">
+
+            <ProgressBar
+                android:id="@+id/pb_show"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:elevation="1dp"
+                android:indeterminateTint="@color/purple_200"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ll_upload_gp" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/white">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_show_match_results"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

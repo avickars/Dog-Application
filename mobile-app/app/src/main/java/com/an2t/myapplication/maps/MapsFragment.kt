@@ -179,8 +179,6 @@ class MapsFragment : AppCompatDialogFragment(), OnMapReadyCallback, GoogleMap.On
         userLatitude: String,
         userLongitude: String
     ) {
-
-//        userAddressResult.latLong = UserLatLong(userLatitude.toDouble(), userLongitude.toDouble())
         val defaultLocationOnMap = LatLng(userLatitude.toDouble(), userLongitude.toDouble())
         val cameraPosition =
             CameraPosition.Builder().target(defaultLocationOnMap).zoom(zoomLevel).build()

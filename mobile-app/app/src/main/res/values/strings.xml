@@ -31,4 +31,6 @@
     <string name="pick_upload_type">Pick Upload Type</string>
     <string name="upload_from">Upload from</string>
     <string name="submit_picture">Submit Picture</string>
+    <string name="uploaded_image">Input Image</string>
+    <string name="matched_results">Matched results</string>
 </resources>

@@ -243,7 +243,7 @@ def run_models_in_background(img_pth, img_name, user_id, url, is_lost, lat, lng)
 
             similar_dogs = pd.DataFrame.from_records(similar_dogs)
             similar_dogs = similar_dogs.sort_values(by=['c_score'], ascending=False)
-            similar_dogs = similar_dogs.head(5)
+            similar_dogs = similar_dogs.head(10)
             similar_dogs = similar_dogs.to_dict('records')
             os.remove(img_name)
 
