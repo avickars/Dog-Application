@@ -11,7 +11,7 @@ import com.an2t.myapplication.model.FinalOutput
 import com.squareup.picasso.Picasso
 
 
-class MatchResultsAdapter(val matchResList: List<FinalOutput>) : RecyclerView.Adapter<MatchResultsAdapter.MatchResultsViewHolder>()  {
+class DashMatchResultsAdapter(val matchResList: List<FinalOutput>) : RecyclerView.Adapter<DashMatchResultsAdapter.MatchResultsViewHolder>()  {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MatchResultsViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.match_res_sub_item,parent, false)

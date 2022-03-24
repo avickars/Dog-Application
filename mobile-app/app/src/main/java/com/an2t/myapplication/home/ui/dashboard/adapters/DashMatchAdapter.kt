@@ -5,14 +5,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.an2t.myapplication.R
 import com.an2t.myapplication.model.Match
 import com.squareup.picasso.Picasso
 
 
-class MainMatchAdapter() : RecyclerView.Adapter<MainMatchAdapter.MainMatchViewHolder>()  {
+class DashMatchAdapter() : RecyclerView.Adapter<DashMatchAdapter.DashViewHolder>()  {
 
     private var mainResList: List<Match>? = null
 
@@ -20,12 +20,12 @@ class MainMatchAdapter() : RecyclerView.Adapter<MainMatchAdapter.MainMatchViewHo
         this.mainResList = notiList
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainMatchViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DashViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.match_res_item,parent, false)
-        return MainMatchViewHolder(view)
+        return DashViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: MainMatchViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: DashViewHolder, position: Int) {
         // Getting element from names list at this position
         val o = mainResList?.get(position)
         // Updating the text of the txtName with this element
@@ -40,9 +40,12 @@ class MainMatchAdapter() : RecyclerView.Adapter<MainMatchAdapter.MainMatchViewHo
 
         var matchResultsAdapter: DashMatchResultsAdapter
         o?.finalOutput?.let {
-            val lm = LinearLayoutManager(holder.rv_res.context, LinearLayoutManager.HORIZONTAL, false)
-            lm.reverseLayout = true
-            lm.stackFromEnd = true
+            val lm =  GridLayoutManager(
+                holder.rv_res.context, // context
+                3, // span count
+                RecyclerView.VERTICAL, // orientation
+                false // reverse layout
+            )
             holder.rv_res.apply {
                 layoutManager = lm
                 matchResultsAdapter = DashMatchResultsAdapter(it)
@@ -62,7 +65,7 @@ class MainMatchAdapter() : RecyclerView.Adapter<MainMatchAdapter.MainMatchViewHo
     }
 
 
-    class MainMatchViewHolder(view : View): RecyclerView.ViewHolder(view) {
+    class DashViewHolder(view : View): RecyclerView.ViewHolder(view) {
         val tv_res_title = view.findViewById(R.id.tv_res_title) as TextView
         val rv_res = view.findViewById(R.id.rv_res) as RecyclerView
         val iv_img_main_dog = view.findViewById(R.id.iv_img_main_dog) as ImageView

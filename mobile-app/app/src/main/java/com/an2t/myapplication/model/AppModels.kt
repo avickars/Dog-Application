@@ -79,6 +79,10 @@ data class AllLostUploadRecords(
 )
 
 data class FinalOutput(
+    @SerializedName("lat")
+    val lat: Double?,
+    @SerializedName("lng")
+    val lng: Double?,
     @SerializedName("c_score")
     val cScore: Double?,
     @SerializedName("id")
