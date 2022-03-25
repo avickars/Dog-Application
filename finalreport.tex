@@ -101,11 +101,18 @@ At a lower level if the user has lost a dog, they will submit a photo and their 
   
   \item After validation, the original image is saved into an S3 bucket, and the related information such as the users contact information, location and the coordinates of the bounding box are inserted into a PostGre relational database system (RDS).
   
-  \item The original image is then cropped using the computed bounding box coordinates, and passed into the Dog Classifier model that determines the $k$ most likely breeds.  This information is inserted into the RDS.
+  \item The original image is then cropped using the computed bounding box coordinates, and passed into the Dog Classifier model that determines the most likely breed(s).  This information is inserted into the RDS.
   
   \item The cropped image is also passed into the Dog Comparator model that creates a five dimensional encoding of the image that is inserted into the RDS.
   
-  \item We then query the encodings of the dogs marked as found according to breed and location, and compare against the lost dog by computing the euclidean distance between the encodings of the lost dog and the found dogs.  The sigmoid function is applied to the distance value to constrain it to $[0,1]$.  The $n$ most similar dogs are returned to the user.
+  \item We then query the encodings of the dogs marked as found according to:
+  
+  \begin{enumerate}
+      \item Dogs that have at least one breed in the intersection between their $b$ most likely breeds respectively, and the $m$ most likely breeds of the lost dog.
+      \item Dogs that are within $x$ distance from the lost dog.
+  \end{enumerate}
+
+   These encodings are then compared against the encodings of the lost dogs by computing the euclidean distance between them.  The sigmoid function is applied to the distance value to constrain it to $[0,1]$.  The $n$ most similar dogs are returned to the user.
   
   \item If a match is confirmed by the user, the corresponding lost and found dogs are removed from the RDS and S3 bucket.  Otherwise, the lost dog is left in the system for future comparisons.
  
@@ -348,6 +355,20 @@ To investigate the bias of the model towards the most populous dogs, we divided 
 
 
 \section{Evaluation}
+To evaluate the accuracy of the data product, we have devised an experiment to assess how well the three models work together to match lost and found dogs.  To do this, we first took the entire validation split from the Petfinder data-set and designated every dog as lost.  At the same time, we randomly designated 10 \% of these dogs as found.  For every lost dog we randomly selected an image to use as input and for every found dog we randomly selected a different image to use as input as well.   All three models were then applied over three a grid of parameters to determine the optimum hyper parameter combination to maximize the success rate of matching lost and found dogs.  To be succinct, we varied the number of the most likely breeds recorded for lost and found dogs over a range from one to ten respectively and varied the number of results returned to the user from one to fifteen.  For every combination we determined the success rate of matching lost and found dogs.  A success was defined as the found dog being among the lost dogs returned to the user.  It is assumed if the found dog was among the lost dogs returned to the user, the user would be able to identify the correct dog.  
+
+We found that by recording only the most likely breed for both lost and found dogs, as well as returning the top 15 matches to the users resulted in the highest success rate of 90\% on the validation data.  Unsurprisingly, the success rate improved linearly with the number of matches returned with the user.  Surprisingly however, the highest success rates were achieved by recording the least amount of the top breeds for both lost and found dogs.  This clearly indicates the impact of the Dog Classifier acting as a filter for the Dog Comparator.  This is vizualized below in Figure \ref{fig:x breed comparisons} where the the number of top breeds recorded for both lost and found dogs have been multiplied together into a single number to give the number of comparisons made relative to breeds.  This is shown along the x-axis.  Along the y-axis, the average accuracy for every number of breed comparisons is shown.  We can clearly see that as the number of breed comparisons increase, the accuracy decreases.
+
+\begin{figure}[]
+\centering
+	\includegraphics[scale=0.7]{final-report-images/num_breed_comparison_accuracy.png}
+\caption{Number of Breed Comparisons vs. Average Success Rate}
+\label{fig:x breed comparisons}
+\end{figure}
+
+Using the optimum parameter combination as determined over the validation split of recording only the most likely breed for both lost and found dogs and returning the top 15 matches to the user, we achieved a success rate of 89\% on the test split.  We do note the significantly decreased success rate over the test split compared to the validation split is due to the significantly increased size of the test split.  The test split is two times the size of the validation split and as a result the difficulty of finding the found dog among the lost dogs is significantly more difficult.  However, after achieving a final success rate of 89\% we suspect that the true success rate is actually significantly higher in the real world.  This is because of two reasons.  The first is that in this experiment, we are applying this experiment using a single image for both lost and found dogs.  In reality, we expect users would submit multiple images in either case and thus significantly increasing the success rate.  Unfortunately, we are unable to account for this because many dogs in the data-set have only two images.  The second is that in this experiment we are not filtering by location.  By filtering by location before applying the Dog Comparator, the number of false matches would be significantly reduced.  Thus, significantly increasing the success rate.
+
+\newpage
 
 \section{Lessons Learnt}
 
