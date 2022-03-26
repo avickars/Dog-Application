@@ -8,7 +8,7 @@ then
 else
    echo "Application not running"
    cd /home/ubuntu/Dog-Application/flask-celery-backend
-   source env_name/bin/activate
+   source venv/bin/activate
    python app.py &
    echo "Application started now"
 fi

@@ -8,7 +8,7 @@ then
 else
    echo "celery not running"
    cd /home/ubuntu/Dog-Application/flask-celery-backend
-   source env_name/bin/activate
+   source venv/bin/activate
    celery -A app.celery worker --loglevel=INFO &
    echo "celery started now"
 fi

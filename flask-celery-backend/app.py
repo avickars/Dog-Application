@@ -214,7 +214,6 @@ def run_models_in_background(img_pth, img_name, user_id, url, is_lost, lat, lng)
         extractor_outputs = dog_extractor(img_pth)
         breeds = predict_breed(img_pth)
         breed_tup = tuple(breeds)
-        print(breed_tup)
         if extractor_outputs[0]['boxes'] == []:
             os.remove(img_name)
             data = {
@@ -232,7 +231,11 @@ def run_models_in_background(img_pth, img_name, user_id, url, is_lost, lat, lng)
         else:
             find_status = 1
 
-        fetch_pets = db_session.query(Pets).filter_by(is_lost=find_status)
+        query = "select * from pets where is_lost = " + str(find_status) + " and breed in " + str(breed_tup)
+        fetch_pets = db_session.execute(query)
+        # all_pets_filtered = pets_up_schema.dump(fetch_pets)
+        # print(all_pets_filtered)
+        # fetch_pets = db_session.query(Pets).filter_by(is_lost=find_status)
         db_session.close()
         all_pets = pets_up_schema.dump(fetch_pets)
 
