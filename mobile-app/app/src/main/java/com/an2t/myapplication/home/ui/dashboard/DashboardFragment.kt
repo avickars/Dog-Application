@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.viewpager.widget.ViewPager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.an2t.myapplication.databinding.FragmentDashboardBinding
@@ -21,7 +20,6 @@ import com.an2t.myapplication.home.ui.home.adapters.DashMatchAdapter
 import com.an2t.myapplication.model.*
 import com.an2t.myapplication.utils.AppConstants
 import com.an2t.myapplication.view_pager_test.DogMatchResultsMapsFragment
-import com.an2t.myapplication.view_pager_test.ViewPagerTestFragment
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -40,7 +38,9 @@ import com.google.maps.model.DirectionsResult
 private const val NUM_PAGES = 5
 
 class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMoveListener,
-    GoogleMap.OnCameraIdleListener,  GoogleMap.OnInfoWindowClickListener, GoogleMap.OnPolylineClickListener {
+    GoogleMap.OnCameraIdleListener, GoogleMap.OnInfoWindowClickListener,
+    GoogleMap.OnPolylineClickListener,
+    DogMatchResultsMapsFragment.OnMatchedResListener {
 
     private var mMap: GoogleMap? = null
     var zoomLevel = 12.5f
@@ -52,7 +52,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private lateinit var dashboardViewModel : DashboardViewModel
+    private lateinit var dashboardViewModel: DashboardViewModel
     private lateinit var matchResultsAdapter: DashMatchAdapter
     private var mGeoApiContext: GeoApiContext? = null
     private var mPolyLinesData: ArrayList<PolylineData> = ArrayList()
@@ -99,7 +99,8 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
 
 
     private fun setUpMaps() {
-        val mapFragment = childFragmentManager.findFragmentById(com.an2t.myapplication.R.id.map) as SupportMapFragment
+        val mapFragment =
+            childFragmentManager.findFragmentById(com.an2t.myapplication.R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
         if (mGeoApiContext == null) {
@@ -109,11 +110,11 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
         }
     }
 
-    private fun calculateDirections(marker: Marker) {
+    private fun calculateDirections(marker: ClusterMarker) {
         print("calculateDirections: calculating directions.")
         val destination = com.google.maps.model.LatLng(
-            marker.getPosition().latitude,
-            marker.getPosition().longitude
+            marker.position.latitude,
+            marker.position.longitude
         )
         val directions = DirectionsApiRequest(mGeoApiContext)
         directions.alternatives(true)
@@ -124,21 +125,22 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
             )
         )
         print("calculateDirections: destination: $destination")
-        directions.destination(destination).setCallback(object : PendingResult.Callback<DirectionsResult?> {
-            override fun onFailure(e: Throwable?) {
+        directions.destination(destination)
+            .setCallback(object : PendingResult.Callback<DirectionsResult?> {
+                override fun onFailure(e: Throwable?) {
 
-            }
+                }
 
-            override fun onResult(result: DirectionsResult?) {
-                print("onResult: routes: " + result!!.routes[0].toString())
-                print("onResult: durations: " + result!!.routes[0].legs[0].duration.toString())
-                print("onResult: distance: " + result!!.routes[0].legs[0].distance.toString())
-                print("onResult: geocodedWayPoints: " + result.geocodedWaypoints[0].toString())
-                addPolylinesToMap(result)
-            }
+                override fun onResult(result: DirectionsResult?) {
+                    print("onResult: routes: " + result!!.routes[0].toString())
+                    print("onResult: durations: " + result!!.routes[0].legs[0].duration.toString())
+                    print("onResult: distance: " + result!!.routes[0].legs[0].distance.toString())
+                    print("onResult: geocodedWayPoints: " + result.geocodedWaypoints[0].toString())
+                    addPolylinesToMap(result)
+                }
 
 
-        })
+            })
     }
 
     private fun addPolylinesToMap(result: DirectionsResult) {
@@ -169,9 +171,11 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
                 }
                 val polyline: Polyline =
                     mMap!!.addPolyline(PolylineOptions().addAll(newDecodedPath))
-                polyline.color = ContextCompat.getColor(requireActivity(), com.an2t.myapplication.R.color.gray)
+                polyline.color =
+                    ContextCompat.getColor(requireActivity(), com.an2t.myapplication.R.color.gray)
                 polyline.isClickable = true
                 mPolyLinesData.add(PolylineData(polyline, route.legs[0]))
+                activateFirstPolyline()
             }
         })
     }
@@ -187,7 +191,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
         _binding?.rvShowMatchResults?.visibility = View.GONE
     }
 
-    private lateinit var selectedMatch : Match
+    private lateinit var selectedMatch: Match
 
     private fun _observe() {
         dashboardViewModel.l_res.observe(viewLifecycleOwner) { l_res ->
@@ -205,15 +209,15 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
                         val pagerAdapter = ScreenSlidePagerAdapter(requireActivity())
                         _binding?.vpShowMatchResults?.adapter = pagerAdapter
 
-                        _binding?.vpShowMatchResults?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                        _binding?.vpShowMatchResults?.registerOnPageChangeCallback(object :
+                            ViewPager2.OnPageChangeCallback() {
                             override fun onPageSelected(position: Int) {
                                 selectedMatch = l_res.matchList[position]
                                 plotMultipleMarkers(selectedMatch, selectedMatch.finalOutput)
+                                calculateDirections(mClusterMarkers[0])
                                 super.onPageSelected(position)
                             }
                         })
-
-
 //                        matchResultsAdapter.apply {
 //                            setListData(it)
 //                            notifyDataSetChanged()
@@ -266,24 +270,17 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
     }
 
     private fun plotMultipleMarkers(selectedMatch: Match, finalOutput: ArrayList<FinalOutput>?) {
-        finalOutput?.let { fo->
+        finalOutput?.let { fo ->
             addMapMaker(selectedMatch, fo)
         }
 
     }
 
-
-
-
     private fun plotMarker(
         userLatitude: String,
         userLongitude: String
     ) {
-
-
         val defaultLocationOnMap = LatLng(userLatitude.toDouble(), userLongitude.toDouble())
-
-//        addMapMaker()
         mMap?.addMarker(MarkerOptions().position(defaultLocationOnMap).title("Marker"))
         val cameraPosition =
             CameraPosition.Builder().target(defaultLocationOnMap).zoom(zoomLevel).build()
@@ -292,7 +289,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
 
 
     private var mClusterManager: ClusterManager<ClusterMarker>? = null
-    private lateinit var mClusterManagerRenderer : CustomClusterManagerRender
+    private lateinit var mClusterManagerRenderer: CustomClusterManagerRender
     private val mClusterMarkers: ArrayList<ClusterMarker> = ArrayList()
 
     @SuppressLint("PotentialBehaviorOverride")
@@ -318,13 +315,20 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
                 var snippet = ""
                 val avatar: Int = com.an2t.myapplication.R.drawable.ic_map_pin
 
-                val ffo = FinalOutput(selectedMatch.lat!!.toDouble(), selectedMatch.lng!!.toDouble(), 1.0, -1, selectedMatch.imageUrl, selectedMatch.userId)
+                val ffo = FinalOutput(
+                    selectedMatch.lat!!.toDouble(),
+                    selectedMatch.lng!!.toDouble(),
+                    1.0,
+                    -1,
+                    selectedMatch.imageUrl,
+                    selectedMatch.userId
+                )
                 val newClusterMarker = ClusterMarker(
                     LatLng(
                         selectedMatch.lat!!.toDouble(),
                         selectedMatch.lng!!.toDouble()
                     ),
-                    "Some Name",
+                    "",
                     snippet,
                     avatar,
                     ffo
@@ -346,7 +350,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
                             userLocation.lat!!.toDouble(),
                             userLocation.lng!!.toDouble()
                         ),
-                        "Some Name",
+                        "",
                         snippet,
                         avatar,
                         userLocation
@@ -358,47 +362,26 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
                 }
             }
             mClusterManager?.cluster()
-            setCameraView(fo[0])
-
-            mClusterManager?.markerCollection?.setOnInfoWindowClickListener{ marker ->
-                calculateDirections(marker)
-                print("Hello")
-            }
+            setCameraView(selectedMatch)
+//            mClusterManager?.markerCollection?.setOnInfoWindowClickListener{ marker ->
+//                calculateDirections(marker)
+//                print("Hello")
+//            }
         }
     }
 
 
     private var mMapBoundary: LatLngBounds? = null
+
     /**
      * Determines the view boundary then sets the camera
      * Sets the view
      */
-    private fun setCameraView(finalOutput: FinalOutput) {
-
-//        Set a boundary to start
-//        val bottomBoundary: Double = finalOutput.lat!!.toDouble().minus(.1)
-//        val leftBoundary: Double = finalOutput.lng!!.toDouble().minus(.1)
-//        val topBoundary: Double = finalOutput.lat.toDouble() + .1
-//        val rightBoundary: Double = finalOutput.lng.toDouble() + .1
-//        mMapBoundary = LatLngBounds(
-//            LatLng(bottomBoundary, leftBoundary),
-//            LatLng(topBoundary, rightBoundary)
-//        )
-//        mMapBoundary?.let {
-//            mMap?.moveCamera();
-//        }
-//        val cameraPosition =
-//            CameraPosition.Builder().target(mMapBoundary).zoom(zoomLevel).build()
-        val defaultLocationOnMap = LatLng(finalOutput.lat!!.toDouble(), finalOutput.lng!!.toDouble())
-//        addMapMaker()
-        mMap?.addMarker(MarkerOptions().position(defaultLocationOnMap).title("Marker"))
+    private fun setCameraView(m: Match) {
+        val defaultLocationOnMap = LatLng(m.lat!!.toDouble(), m.lng!!.toDouble())
         val cameraPosition =
             CameraPosition.Builder().target(defaultLocationOnMap).zoom(zoomLevel).build()
         mMap?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-//        val cameraPosition =
-//            CameraPosition.Builder().target(defaultLocationOnMap).zoom(zoomLevel).build()
-//        mMap?.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-//        mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mMapBoundary, 0))
     }
 
     override fun onInfoWindowClick(p0: Marker) {
@@ -408,22 +391,37 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
     override fun onPolylineClick(polyline: Polyline) {
         for (polylineData in mPolyLinesData) {
             print("onPolylineClick: toString: " + polylineData.toString())
-            if (polyline.getId().equals(polylineData.getPolyline().getId())) {
-                polylineData.getPolyline()
-                    .setColor(ContextCompat.getColor(requireActivity(), com.an2t.myapplication.R.color.purple_200))
-                polylineData.getPolyline().setZIndex(1F)
-//                print(polylineData.leg.distance)
+            if (polyline.id.equals(polylineData.polyline.id)) {
+                polylineData.polyline.color = ContextCompat.getColor(
+                    requireActivity(),
+                    com.an2t.myapplication.R.color.purple_200
+                )
+                polylineData.polyline.zIndex = 1F
             } else {
-                polylineData.getPolyline()
-                    .setColor(ContextCompat.getColor(requireActivity(), com.an2t.myapplication.R.color.gray))
-                polylineData.getPolyline().setZIndex(0F)
+                polylineData.polyline
+                    .color =
+                    ContextCompat.getColor(requireActivity(), com.an2t.myapplication.R.color.gray)
+                polylineData.polyline.zIndex = 0F
             }
         }
+    }
+
+    fun activateFirstPolyline(){
+        mPolyLinesData[0].polyline.color = ContextCompat.getColor(
+            requireActivity(),
+            com.an2t.myapplication.R.color.purple_200
+        )
+        mPolyLinesData[0].polyline.zIndex = 1F
     }
 
     private inner class ScreenSlidePagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
         override fun getItemCount(): Int = mainResList?.size!!
 
-        override fun createFragment(position: Int): Fragment = DogMatchResultsMapsFragment.newInstance(mainResList?.get(position)!!)
+        override fun createFragment(position: Int): Fragment =
+            DogMatchResultsMapsFragment.newInstance(mainResList?.get(position)!!, position)
+    }
+
+    override fun onMatchedResClick(finalOutput: FinalOutput, itemNumber: Int) {
+        calculateDirections(mClusterMarkers[itemNumber + 1])
     }
 }
