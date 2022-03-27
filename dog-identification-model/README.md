@@ -105,3 +105,7 @@ Contains declaration of various parameters used.
 ## pipeline_testing.ipynb
 
 This notebook determines the optimum parameters to use in the pipeline between all three models.  It then uses these parameters and applies them over the test and validation accuracy to determine how well the pipeline matches lost and found dogs.
+
+## data_dividation.ipynb
+
+This notebook divides the petfinder data set into training, validation and test splits.
