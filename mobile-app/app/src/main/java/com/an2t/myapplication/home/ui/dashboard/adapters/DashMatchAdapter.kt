@@ -47,8 +47,8 @@ class DashMatchAdapter() : RecyclerView.Adapter<DashMatchAdapter.DashViewHolder>
             lm.stackFromEnd = true
             holder.rv_res.apply {
                 layoutManager = lm
-                matchResultsAdapter = DashMatchResultsAdapter(it)
-                adapter = matchResultsAdapter
+//                matchResultsAdapter = DashMatchResultsAdapter(it)
+//                adapter = matchResultsAdapter
             }
         }
         // Adding an OnClickLister to the holder.itemView
