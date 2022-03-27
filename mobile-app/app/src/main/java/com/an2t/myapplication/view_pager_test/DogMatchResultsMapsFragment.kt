@@ -109,4 +109,9 @@ class DogMatchResultsMapsFragment : Fragment() {
             }
         }
     }
+
+    fun updateDurationAndDistance(distance: String, duration: String) {
+        binding.tvDistance.text = "Distance: ${distance}"
+        binding.tvDuration.text = "Duration: ${duration}"
+    }
 }

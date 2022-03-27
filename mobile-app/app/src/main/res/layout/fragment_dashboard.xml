@@ -30,6 +30,7 @@
 
 
         <androidx.appcompat.widget.AppCompatImageView
+            android:visibility="gone"
             android:id="@+id/imgMyLocation"
             android:layout_width="50dp"
             android:layout_height="50dp"
