@@ -11,3 +11,5 @@ celery
 python-decouple
 pandas
 requests
+Jinja2
+sendgrid

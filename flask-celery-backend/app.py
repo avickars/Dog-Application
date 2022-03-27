@@ -9,7 +9,7 @@ import torch
 from PIL import Image
 from flask import Flask
 
-from flask import request, jsonify
+from flask import request, jsonify, render_template
 from flask_marshmallow import Marshmallow
 from flask_sqlalchemy import SQLAlchemy
 
@@ -22,6 +22,9 @@ import requests
 from sqlalchemy.sql.schema import Column
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import os
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 
 
 if config("AWS_ACCESS_KEY_ID", default='') != '':
@@ -172,6 +175,71 @@ db_session = scoped_session(sessionmaker(
 celery = make_celery(app,db)
 
 
+def format_data_for_email_temp(data=[]):
+    md = []
+    i = 0
+    for d in data:
+        idx = data.index(d)
+        if i % 2 == 0:
+            dn = []
+        if len(dn) < 3:
+            dn.append(d)
+        if len(dn) == 2 or idx == (len(data) - 1):
+            md.append(dn)
+        i += 1
+    return md
+
+
+@app.route('/viewTemp')
+def viewTemp():
+    SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+    json_url = os.path.join(SITE_ROOT, 'static', 'email_data.json')
+    data = json.load(open(json_url))
+
+    _d = format_data_for_email_temp(data)
+
+    _message_body = {
+        "title": "Here is a good news for you!",
+        "message": "We found 3 match results of your lost dog.",
+        "banner_img": "https://i.imgur.com/jcP2YnQ.png",
+        "input_img": "https://i.imgur.com/0F2598w.png",
+        "matched_results": _d
+    }
+    return render_template('email_template.html', **_message_body)
+
+def send_email_to_user(data=[], to_email='karthiksrinath24007@gmail.com', count=0, uploaded_img=''):
+    API_KEY = config('SEND_GRID_API_KEY', default='')
+    if API_KEY == '':
+        API_KEY = os.environ['SEND_GRID_API_KEY']
+
+    _d = format_data_for_email_temp(data)
+
+    _message_body = {
+        "title": "Here is a good news for you!",
+        "message": f"We found {count} match results of your lost dog.",
+        "banner_img": "https://i.imgur.com/jcP2YnQ.png",
+        "input_img": uploaded_img,
+        "matched_results": _d
+    }
+
+    message = Mail(
+        from_email='cmpt733dogapp@gmail.com',
+        to_emails=to_email,
+        subject='Your Dog Status',
+        html_content=render_template('email_template.html', **_message_body),
+        is_multiple=True
+    )
+    try:
+        sg = SendGridAPIClient(API_KEY)
+        response = sg.send(message)
+
+        if response.status_code == 202:
+            return 'Email Sent'
+        else:
+            return 'Not able to send email'
+    except Exception as e:
+        return 'Not able to send email'
+
 def sendNotificationToLostDogUser(user_id, db_session, count, ac_img, mat_img):
 
     _res = db_session.query(User.id, User.fcm_token).filter_by(id=user_id).first()
@@ -283,7 +351,9 @@ def run_models_in_background(img_pth, img_name, user_id, url, is_lost, lat, lng)
             "image_url": url
         }
         noti_message = sendNotificationToLostDogUser(user_id, db_session, len(similar_dogs), url, similar_dog_url)
-        return {"data":data, "notification_response": noti_message}
+        user_email = db_session.query(User.email).filter_by(id=user_id).first()[0]
+        mail_status = send_email_to_user(similar_dogs, user_email, len(similar_dogs), url)
+        return {"data": data, "email_status":  mail_status, "notification_response": noti_message}
 
 # App Models
 
