@@ -1,10 +1,8 @@
 import requests
-import pprint
 from bs4 import BeautifulSoup
 import pandas as pd
 import re
 import os
-import shutil
 import urllib.request
 import urllib.error as error
 
