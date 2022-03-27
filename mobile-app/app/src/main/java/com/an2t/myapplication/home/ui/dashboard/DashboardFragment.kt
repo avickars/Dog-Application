@@ -144,6 +144,8 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
                         addPolylinesToMap(r)
                         Handler(Looper.getMainLooper()).post(Runnable {
                             dogMatchFragment.updateDurationAndDistance(distance, duration)
+                            result.routes[0].legs[0]
+
                         })
                     }
 
@@ -229,8 +231,8 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
                                 selectedMatch = l_res.matchList[position]
                                 plotMultipleMarkers(selectedMatch, selectedMatch.finalOutput)
                                 calculateDirections(mClusterMarkers[0])
-
                                 dogMatchFragment = pagerAdapter.fragments[position]
+                                shouldZoomInPolyPath = true
                                 super.onPageSelected(position)
                             }
                         })
@@ -419,6 +421,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
 
                 Handler(Looper.getMainLooper()).post(Runnable {
                     dogMatchFragment.updateDurationAndDistance(dis, dur)
+                    zoomRoute(polyline.points)
                 })
 
 
@@ -431,12 +434,18 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
         }
     }
 
+    var shouldZoomInPolyPath = true
+
     fun activateFirstPolyline(){
         mPolyLinesData[0].polyline.color = ContextCompat.getColor(
             requireActivity(),
             com.an2t.myapplication.R.color.purple_200
         )
         mPolyLinesData[0].polyline.zIndex = 1F
+        if(!shouldZoomInPolyPath){
+            zoomRoute(mPolyLinesData[0].polyline.points)
+        }
+        shouldZoomInPolyPath = false
     }
 
     private inner class ScreenSlidePagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
@@ -449,6 +458,20 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
             return _f
         }
 
+    }
+
+    fun zoomRoute(lstLatLngRoute: List<LatLng?>?) {
+        if (mMap == null || lstLatLngRoute == null || lstLatLngRoute.isEmpty()) return
+        val boundsBuilder = LatLngBounds.Builder()
+        for (latLngPoint in lstLatLngRoute) boundsBuilder.include(latLngPoint)
+        val routePadding = 200
+        val latLngBounds = boundsBuilder.build()
+        mMap?.animateCamera(
+
+            CameraUpdateFactory.newLatLngBounds(latLngBounds, routePadding),
+            600,
+            null
+        )
     }
 
     override fun onMatchedResClick(finalOutput: FinalOutput, itemNumber: Int) {
