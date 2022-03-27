@@ -59,6 +59,8 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
 
     private var mainResList: ArrayList<Match>? = ArrayList()
 
+    private lateinit var dogMatchFragment: DogMatchResultsMapsFragment
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -132,11 +134,20 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
                 }
 
                 override fun onResult(result: DirectionsResult?) {
-                    print("onResult: routes: " + result!!.routes[0].toString())
-                    print("onResult: durations: " + result!!.routes[0].legs[0].duration.toString())
-                    print("onResult: distance: " + result!!.routes[0].legs[0].distance.toString())
-                    print("onResult: geocodedWayPoints: " + result.geocodedWaypoints[0].toString())
-                    addPolylinesToMap(result)
+//                    print("onResult: routes: " + result!!.routes[0].toString())
+//                    print("onResult: durations: " + result!!.routes[0].legs[0].duration.toString())
+//                    print("onResult: distance: " + result!!.routes[0].legs[0].distance.toString())
+//                    print("onResult: geocodedWayPoints: " + result.geocodedWaypoints[0].toString())
+                    result?.let { r->
+                        val distance = r.routes[0].legs[0].distance.toString()
+                        val duration = r.routes[0].legs[0].duration.toString()
+                        addPolylinesToMap(r)
+                        Handler(Looper.getMainLooper()).post(Runnable {
+                            dogMatchFragment.updateDurationAndDistance(distance, duration)
+                        })
+                    }
+
+
                 }
 
 
@@ -145,7 +156,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
 
     private fun addPolylinesToMap(result: DirectionsResult) {
         Handler(Looper.getMainLooper()).post(Runnable {
-            print("run: result routes: " + result.routes.size)
+//            print("run: result routes: " + result.routes.size)
             if (mPolyLinesData.size > 0) {
                 for (polylineData in mPolyLinesData) {
                     polylineData.polyline.remove()
@@ -154,7 +165,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
                 mPolyLinesData = ArrayList()
             }
             for (route in result.routes) {
-                print("run: leg: " + route.legs[0].toString())
+//                print("run: leg: " + route.legs[0].toString())
                 val decodedPath = PolylineEncoding.decode(route.overviewPolyline.encodedPath)
                 val newDecodedPath: MutableList<LatLng> = ArrayList()
 
@@ -194,6 +205,8 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
     private lateinit var selectedMatch: Match
 
     private fun _observe() {
+
+
         dashboardViewModel.l_res.observe(viewLifecycleOwner) { l_res ->
             l_res?.status?.let {
                 hideProgress()
@@ -207,6 +220,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
                         mainResList?.clear()
                         mainResList?.addAll(it)
                         val pagerAdapter = ScreenSlidePagerAdapter(requireActivity())
+
                         _binding?.vpShowMatchResults?.adapter = pagerAdapter
 
                         _binding?.vpShowMatchResults?.registerOnPageChangeCallback(object :
@@ -215,6 +229,8 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
                                 selectedMatch = l_res.matchList[position]
                                 plotMultipleMarkers(selectedMatch, selectedMatch.finalOutput)
                                 calculateDirections(mClusterMarkers[0])
+
+                                dogMatchFragment = pagerAdapter.fragments[position]
                                 super.onPageSelected(position)
                             }
                         })
@@ -309,7 +325,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
             }
 
             mClusterManager?.clearItems()
-            mClusterMarkers?.clear()
+            mClusterMarkers.clear()
 
             try {
                 var snippet = ""
@@ -325,8 +341,8 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
                 )
                 val newClusterMarker = ClusterMarker(
                     LatLng(
-                        selectedMatch.lat!!.toDouble(),
-                        selectedMatch.lng!!.toDouble()
+                        selectedMatch.lat.toDouble(),
+                        selectedMatch.lng.toDouble()
                     ),
                     "",
                     snippet,
@@ -397,6 +413,15 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
                     com.an2t.myapplication.R.color.purple_200
                 )
                 polylineData.polyline.zIndex = 1F
+
+                val dur = polylineData.leg.duration.toString()
+                val dis = polylineData.leg.distance.toString()
+
+                Handler(Looper.getMainLooper()).post(Runnable {
+                    dogMatchFragment.updateDurationAndDistance(dis, dur)
+                })
+
+
             } else {
                 polylineData.polyline
                     .color =
@@ -415,10 +440,15 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
     }
 
     private inner class ScreenSlidePagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
+        val fragments: MutableList<DogMatchResultsMapsFragment> = mutableListOf()
         override fun getItemCount(): Int = mainResList?.size!!
 
-        override fun createFragment(position: Int): Fragment =
-            DogMatchResultsMapsFragment.newInstance(mainResList?.get(position)!!, position)
+        override fun createFragment(position: Int): Fragment  {
+            val _f = DogMatchResultsMapsFragment.newInstance(mainResList?.get(position)!!, position)
+            fragments.add(_f)
+            return _f
+        }
+
     }
 
     override fun onMatchedResClick(finalOutput: FinalOutput, itemNumber: Int) {
