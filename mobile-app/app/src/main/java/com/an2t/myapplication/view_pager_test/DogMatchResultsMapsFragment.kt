@@ -1,36 +1,60 @@
 package com.an2t.myapplication.view_pager_test
 
+import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.an2t.myapplication.R
-import com.an2t.myapplication.databinding.FragmentDashboardBinding
 import com.an2t.myapplication.databinding.FragmentDogMatchResultsMapsBinding
+import com.an2t.myapplication.home.ui.dashboard.DashboardFragment
 import com.an2t.myapplication.home.ui.home.adapters.DashMatchResultsAdapter
+import com.an2t.myapplication.model.FinalOutput
 import com.an2t.myapplication.model.Match
 import com.squareup.picasso.Picasso
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val DOG_DATA = "DOG_DATA"
+private const val ITEM_NUMBER = "ITEM_NUMBER"
 
 
 class DogMatchResultsMapsFragment : Fragment() {
+
+
+    var  onMatchResultClickListener : OnMatchedResListener? = null
+
+    interface OnMatchedResListener{
+        fun onMatchedResClick(finalOutput: FinalOutput, itemNumber: Int)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        val _fc = requireActivity().supportFragmentManager.fragments[0].childFragmentManager.fragments[0]
+        if (_fc is OnMatchedResListener) {
+            onMatchResultClickListener =  _fc as DashboardFragment
+        } else {
+            throw ClassCastException(
+                "DashboardFragment must implement OnMatchedResListener"
+            )
+        }
+    }
+
+
     private var dogData: Match? = null
+    private var itemNumber: Int = 0
 
     private var _binding: FragmentDogMatchResultsMapsBinding? = null
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             dogData = it.getParcelable(DOG_DATA)
+            itemNumber = it.getInt(ITEM_NUMBER)
         }
     }
 
@@ -45,10 +69,11 @@ class DogMatchResultsMapsFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(dogData: Match) =
+        fun newInstance(dogData: Match, itemNumber: Int) =
             DogMatchResultsMapsFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(DOG_DATA, dogData)
+                    putInt(ITEM_NUMBER, itemNumber)
                 }
             }
     }
@@ -78,6 +103,7 @@ class DogMatchResultsMapsFragment : Fragment() {
                         .placeholder(R.drawable.gallery)
                         .error(R.drawable.gallery)
                         .into(binding.ivImgMainDog2)
+                    onMatchResultClickListener?.onMatchedResClick(fo, it.indexOf(fo))
                 })
                 adapter = matchResultsAdapter
             }

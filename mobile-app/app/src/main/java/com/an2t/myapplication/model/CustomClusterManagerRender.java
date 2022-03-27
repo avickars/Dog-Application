@@ -24,16 +24,11 @@ public class CustomClusterManagerRender extends DefaultClusterRenderer<ClusterMa
 
     private final IconGenerator iconGenerator;
     private ImageView imageView;
-//    private final int markerWidth;
-//    private final int markerHeight;
-    private Context context;
-
 
     public CustomClusterManagerRender(Context context, GoogleMap googleMap,
                                       ClusterManager<ClusterMarker> clusterManager) {
 
         super(context, googleMap, clusterManager);
-        this.context = context.getApplicationContext();
         iconGenerator = new IconGenerator(context.getApplicationContext());
         imageView = new ImageView(context.getApplicationContext());
 
@@ -51,21 +46,9 @@ public class CustomClusterManagerRender extends DefaultClusterRenderer<ClusterMa
 
         Picasso.get()
                 .load(item.getUser().getImageUrl())
-                .into(new com.squareup.picasso.Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        imageView.setImageBitmap(bitmap);
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-                    }
-                });
+                .placeholder(R.drawable.gallery)
+                .error(R.drawable.gallery)
+                .into(imageView);
 
         Bitmap icon = iconGenerator.makeIcon();
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(item.getTitle());
@@ -77,44 +60,4 @@ public class CustomClusterManagerRender extends DefaultClusterRenderer<ClusterMa
         return false;
     }
 
-//    @Override
-//    protected void onClusterItemRendered(@NonNull ClusterMarker clusterItem, @NonNull Marker marker) {
-//        super.onClusterItemRendered(clusterItem, marker);
-//        Picasso.get()
-//                .load(clusterItem.getUser().getImageUrl())
-//                .into(new com.squareup.picasso.Target() {
-//                    @Override
-//                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-//                        imageView.setImageBitmap(bitmap);
-//                        // let's find marker for this user
-////                        Marker markerToChange = null;
-////                        for (Marker marker : mClusterManager.getMarkerCollection().getMarkers()) {
-////                            if (marker.getPosition().equals(user.getPosition())) {
-////                                markerToChange = marker;
-////                                break;
-////                            }
-////                        }
-////                        // if found - change icon
-////                        if (markerToChange != null) {
-////                            markerToChange.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap));
-////                        }
-//                    }
-//
-//                    @Override
-//                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-//                    }
-//                });
-
-
-//        Picasso.get()
-//                .load(clusterItem.getUser().getImageUrl())
-//                .placeholder(R.drawable.gallery)
-//                .error(R.drawable.gallery)
-//                .into(imageView);
-//    }
 }
