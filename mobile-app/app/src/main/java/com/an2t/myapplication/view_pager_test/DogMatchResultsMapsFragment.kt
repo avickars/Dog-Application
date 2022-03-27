@@ -70,7 +70,15 @@ class DogMatchResultsMapsFragment : Fragment() {
             lm.stackFromEnd = true
             binding.rvRes.apply {
                 layoutManager = lm
-                matchResultsAdapter = DashMatchResultsAdapter(it)
+                matchResultsAdapter = DashMatchResultsAdapter(it, DashMatchResultsAdapter.OnClickListener { fo ->
+                    binding.llDisDur.visibility = View.VISIBLE
+                    binding.cardRes2.visibility = View.VISIBLE
+                    Picasso.get()
+                        .load(fo?.imageUrl)
+                        .placeholder(R.drawable.gallery)
+                        .error(R.drawable.gallery)
+                        .into(binding.ivImgMainDog2)
+                })
                 adapter = matchResultsAdapter
             }
         }
