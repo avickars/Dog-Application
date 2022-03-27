@@ -1,12 +1,17 @@
 import json
 import random
 import string
-from flask import request, jsonify
+from flask import request, jsonify, render_template
 from sqlalchemy import delete
 from main.models import db, User, users_schema, UserSession, user_schema
 from main.user.middleware import handle_all_exceptions
 from . import user
 import requests
+import os
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+from decouple import config
+
 
 @user.route('/register', methods=['POST'])
 @handle_all_exceptions
@@ -157,3 +162,82 @@ def sendNotificationToLostDogUser():
 def getusers():
     users = User.query.all()
     return jsonify(users_schema.dump(users))
+
+
+
+def format_data_for_email_temp(data=[]):
+    md = []
+    i = 0
+    for d in data:
+        idx = data.index(d)
+        if i % 2 == 0:
+            dn = []
+        if len(dn) < 3:
+            dn.append(d)
+        if len(dn) == 2 or idx == (len(data) - 1):
+            md.append(dn)
+        i += 1
+    return md
+
+
+@user.route('/sendEmail')
+def sendEmail():
+    SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+    SITE_ROOT = "/".join(SITE_ROOT.split("/")[:-1])
+    json_url = os.path.join(SITE_ROOT, 'static', 'mail_test_data.json')
+    data = json.load(open(json_url))
+    print(data)
+
+    API_KEY = config('SEND_GRID_API_KEY', default='')
+    if API_KEY == '':
+        API_KEY = os.environ['SEND_GRID_API_KEY']
+
+    _d = format_data_for_email_temp(data)
+
+    _message_body = {
+        "title": "Here is a good news for you!",
+        "message": "We found 3 match results of your lost dog.",
+        "banner_img": "https://i.imgur.com/jcP2YnQ.png",
+        "input_img": "https://i.imgur.com/0F2598w.png",
+        "matched_results": _d
+    }
+
+    message = Mail(
+        from_email='cmpt733dogapp@gmail.com',
+        to_emails='anant.awasthy29@gmail.com',
+        subject='Your Dog Status',
+        html_content=render_template('email/emailTemp2.html', **_message_body),
+        is_multiple=True
+    )
+    try:
+        sg = SendGridAPIClient(API_KEY)
+        response = sg.send(message)
+        print(response.status_code)
+        print(response.body)
+        print(response.headers)
+    except Exception as e:
+        print(e)
+
+    users = User.query.all()
+    return jsonify(users_schema.dump(users))
+
+
+
+@user.route('/viewTemp')
+def viewTemp():
+    SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+    SITE_ROOT = "/".join(SITE_ROOT.split("/")[:-1])
+    json_url = os.path.join(SITE_ROOT, 'static', 'mail_test_data.json')
+    data = json.load(open(json_url))
+    print(data)
+
+    _d = format_data_for_email_temp(data)
+
+    _message_body = {
+        "title": "Here is a good news for you!",
+        "message": "We found 3 match results of your lost dog.",
+        "banner_img": "https://i.imgur.com/jcP2YnQ.png",
+        "input_img": "https://i.imgur.com/0F2598w.png",
+        "matched_results": _d
+    }
+    return render_template('email/emailTemp2.html', **_message_body)

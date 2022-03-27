@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+<head>
+    <title>Twilio SendGrid Example</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        .main {width: calc(100vw - 10);display: flex;flex-direction: column;display: flex;
+        }
+
+        .header {width: calc(100vw - 10);background-color: #9E67FD;box-sizing: border-box;padding: 16px 0px;
+        }
+
+        .logo-img-con {width: 100px;height: 100px;margin: 0 auto;
+        }
+
+
+        .app-title {
+            color: #FFF;
+        }
+
+
+        .logo-title-gp {display: flex;flex-direction: column;
+        }
+
+        .app-title {
+            text-align: center;
+            font-size: 24px;
+        }
+
+
+        .main-body {width: calc(100vw - 10);flex: 1;display: flex;flex-direction: column;align-items: center;color: #475569;
+        }
+
+
+        .message-title {margin-top: 10px;font-size: 32px;text-align: center;
+        }
+
+
+        .message-content {margin-top: 10px;font-size: 24px;text-align: center;
+        }
+
+        .dog-img {margin-top: 16px;border-radius: 20px;width: 100px;height: 100px;box-shadow: 0 3px 10px rgb(0 0 0 / 0.09);
+        }
+
+
+        .in-title {
+            margin-top: 8px;
+        }
+
+        .out-title {margin-top: 32px;font-size: 20px;
+        }
+
+
+        .divider {margin-top: 16px;width: calc(100% - 30px);border: 1px solid #f1f5f9;
+        }
+
+
+        .matched-gp {display: flex;flex-wrap: wrap;justify-content: center;
+        }
+
+
+        .dog-con {margin-top: 16px;margin-right: 16px;
+        }
+
+
+        .dog-img-res {border-radius: 20px;width: 100px;height: 100px;box-shadow: 0 3px 10px rgb(0 0 0 / 0.09);
+        }
+
+    </style>
+</head>
+<body style="margin: 0;">
+<div class="main" style="width: calc(100vw - 10);display: flex;flex-direction: column;display: flex;">
+    <div class="header" style="width: calc(100vw - 10);background-color: #9E67FD;box-sizing: border-box;padding: 16px 0px;">
+        <div class="logo-title-gp" style="display: flex;flex-direction: column;">
+            <img class="logo-img-con" src="https://i.imgur.com/jcP2YnQ.png"
+                 alt="logo_img" style="width: 100px;height: 100px;margin: 0 auto;">
+            <label class="app-title" style="color: #FFF;">
+                Dog Finder
+            </label>
+        </div>
+    </div>
+    <div class="main-body" style="width: calc(100vw - 10);flex: 1;display: flex;flex-direction: column;align-items: center;color: #475569;">
+        <div class="message-title" style="margin-top: 10px;font-size: 32px;text-align: center;">
+            Here is a good news for you!
+        </div>
+        <div class="message-content" style="margin-top: 10px;font-size: 24px;text-align: center;">
+            We found 3 match results of your lost dog!
+        </div>
+        <img class="dog-img" src="https://i.imgur.com/5jFQFvj.png"
+             alt="main_img" style="margin-top: 16px;border-radius: 20px;width: 100px;height: 100px;box-shadow: 0 3px 10px rgb(0 0 0 / 0.09);">
+        <div class="in-title" style="margin-top: 8px;">Input Image</div>
+        <div class="divider" style="margin-top: 16px;width: calc(100% - 30px);border: 1px solid #f1f5f9;"></div>
+        <div class="out-title" style="margin-top: 32px;font-size: 20px;">Matched Results</div>
+
+        <div class="matched-gp" style="display: flex;flex-wrap: wrap;justify-content: center;">
+            <div class="dog-con" style="margin-top: 16px;margin-right: 16px;">
+                <img class="dog-img-res" src="https://i.imgur.com/5jFQFvj.png"
+                     style="border-radius: 20px;width: 100px;height: 100px;box-shadow: 0 3px 10px rgb(0 0 0 / 0.09);"
+                     alt="main_img">
+            </div>
+
+            <div class="dog-con" style="margin-top: 16px;margin-right: 16px;">
+                <img class="dog-img-res" src="https://i.imgur.com/5jFQFvj.png"
+                     style="border-radius: 20px;width: 100px;height: 100px;box-shadow: 0 3px 10px rgb(0 0 0 / 0.09);"
+                     alt="main_img">
+            </div>
+
+            <div class="dog-con" style="margin-top: 16px;margin-right: 16px;">
+                <img class="dog-img-res" src="https://i.imgur.com/5jFQFvj.png"
+                     style="border-radius: 20px;width: 100px;height: 100px;box-shadow: 0 3px 10px rgb(0 0 0 / 0.09);"
+                     alt="main_img">
+            </div>
+
+            <div class="dog-con" style="margin-top: 16px;margin-right: 16px;">
+                <img class="dog-img-res" src="https://i.imgur.com/5jFQFvj.png"
+                     style="border-radius: 20px;width: 100px;height: 100px;box-shadow: 0 3px 10px rgb(0 0 0 / 0.09);"
+                     alt="main_img">
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

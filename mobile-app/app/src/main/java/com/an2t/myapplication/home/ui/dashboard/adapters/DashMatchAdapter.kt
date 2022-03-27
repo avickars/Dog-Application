@@ -17,6 +17,9 @@ class DashMatchAdapter() : RecyclerView.Adapter<DashMatchAdapter.DashViewHolder>
 
     private var mainResList: List<Match>? = null
 
+
+//    iv_img_main_dog
+
     fun setListData(notiList: List<Match>) {
         this.mainResList = notiList
     }

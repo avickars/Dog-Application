@@ -9,6 +9,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.an2t.myapplication.maps.MapsFragment
@@ -20,7 +21,7 @@ import com.an2t.myapplication.utils.FragmentsTransactionListener
 
 //import com.an2t.myapplication.home1.databinding.ActivityHomeBinding
 
-class HomeActivity : AppCompatActivity(), FragmentsTransactionListener {
+class HomeActivity : FragmentActivity(), FragmentsTransactionListener {
 
     private lateinit var binding: ActivityHomeBinding
 
@@ -46,6 +47,7 @@ class HomeActivity : AppCompatActivity(), FragmentsTransactionListener {
         _addListeners()
 //        _openMapsBottomSheet()
     }
+
 
     private fun _openMapsBottomSheet() {
         val bottomSheetFragment = MapsFragment()
