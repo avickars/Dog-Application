@@ -1,0 +1,29 @@
+[
+  {
+    "id": 262,
+    "lat": 49.187378,
+    "lng": -122.886554,
+    "breed": null,
+    "c_score": 0.9578165411949158,
+    "user_id": 1,
+    "image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/f9aa7f63-171c-4a1a-93f2-601cf6720cac.jpg"
+  },
+  {
+    "id": 261,
+    "lat": 49.180645,
+    "lng": -122.885874,
+    "breed": null,
+    "c_score": 0.9495993852615356,
+    "user_id": 1,
+    "image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/9cd15cf0-0d72-47ef-b09c-39fb677e8ca5.jpg"
+  },
+  {
+    "id": 267,
+    "lat": 49.156888,
+    "lng": -122.843398,
+    "breed": null,
+    "c_score": 0.8613976240158081,
+    "user_id": 1,
+    "image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/0df22bef-9fa1-4cc0-80e4-cbf87e5d5420.jpg"
+  }
+]

@@ -25,6 +25,8 @@
         android:layout_height="wrap_content">
 
         <Button
+            android:textColor="@color/white"
+            android:backgroundTint="@color/purple_400"
             android:layout_weight="1"
             android:id="@+id/btn_upload_camera"
             android:layout_width="match_parent"

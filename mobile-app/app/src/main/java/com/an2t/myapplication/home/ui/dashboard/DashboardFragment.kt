@@ -10,12 +10,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import com.an2t.myapplication.databinding.FragmentDashboardBinding
 import com.an2t.myapplication.home.ui.home.adapters.DashMatchAdapter
 import com.an2t.myapplication.model.*
 import com.an2t.myapplication.utils.AppConstants
+import com.an2t.myapplication.view_pager_test.DogMatchResultsMapsFragment
+import com.an2t.myapplication.view_pager_test.ViewPagerTestFragment
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -30,6 +36,8 @@ import com.google.maps.model.DirectionsResult
 
 
 //import com.an2t.myapplication.home1.databinding.FragmentDashboardBinding
+
+private const val NUM_PAGES = 5
 
 class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMoveListener,
     GoogleMap.OnCameraIdleListener,  GoogleMap.OnInfoWindowClickListener, GoogleMap.OnPolylineClickListener {
@@ -48,6 +56,8 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
     private lateinit var matchResultsAdapter: DashMatchAdapter
     private var mGeoApiContext: GeoApiContext? = null
     private var mPolyLinesData: ArrayList<PolylineData> = ArrayList()
+
+    private var mainResList: ArrayList<Match>? = ArrayList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -81,7 +91,12 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
         dashboardViewModel.callMatchRecords(refresh_token, fcm_token)
 
         _observe()
+
+        // The pager adapter, which provides the pages to the view pager widget.
+//        val pagerAdapter = ScreenSlidePagerAdapter(requireActivity())
+//        _binding?.vpShowMatchResults?.adapter = pagerAdapter
     }
+
 
     private fun setUpMaps() {
         val mapFragment = childFragmentManager.findFragmentById(com.an2t.myapplication.R.id.map) as SupportMapFragment
@@ -104,8 +119,8 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
         directions.alternatives(true)
         directions.origin(
             com.google.maps.model.LatLng(
-                selectedMatch.finalOutput?.get(0)?.lat!!.toDouble(),
-                selectedMatch.finalOutput?.get(0)?.lng!!.toDouble()
+                selectedMatch.lat!!.toDouble(),
+                selectedMatch.lng!!.toDouble()
             )
         )
         print("calculateDirections: destination: $destination")
@@ -182,13 +197,27 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
 
                     if (0 < l_res.matchList?.size!!) {
                         selectedMatch = l_res.matchList[0]
-                        plotMultipleMarkers(selectedMatch.finalOutput)
+                        plotMultipleMarkers(selectedMatch, selectedMatch.finalOutput)
                     }
                     l_res.matchList?.let {
-                        matchResultsAdapter.apply {
-                            setListData(it)
-                            notifyDataSetChanged()
-                        }
+                        mainResList?.clear()
+                        mainResList?.addAll(it)
+                        val pagerAdapter = ScreenSlidePagerAdapter(requireActivity())
+                        _binding?.vpShowMatchResults?.adapter = pagerAdapter
+
+                        _binding?.vpShowMatchResults?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                            override fun onPageSelected(position: Int) {
+                                selectedMatch = l_res.matchList[position]
+                                plotMultipleMarkers(selectedMatch, selectedMatch.finalOutput)
+                                super.onPageSelected(position)
+                            }
+                        })
+
+
+//                        matchResultsAdapter.apply {
+//                            setListData(it)
+//                            notifyDataSetChanged()
+//                        }
                     }
                 }
             }
@@ -236,9 +265,9 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
 
     }
 
-    private fun plotMultipleMarkers(finalOutput: List<FinalOutput>?) {
+    private fun plotMultipleMarkers(selectedMatch: Match, finalOutput: ArrayList<FinalOutput>?) {
         finalOutput?.let { fo->
-            addMapMaker(fo)
+            addMapMaker(selectedMatch, fo)
         }
 
     }
@@ -267,7 +296,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
     private val mClusterMarkers: ArrayList<ClusterMarker> = ArrayList()
 
     @SuppressLint("PotentialBehaviorOverride")
-    private fun addMapMaker(fo: List<FinalOutput>) {
+    private fun addMapMaker(selectedMatch: Match, fo: ArrayList<FinalOutput>) {
         if (mMap != null) {
             if (mClusterManager == null) {
                 mClusterManager =
@@ -281,6 +310,31 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
                 )
                 mClusterManager!!.setRenderer(mClusterManagerRenderer)
             }
+
+            mClusterManager?.clearItems()
+            mClusterMarkers?.clear()
+
+            try {
+                var snippet = ""
+                val avatar: Int = com.an2t.myapplication.R.drawable.ic_map_pin
+
+                val ffo = FinalOutput(selectedMatch.lat!!.toDouble(), selectedMatch.lng!!.toDouble(), 1.0, -1, selectedMatch.imageUrl, selectedMatch.userId)
+                val newClusterMarker = ClusterMarker(
+                    LatLng(
+                        selectedMatch.lat!!.toDouble(),
+                        selectedMatch.lng!!.toDouble()
+                    ),
+                    "Some Name",
+                    snippet,
+                    avatar,
+                    ffo
+                )
+                mClusterManager?.addItem(newClusterMarker)
+                mClusterMarkers.add(newClusterMarker)
+            } catch (e: NullPointerException) {
+                print("addMapMarkers: NullPointerException: " + e.message)
+            }
+
 
             for (userLocation in fo) {
 
@@ -340,7 +394,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
         mMap?.addMarker(MarkerOptions().position(defaultLocationOnMap).title("Marker"))
         val cameraPosition =
             CameraPosition.Builder().target(defaultLocationOnMap).zoom(zoomLevel).build()
-        mMap?.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+        mMap?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
 //        val cameraPosition =
 //            CameraPosition.Builder().target(defaultLocationOnMap).zoom(zoomLevel).build()
 //        mMap?.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
@@ -365,5 +419,11 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
                 polylineData.getPolyline().setZIndex(0F)
             }
         }
+    }
+
+    private inner class ScreenSlidePagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
+        override fun getItemCount(): Int = mainResList?.size!!
+
+        override fun createFragment(position: Int): Fragment = DogMatchResultsMapsFragment.newInstance(mainResList?.get(position)!!)
     }
 }

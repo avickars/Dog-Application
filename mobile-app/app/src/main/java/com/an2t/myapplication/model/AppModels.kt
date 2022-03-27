@@ -1,6 +1,8 @@
 package com.an2t.myapplication.model
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
 data class LoginReq(
     val device_type: String,
@@ -78,6 +80,7 @@ data class AllLostUploadRecords(
     val status: Boolean?
 )
 
+@Parcelize
 data class FinalOutput(
     @SerializedName("lat")
     val lat: Double?,
@@ -91,11 +94,12 @@ data class FinalOutput(
     val imageUrl: String?,
     @SerializedName("user_id")
     val userId: Int?
-)
+) : Parcelable
 
+@Parcelize
 data class Match(
     @SerializedName("final_output")
-    val finalOutput: List<FinalOutput>?,
+    val finalOutput: ArrayList<FinalOutput>?,
     @SerializedName("image_url")
     val imageUrl: String?,
     @SerializedName("is_lost")
@@ -106,4 +110,4 @@ data class Match(
     val lat: Double?,
     @SerializedName("lng")
     val lng: Double?,
-)
+) : Parcelable

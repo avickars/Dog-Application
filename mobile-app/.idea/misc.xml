@@ -5,8 +5,12 @@
       <map>
         <entry key="../../../../../../layout/custom_preview.xml" value="0.2537037037037037" />
         <entry key="../../../../Library/Android/sdk/platforms/android-32/data/res/drawable/btn_default_small.xml" value="0.137" />
+        <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.137" />
         <entry key="app/src/main/res/drawable/bg_my_location.xml" value="0.137" />
         <entry key="app/src/main/res/drawable/et_background.xml" value="0.226" />
+        <entry key="app/src/main/res/drawable/ic_dashboard_black_24dp.xml" value="0.137" />
+        <entry key="app/src/main/res/drawable/ic_home_black_24dp.xml" value="0.137" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.137" />
         <entry key="app/src/main/res/drawable/ic_map_pin.xml" value="0.137" />
         <entry key="app/src/main/res/drawable/ic_my_location.xml" value="0.137" />
         <entry key="app/src/main/res/drawable/ic_notifications_black_24dp.xml" value="0.1235" />
@@ -18,9 +22,11 @@
         <entry key="app/src/main/res/layout/activity_maps.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/activity_register.xml" value="0.22780797101449277" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.16183136899365366" />
+        <entry key="app/src/main/res/layout/activity_view_pager_test.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/dash_main_item.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/dash_main_sub_item.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/fragment_dashboard.xml" value="0.16183136899365366" />
+        <entry key="app/src/main/res/layout/fragment_dog_match_results_maps.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/fragment_found_dog.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_gallery_or_camera.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.16183136899365366" />
@@ -28,11 +34,13 @@
         <entry key="app/src/main/res/layout/fragment_maps.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/fragment_notifications.xml" value="0.16183136899365366" />
         <entry key="app/src/main/res/layout/fragment_select_lost_or_found.xml" value="0.26175762044410006" />
+        <entry key="app/src/main/res/layout/fragment_view_pager_test.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/ic_my_location.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/match_res_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/match_res_sub_item.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/notification.xml" value="0.2542510986328125" />
         <entry key="app/src/main/res/layout/notification_item.xml" value="0.16183136899365366" />
+        <entry key="app/src/main/res/layout/view_pager_item.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/xml/network_security_config.xml" value="0.16183136899365366" />
       </map>
     </option>

@@ -28,7 +28,7 @@
                 tools:context=".order.add_address.AddUpdateAddressFragment" />
 
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgPin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -40,10 +40,10 @@
                 app:srcCompat="@drawable/ic_map_pin" />
 
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgMyLocation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_margin="16dp"
                 android:background="@drawable/bg_my_location"
                 android:elevation="10dp"
@@ -94,6 +94,8 @@
                         android:layout_height="50dp"/>
 
                     <Button
+                        android:textColor="@color/white"
+                        android:backgroundTint="@color/purple_400"
                         android:layout_marginHorizontal="10dp"
                         android:id="@+id/btn_confirm"
                         android:layout_width="0dp"
