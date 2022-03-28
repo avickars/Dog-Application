@@ -8,6 +8,7 @@
 
 
     <Button
+        android:visibility="gone"
         android:id="@+id/btn_send_notification"
         android:layout_width="0dp"
         android:layout_height="50dp"
@@ -17,6 +18,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_notification"

@@ -19,7 +19,6 @@
                 android:paddingVertical="8dp"
                 android:text="@string/uploaded_image"
                 android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -43,6 +42,18 @@
                     android:src="@drawable/big_data" />
             </androidx.cardview.widget.CardView>
 
+            <TextView
+                android:id="@+id/tv_title_match"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:paddingVertical="8dp"
+                android:text="@string/matched_image"
+                android:textSize="14sp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
 
             <LinearLayout
                 android:id="@+id/ll_dis_dur"
@@ -55,6 +66,12 @@
                 app:layout_constraintStart_toEndOf="@id/card_res"
                 app:layout_constraintTop_toBottomOf="@id/tv_title_input">
 
+                <TextView
+                    android:id="@+id/tv_eta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/eta"
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/tv_distance"

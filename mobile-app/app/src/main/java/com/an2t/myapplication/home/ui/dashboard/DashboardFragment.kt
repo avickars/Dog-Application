@@ -35,8 +35,6 @@ import com.google.maps.model.DirectionsResult
 
 //import com.an2t.myapplication.home1.databinding.FragmentDashboardBinding
 
-private const val NUM_PAGES = 5
-
 class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMoveListener,
     GoogleMap.OnCameraIdleListener, GoogleMap.OnInfoWindowClickListener,
     GoogleMap.OnPolylineClickListener,
@@ -94,9 +92,9 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
 
         _observe()
 
-        // The pager adapter, which provides the pages to the view pager widget.
-//        val pagerAdapter = ScreenSlidePagerAdapter(requireActivity())
-//        _binding?.vpShowMatchResults?.adapter = pagerAdapter
+//       The pager adapter, which provides the pages to the view pager widget.
+//       val pagerAdapter = ScreenSlidePagerAdapter(requireActivity())
+//       _binding?.vpShowMatchResults?.adapter = pagerAdapter
     }
 
 
