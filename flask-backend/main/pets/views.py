@@ -47,3 +47,13 @@ def add_found_dogs(*args, **kwargs):
         "status": True,
         "message": "All records added successfully!"
     })
+
+
+@pets.route('/getAllFoundPets', methods=['POST'])
+@handle_all_exceptions
+def get_all_found_pets(*args, **kwargs):
+    # 'lat', 'lng', 'user_id', 'image_url', 'is_lost', 'final_output', 'dog_extractor', 'dog_identification'
+    fetch_list = db.session.query(Pets.lat,Pets.lng, Pets.user_id, Pets.image_url, Pets.is_lost, Pets.final_output, Pets.dog_extractor, Pets.dog_identification,Pets.breed).filter_by(is_lost=0).order_by(desc(Pets.id))
+    all_pets = pets_s_schema.dump(fetch_list)
+    return jsonify(all_pets)
+

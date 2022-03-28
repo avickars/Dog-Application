@@ -1,64 +1,74 @@
-[{
-		"lat": 49.187378,
-		"lng": -122.886554,
-		"user_id": 1,
-		"is_lost": 0,
-		"image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/f9aa7f63-171c-4a1a-93f2-601cf6720cac.jpg"
-	},
-	{
-		"lat": 49.180645,
-		"lng": -122.885874,
-		"user_id": 4,
-		"is_lost": 0,
-		"image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/9cd15cf0-0d72-47ef-b09c-39fb677e8ca5.jpg"
-	},
-	{
-		"lat": 49.156888,
-		"lng": -122.843398,
-		"user_id": 5,
-		"is_lost": 0,
-		"image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/0df22bef-9fa1-4cc0-80e4-cbf87e5d5420.jpg"
-	},
-	{
-		"lat": 49.161326,
-		"lng": -122.881375,
-		"user_id": 1,
-		"is_lost": 0,
-		"image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/27761d48-656c-46dd-8430-29b31a08b7c0.jpg"
-	},
-	{
-		"lat": 49.196736,
-		"lng": -122.871668,
-		"user_id": 4,
-		"is_lost": 0,
-		"image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/318e786d-be7a-4bae-ac6d-582739498633.jpg"
-	},
-	{
-		"lat": 49.182679,
-		"lng": -122.866006,
-		"user_id": 5,
-		"is_lost": 0,
-		"image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/865c14ae-94ad-4d54-a1d2-4f33816d1aef.jpg"
-	},
-	{
-		"lat": 49.150556,
-		"lng": -122.895009,
-		"user_id": 1,
-		"is_lost": 0,
-		"image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/dd0da998-f79d-4352-9b2e-d834f2fbcb05.jpg"
-	},
-	{
-		"lat": 49.172934,
-		"lng": -122.88229,
-		"user_id": 4,
-		"is_lost": 0,
-		"image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/b2872f7b-ae84-4665-a365-b811ae6c8018.jpg"
-	},
-	{
-		"lat": 49.142655,
-		"lng": -122.882656,
-		"user_id": 5,
-		"is_lost": 0,
-		"image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/0d35a08a-76ff-472c-af64-01e9a45557b7.jpg"
-	}
+[
+    {
+        "breed": "Siberian husky",
+        "dog_extractor": [
+            {
+                "boxes": [
+                    [
+                        135.76210021972656,
+                        254.85890197753906,
+                        489.50048828125,
+                        827.8035888671875
+                    ]
+                ],
+                "labels": [
+                    1.0
+                ],
+                "scores": [
+                    0.9989863038063049
+                ]
+            }
+        ],
+        "dog_identification": [
+            [
+                0.42611730098724365,
+                0.3946008086204529,
+                -0.259566992521286,
+                -0.5295255184173584,
+                0.565800130367279
+            ]
+        ],
+        "final_output": [],
+        "image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/3b8b422b-d2b3-4dda-ac57-7a67bb18006f.jpg",
+        "is_lost": 0,
+        "lat": 49.172934,
+        "lng": -122.88229,
+        "user_id": 4
+    },
+    {
+        "breed": "Siberian husky",
+        "dog_extractor": [
+            {
+                "boxes": [
+                    [
+                        55.360477447509766,
+                        6.078050136566162,
+                        877.10791015625,
+                        929.5836181640625
+                    ]
+                ],
+                "labels": [
+                    1.0
+                ],
+                "scores": [
+                    0.9988675117492676
+                ]
+            }
+        ],
+        "dog_identification": [
+            [
+                0.5542470812797546,
+                0.535447359085083,
+                -0.3467833697795868,
+                -0.6340649724006653,
+                0.9470943212509155
+            ]
+        ],
+        "final_output": [],
+        "image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/3f0fd98d-8e1b-435e-9a20-45ff52662127.jpg",
+        "is_lost": 0,
+        "lat": 49.142655,
+        "lng": -122.882656,
+        "user_id": 1
+    }
 ]
