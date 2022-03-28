@@ -108,6 +108,8 @@ data class Match(
     val finalOutput: ArrayList<FinalOutput>?,
     @SerializedName("image_url")
     val imageUrl: String?,
+    @SerializedName("breed")
+    val breed: String?,
     @SerializedName("is_lost")
     val isLost: Int?,
     @SerializedName("user_id")
