@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
@@ -24,6 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.an2t.myapplication.R
 import com.an2t.myapplication.databinding.FragmentNotificationsBinding
 import com.an2t.myapplication.home.HomeActivity
+import com.an2t.myapplication.utils.AppConstants
 
 //import com.an2t.myapplication.home1.databinding.FragmentNotificationsBinding
 
@@ -39,14 +41,15 @@ class NotificationsFragment : Fragment() {
 
     private val CHANNEL_ID = "channel_id_example_01"
     private val notificationId = 101
+    lateinit var notificationsViewModel: NotificationsViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val notificationsViewModel =
-            ViewModelProvider(this).get(NotificationsViewModel::class.java)
+
+        notificationsViewModel = ViewModelProvider(this).get(NotificationsViewModel::class.java)
 
         _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -75,6 +78,18 @@ class NotificationsFragment : Fragment() {
         notiAdapter.apply {
             setListData(listData)
             notifyDataSetChanged()
+        }
+
+        notificationsViewModel.callUserDetails(getRefreshToken())
+        observe()
+    }
+
+    private fun observe() {
+        notificationsViewModel.l_res.observe(viewLifecycleOwner) { l_res ->
+            l_res?.status?.let {
+                binding.tvEmail.text = l_res.email
+                binding.tvInitEmail.text = l_res.email[0].toString().uppercase()
+            }
         }
     }
 
@@ -110,7 +125,6 @@ class NotificationsFragment : Fragment() {
                 R.drawable.home_purple
             )
 
-
             val builder = NotificationCompat.Builder(it, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle("Example Title")
@@ -128,6 +142,13 @@ class NotificationsFragment : Fragment() {
         }
     }
 
+
+    private fun getRefreshToken(): String {
+        val sharedPreference =
+            activity?.getSharedPreferences(AppConstants.SHARED_PREF_DOG_APP, Context.MODE_PRIVATE)
+        val refresh_token = sharedPreference?.getString(AppConstants.REFRESH_TOKEN, "")
+        return refresh_token!!
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

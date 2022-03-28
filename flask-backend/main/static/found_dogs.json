@@ -1,73 +1,64 @@
 [{
-		"id": 262,
 		"lat": 49.187378,
 		"lng": -122.886554,
-		"c_score": 0.9754829406738281,
 		"user_id": 1,
+		"is_lost": 0,
 		"image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/f9aa7f63-171c-4a1a-93f2-601cf6720cac.jpg"
 	},
 	{
-		"id": 261,
 		"lat": 49.180645,
 		"lng": -122.885874,
-		"c_score": 0.9707255363464355,
-		"user_id": 1,
+		"user_id": 4,
+		"is_lost": 0,
 		"image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/9cd15cf0-0d72-47ef-b09c-39fb677e8ca5.jpg"
 	},
 	{
-		"id": 267,
 		"lat": 49.156888,
 		"lng": -122.843398,
-		"c_score": 0.8743394613265991,
-		"user_id": 1,
+		"user_id": 5,
+		"is_lost": 0,
 		"image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/0df22bef-9fa1-4cc0-80e4-cbf87e5d5420.jpg"
 	},
 	{
-		"id": 266,
 		"lat": 49.161326,
 		"lng": -122.881375,
-		"c_score": 0.8422367572784424,
 		"user_id": 1,
+		"is_lost": 0,
 		"image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/27761d48-656c-46dd-8430-29b31a08b7c0.jpg"
 	},
 	{
-		"id": 263,
 		"lat": 49.196736,
 		"lng": -122.871668,
-		"c_score": 0.7855283617973328,
-		"user_id": 1,
+		"user_id": 4,
+		"is_lost": 0,
 		"image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/318e786d-be7a-4bae-ac6d-582739498633.jpg"
 	},
 	{
-		"id": 264,
 		"lat": 49.182679,
 		"lng": -122.866006,
-		"c_score": 0.7855283617973328,
-		"user_id": 1,
+		"user_id": 5,
+		"is_lost": 0,
 		"image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/865c14ae-94ad-4d54-a1d2-4f33816d1aef.jpg"
 	},
 	{
-		"id": 269,
 		"lat": 49.150556,
 		"lng": -122.895009,
-		"c_score": 0.7200192213058472,
 		"user_id": 1,
+		"is_lost": 0,
 		"image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/dd0da998-f79d-4352-9b2e-d834f2fbcb05.jpg"
 	},
 	{
-		"id": 265,
 		"lat": 49.172934,
 		"lng": -122.88229,
-		"c_score": 0.6883747577667236,
-		"user_id": 1,
+		"user_id": 4,
+		"is_lost": 0,
 		"image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/b2872f7b-ae84-4665-a365-b811ae6c8018.jpg"
 	},
 	{
-		"id": 268,
 		"lat": 49.142655,
 		"lng": -122.882656,
-		"c_score": 0.6250438690185547,
-		"user_id": 1,
+		"user_id": 5,
+		"is_lost": 0,
 		"image_url": "https://imagescmpt.s3.us-west-2.amazonaws.com/0d35a08a-76ff-472c-af64-01e9a45557b7.jpg"
 	}
 ]
