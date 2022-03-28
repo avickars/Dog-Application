@@ -231,7 +231,6 @@ class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionLi
     }
 
     fun openCamera() {
-
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             if (activity?.checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
                 val permission =

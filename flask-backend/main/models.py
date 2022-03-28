@@ -85,9 +85,17 @@ class PetsSchemaUp(ma.Schema):
         fields = (
             'id', 'image_url', 'dog_identification')
 
+class InPetsSchema(ma.Schema):
+    class Meta:
+        fields = (
+            'lat', 'lng', 'user_id', 'image_url', 'is_lost')
+
+
 pets_schema = PetsSchema()
 pets_s_schema = PetsSchema(many=True)
 pets_up_schema = PetsSchemaUp(many=True)
+in_pets_schema = InPetsSchema(many=True)
+
 
 
 if __name__ == "_main_":

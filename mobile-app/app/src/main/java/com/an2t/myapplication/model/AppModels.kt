@@ -32,6 +32,12 @@ data class CommonReq(
     val fcm_token: String
 )
 
+data class UserDetailsResponse(
+    @SerializedName("email")
+    val email: String,
+    @SerializedName("status")
+    val status: Boolean
+)
 
 data class NotificationResponse(
     @SerializedName("title")
