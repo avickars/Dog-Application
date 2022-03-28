@@ -4,7 +4,7 @@ import string
 from flask import request, jsonify, render_template
 from sqlalchemy import delete
 from main.models import db, User, users_schema, UserSession, user_schema
-from main.user.middleware import handle_all_exceptions
+from main.user.middleware import handle_all_exceptions, logged_in
 from . import user
 import requests
 import os
@@ -241,3 +241,23 @@ def viewTemp():
         "matched_results": _d
     }
     return render_template('email/emailTemp2.html', **_message_body)
+
+
+@user.route('/getUserDataByUserId', methods=['POST'])
+@logged_in
+def getUserDataByUserId(*args, **kwargs):
+
+    if 'user_id' not in kwargs:
+        _error = jsonify({
+            "status": False,
+            "message": "Seems you have not signed in. Please sign-in!"
+        })
+        return _error
+
+    user_id = kwargs['user_id']
+    _res = db.session.query(User).filter_by(id=user_id).first()
+    user_data = user_schema.dump(_res)
+    return jsonify({
+        "status": True,
+        "email": user_data['email']
+    })

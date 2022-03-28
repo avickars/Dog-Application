@@ -51,7 +51,6 @@ class NotificationsFragment : Fragment() {
         _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-
         val btnSendNotification: Button = binding.btnSendNotification
         btnSendNotification.setOnClickListener {
             sendNotification()
@@ -95,7 +94,6 @@ class NotificationsFragment : Fragment() {
     }
 
     private fun sendNotification(){
-
 
         context?.let {
             val intent = Intent(activity,HomeActivity::class.java).apply {
