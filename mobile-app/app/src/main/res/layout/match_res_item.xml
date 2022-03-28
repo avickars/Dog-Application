@@ -38,6 +38,7 @@
     </androidx.cardview.widget.CardView>
 
     <TextView
+        app:layout_constraintBottom_toTopOf="@id/tv_title_output"
         android:id="@+id/tv_res_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/card_res"

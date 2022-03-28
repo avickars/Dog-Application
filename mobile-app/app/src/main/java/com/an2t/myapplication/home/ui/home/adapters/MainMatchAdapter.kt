@@ -38,6 +38,7 @@ class MainMatchAdapter() : RecyclerView.Adapter<MainMatchAdapter.MainMatchViewHo
             .error(R.drawable.gallery)
             .into(holder.iv_img_main_dog)
 
+        holder.tv_res_title.text = "Predicted Breed: \n${o?.breed}"
 
         var matchResultsAdapter: MatchResultsAdapter
         o?.finalOutput?.let {

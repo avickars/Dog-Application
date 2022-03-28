@@ -129,9 +129,10 @@ class Pets(db.Model):
     lat = db.Column(db.Float)
     lng = db.Column(db.Float)
     breed = db.Column(db.String(80), nullable=False)
+    contact_email = db.Column(db.String(80))
 
 
-    def _init_(self, user_id, image_url, is_lost, dog_extractor, dog_identification, final_output, lat, lng, breed):
+    def _init_(self, user_id, image_url, is_lost, dog_extractor, dog_identification, final_output, lat, lng, breed, contact_email):
         self.user_id = user_id
         self.image_url = image_url
         self.is_lost = is_lost
@@ -141,6 +142,7 @@ class Pets(db.Model):
         self.lat = lat
         self.lng = lng
         self.breed = breed
+        self.contact_email = contact_email
 
 
 # JSON Schema
@@ -276,7 +278,7 @@ def sendNotificationToLostDogUser(user_id, db_session, count, ac_img, mat_img):
 
 
 @celery.task(name="main.run_models_in_background")
-def run_models_in_background(img_pth, img_name, user_id, url, is_lost, lat, lng):
+def run_models_in_background(img_pth, img_name, user_id, url, is_lost, lat, lng, email):
     app = create_app()
     with app.app_context():
         extractor_outputs = dog_extractor(img_pth)
@@ -334,7 +336,8 @@ def run_models_in_background(img_pth, img_name, user_id, url, is_lost, lat, lng)
             final_output=similar_dogs,
             breed=breeds[0],
             lat=float(lat),
-            lng=float(lng)
+            lng=float(lng),
+            contact_email=email
         )
         db_session.add(pets)
         db_session.commit()
@@ -383,6 +386,7 @@ def logged_in(f):
                 return _error
 
         kwargs['user_id'] = _results[0].user_id
+        kwargs['email'] = _results[1].email
 
         if _results is not None:
             return f(*args, **kwargs)
@@ -408,6 +412,7 @@ def upload_lost_pet_image(*args, **kwargs):
         return _error
 
     user_id = kwargs['user_id']
+    email = kwargs['email']
 
     bucket = 'imagescmpt'
 
@@ -442,7 +447,7 @@ def upload_lost_pet_image(*args, **kwargs):
     lat = request.form.get('lat', '49.191855')
     lng = request.form.get('lng', '-122.867152')
 
-    run_models_in_background.delay(img_pth, img_name, user_id, url, is_lost, lat, lng)
+    run_models_in_background.delay(img_pth, img_name, user_id, url, is_lost, lat, lng, email)
     return jsonify(data)
 
 

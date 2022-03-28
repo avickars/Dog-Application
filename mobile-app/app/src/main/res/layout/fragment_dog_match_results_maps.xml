@@ -56,15 +56,17 @@
 
 
             <LinearLayout
+                android:visibility="gone"
                 android:id="@+id/ll_dis_dur"
                 android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:gravity="center"
+                android:layout_height="0dp"
+                android:gravity="center|bottom"
                 android:orientation="vertical"
-                android:visibility="gone"
                 app:layout_constraintEnd_toStartOf="@id/card_res_2"
                 app:layout_constraintStart_toEndOf="@id/card_res"
-                app:layout_constraintTop_toBottomOf="@id/tv_title_input">
+                app:layout_constraintBottom_toTopOf="@id/tv_title_output"
+                app:layout_constraintTop_toTopOf="parent"
+                >
 
                 <TextView
                     android:id="@+id/tv_eta"
@@ -86,6 +88,23 @@
                     android:layout_height="wrap_content"
                     android:text="@string/duration"
                     android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tv_breed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/duration"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/tv_email"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Contact Email:\nanant.awasthy29@gmail.com"
+                    android:textSize="12sp" />
+
+
 
             </LinearLayout>
 
@@ -119,8 +138,20 @@
                 android:paddingVertical="8dp"
                 android:text="@string/matched_results"
                 android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/card_res" />
+
+
+            <TextView
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@id/rv_res"
+                android:id="@+id/tv_title_email"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:paddingVertical="8dp"
+                android:textSize="10sp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/card_res" />
 
             <androidx.recyclerview.widget.RecyclerView

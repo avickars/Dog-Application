@@ -27,7 +27,7 @@
         <entry key="app/src/main/res/layout/dash_main_item.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/dash_main_sub_item.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/fragment_dashboard.xml" value="0.16183136899365366" />
-        <entry key="app/src/main/res/layout/fragment_dog_match_results_maps.xml" value="0.25446929931640627" />
+        <entry key="app/src/main/res/layout/fragment_dog_match_results_maps.xml" value="0.45" />
         <entry key="app/src/main/res/layout/fragment_found_dog.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_gallery_or_camera.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.16183136899365366" />

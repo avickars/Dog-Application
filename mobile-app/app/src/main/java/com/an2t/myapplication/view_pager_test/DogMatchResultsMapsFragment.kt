@@ -99,6 +99,7 @@ class DogMatchResultsMapsFragment : Fragment() {
                     binding.llDisDur.visibility = View.VISIBLE
                     binding.cardRes2.visibility = View.VISIBLE
                     binding.tvTitleMatch.visibility = View.VISIBLE
+                    binding.tvTitleEmail.visibility = View.VISIBLE
                     Picasso.get()
                         .load(fo.imageUrl)
                         .placeholder(R.drawable.gallery)
@@ -114,5 +115,6 @@ class DogMatchResultsMapsFragment : Fragment() {
     fun updateDurationAndDistance(distance: String, duration: String) {
         binding.tvDistance.text = "Distance: ${distance}"
         binding.tvDuration.text = "Duration: ${duration}"
+        binding.tvBreed.text = "Breed: ${dogData?.breed}"
     }
 }
