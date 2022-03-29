@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.lifecycle.Observer
@@ -23,6 +25,7 @@ class RegisterActivity : AppCompatActivity() {
     lateinit var et_password: AppCompatEditText
     lateinit var et_password2: AppCompatEditText
     lateinit var btn_login: Button
+    lateinit var progressBar: ProgressBar
 
     lateinit var mLVM: RegisterVM
 
@@ -40,11 +43,13 @@ class RegisterActivity : AppCompatActivity() {
         et_password = findViewById(R.id.et_password)
         btn_login = findViewById(R.id.btn_login)
         et_password2 = findViewById(R.id.et_password2)
+        progressBar = findViewById(R.id.pb_show)
     }
 
     fun _addListeners(){
         btn_login.setOnClickListener {
             if(validateRegister()){
+                showProgress()
                 val email = et_email.text.toString().trim()
                 val password = et_password.text.toString().trim()
                 val device_type = "MOBILE"
@@ -52,6 +57,16 @@ class RegisterActivity : AppCompatActivity() {
                 mLVM.callRegisterAPI(loginReq)
             }
         }
+    }
+
+    private fun showProgress() {
+        progressBar.visibility = View.VISIBLE
+        btn_login.visibility = View.INVISIBLE
+    }
+
+    private fun hideProgress() {
+        progressBar.visibility = View.GONE
+        btn_login.visibility = View.VISIBLE
     }
 
     private fun getFCMToken(): String {
@@ -65,6 +80,7 @@ class RegisterActivity : AppCompatActivity() {
         mLVM.l_res.observe(this,
             Observer { l_res ->
                 l_res?.let {
+                    hideProgress()
                     if (it.status!!) {
                         saveRefreshToken(it)
                         val i = Intent(this, HomeActivity::class.java)
@@ -79,6 +95,7 @@ class RegisterActivity : AppCompatActivity() {
     private fun saveRefreshToken(it: RegRes) {
         val editor = getSharedPreferences(AppConstants.SHARED_PREF_DOG_APP, MODE_PRIVATE).edit()
         editor.putString(AppConstants.REFRESH_TOKEN, it.refreshToken)
+        editor.putString(AppConstants.USER_EMAIL, et_email.text.toString().trim())
         editor.apply()
     }
 

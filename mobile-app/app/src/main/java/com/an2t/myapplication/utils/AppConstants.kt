@@ -4,6 +4,7 @@ class AppConstants {
     companion object {
         val SHARED_PREF_DOG_APP = "dog-app-storage"
         val REFRESH_TOKEN = "refresh_token"
+        val USER_EMAIL = "user_email"
         val LAT = "lat"
         val LNG = "lng"
         val FCM_TOKEN = "fcm_token"

@@ -99,7 +99,9 @@ data class FinalOutput(
     @SerializedName("image_url")
     val imageUrl: String?,
     @SerializedName("user_id")
-    val userId: Int?
+    val userId: Int?,
+    @SerializedName("contact_email")
+    val contact_email: String?,
 ) : Parcelable
 
 @Parcelize
@@ -110,6 +112,8 @@ data class Match(
     val imageUrl: String?,
     @SerializedName("breed")
     val breed: String?,
+    @SerializedName("contact_email")
+    val contact_email: String?,
     @SerializedName("is_lost")
     val isLost: Int?,
     @SerializedName("user_id")

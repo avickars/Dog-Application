@@ -80,7 +80,7 @@ class Pets(db.Model):
 class PetsSchema(ma.Schema):
     class Meta:
         fields = (
-            'id', 'user_id', 'image_url', 'is_lost', 'final_output', 'lat', 'lng', 'dog_extractor', 'dog_identification', 'breed')
+            'id', 'user_id', 'image_url', 'is_lost', 'final_output', 'lat', 'lng', 'dog_extractor', 'dog_identification', 'breed', 'contact_email')
 
 
 # JSON Schema
@@ -92,7 +92,7 @@ class PetsSchemaUp(ma.Schema):
 class InPetsSchema(ma.Schema):
     class Meta:
         fields = (
-            'lat', 'lng', 'user_id', 'image_url', 'is_lost', 'final_output', 'dog_extractor', 'dog_identification', 'breed')
+            'lat', 'lng', 'user_id', 'image_url', 'is_lost', 'final_output', 'dog_extractor', 'dog_identification', 'breed', 'contact_email')
 
 
 pets_schema = PetsSchema()

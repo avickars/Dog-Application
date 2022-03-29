@@ -17,9 +17,8 @@
     <string name="upload_gallery">Upload from gallery</string>
     <string name="dash">dash</string>
     <string name="send_notification">Send notification</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="upload_pic_using">Upload your dogs picture</string>
+    <string name="upload_pic_using">Upload your dog\'s picture</string>
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
     <string name="title_activity_maps">MapsActivity</string>
@@ -32,11 +31,14 @@
     <string name="upload_from">Upload from</string>
     <string name="submit_picture">Submit Picture</string>
     <string name="uploaded_image">Input Image</string>
-    <string name="matched_results">Comparison results</string>
+    <string name="matched_results">Results</string>
     <string name="google_maps_api_key">AIzaSyBrPZDULnIR1fQ9H4Npt8oFp6Kx3nuGf-8</string>
     <string name="lorem_ipsum">In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before the final copy is available.</string>
     <string name="distance">Distance</string>
     <string name="duration">Duration</string>
     <string name="matched_image">Matched Image</string>
     <string name="eta">Estimated</string>
+    <string name="loading">Loading...</string>
+    <string name="no_records_found">No upload record found.\nPlease upload an image of a dog.</string>
+    <string name="sign_out">Sign out</string>
 </resources>

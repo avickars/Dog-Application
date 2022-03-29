@@ -17,8 +17,8 @@
         <entry key="app/src/main/res/drawable/ic_notifications_black_24dp.xml" value="0.1235" />
         <entry key="app/src/main/res/drawable/ic_round_login_24.xml" value="0.1235" />
         <entry key="app/src/main/res/drawable/react.xml" value="0.335" />
-        <entry key="app/src/main/res/layout/activity_home.xml" value="0.19186248779296877" />
-        <entry key="app/src/main/res/layout/activity_login.xml" value="0.23226318359375" />
+        <entry key="app/src/main/res/layout/activity_home.xml" value="0.21784565916398713" />
+        <entry key="app/src/main/res/layout/activity_login.xml" value="0.45" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.27237854003906253" />
         <entry key="app/src/main/res/layout/activity_maps.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/activity_register.xml" value="0.22780797101449277" />
@@ -34,6 +34,7 @@
         <entry key="app/src/main/res/layout/fragment_home1.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/fragment_maps.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/fragment_notifications.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_profile_dialog.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_select_lost_or_found.xml" value="0.26175762044410006" />
         <entry key="app/src/main/res/layout/fragment_view_pager_test.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/ic_my_location.xml" value="0.19628286491387126" />
@@ -42,6 +43,7 @@
         <entry key="app/src/main/res/layout/notification.xml" value="0.2542510986328125" />
         <entry key="app/src/main/res/layout/notification_item.xml" value="0.16183136899365366" />
         <entry key="app/src/main/res/layout/view_pager_item.xml" value="0.19628286491387126" />
+        <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.231722958529286" />
         <entry key="app/src/main/res/xml/network_security_config.xml" value="0.16183136899365366" />
       </map>
     </option>

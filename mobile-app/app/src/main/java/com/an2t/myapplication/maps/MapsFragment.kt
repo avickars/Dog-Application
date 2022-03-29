@@ -74,6 +74,13 @@ class MapsFragment : AppCompatDialogFragment(), OnMapReadyCallback, GoogleMap.On
     }
 
 
+    override fun onResume() {
+        super.onResume()
+        val width = resources.getDimensionPixelSize(R.dimen.maps_dialog_width)
+        val height = resources.getDimensionPixelSize(R.dimen.maps_dialog_height)
+        dialog!!.window!!.setLayout(width, height)
+    }
+
     interface OnLocationFetched {
         fun onLocationFetchedListener()
     }
@@ -230,6 +237,15 @@ class MapsFragment : AppCompatDialogFragment(), OnMapReadyCallback, GoogleMap.On
 
     private fun updateGeoReverseCodedAddress(latitude: Double, longitude: Double) {
         userLatLng = LatLng(latitude, longitude)
+
+        val editor = context?.getSharedPreferences(
+            AppConstants.SHARED_PREF_DOG_APP,
+            AppCompatActivity.MODE_PRIVATE
+        )?.edit()
+        editor?.putString(AppConstants.LAT, latitude.toString())
+        editor?.putString(AppConstants.LNG, longitude.toString())
+        editor?.apply()
+
         if (Geocoder.isPresent()) {
             var addressList: List<Address>? = null
             uiScope.launch(Dispatchers.IO) {
@@ -247,7 +263,7 @@ class MapsFragment : AppCompatDialogFragment(), OnMapReadyCallback, GoogleMap.On
         addressList: List<Address>?
     ) {
         if (addressList?.size != 0) {
-            binding.tvShowAddress.text = addressList?.get(0)?.getAddressLine(0).toString()
+            binding.tvShowAddress.text = "Selected Address:\n${addressList?.get(0)?.getAddressLine(0).toString()}"
         }
     }
 

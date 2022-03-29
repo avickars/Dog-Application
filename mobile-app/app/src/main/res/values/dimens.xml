@@ -3,4 +3,8 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="marker_size">32dp</dimen>
+    <dimen name="profile_dialog_width">350dp</dimen>
+    <dimen name="profile_dialog_height">250dp</dimen>
+    <dimen name="maps_dialog_width">370dp</dimen>
+    <dimen name="maps_dialog_height">700dp</dimen>
 </resources>

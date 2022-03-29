@@ -100,6 +100,7 @@ class DogMatchResultsMapsFragment : Fragment() {
                     binding.cardRes2.visibility = View.VISIBLE
                     binding.tvTitleMatch.visibility = View.VISIBLE
                     binding.tvTitleEmail.visibility = View.VISIBLE
+                    binding.tvTitleEmail.text = "Contact Email: ${fo?.contact_email}"
                     Picasso.get()
                         .load(fo.imageUrl)
                         .placeholder(R.drawable.gallery)

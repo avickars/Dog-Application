@@ -127,6 +127,19 @@
                     app:layout_constraintTop_toBottomOf="@id/et_email"
                     tools:ignore="MissingConstraints"/>
 
+                <ProgressBar
+                    android:visibility="gone"
+                    android:layout_marginTop="16dp"
+                    android:elevation="10dp"
+                    android:layout_gravity="center"
+                    android:id="@+id/pb_show"
+                    android:indeterminateTint="@color/purple_200"
+                    app:layout_constraintEnd_toEndOf="@id/et_password"
+                    app:layout_constraintStart_toStartOf="@id/et_password"
+                    app:layout_constraintTop_toBottomOf="@id/et_password"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
 
                 <Button
                     android:id="@+id/btn_login"

@@ -3,7 +3,9 @@ package com.an2t.myapplication.login
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +20,8 @@ import com.an2t.myapplication.register.RegisterActivity
 import com.an2t.myapplication.utils.AppConstants
 import com.an2t.myapplication.utils.AppConstants.Companion.REFRESH_TOKEN
 import com.an2t.myapplication.utils.AppConstants.Companion.SHARED_PREF_DOG_APP
+import com.an2t.myapplication.utils.AppConstants.Companion.USER_EMAIL
+import kotlinx.android.synthetic.main.activity_login.view.*
 
 
 class LoginActivity : AppCompatActivity() {
@@ -26,6 +30,7 @@ class LoginActivity : AppCompatActivity() {
     lateinit var et_password: AppCompatEditText
     lateinit var btn_login: Button
     lateinit var tv_sign_up: TextView
+    lateinit var progressBar: ProgressBar
 
     lateinit var mLVM: LoginVM
 
@@ -44,6 +49,7 @@ class LoginActivity : AppCompatActivity() {
         et_password = findViewById(R.id.et_password)
         btn_login = findViewById(R.id.btn_login)
         tv_sign_up = findViewById(R.id.tv_sign_up)
+        progressBar = findViewById(R.id.pb_show)
     }
 
     fun _addListeners(){
@@ -53,6 +59,7 @@ class LoginActivity : AppCompatActivity() {
                 val password = et_password.text.toString().trim()
                 val device_type = "MOBILE"
                 val loginReq = LoginReq(device_type, email, password, getFCMToken())
+                showProgress()
                 mLVM.callLogin(loginReq)
             }
         }
@@ -60,6 +67,16 @@ class LoginActivity : AppCompatActivity() {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    private fun showProgress() {
+        progressBar.visibility = View.VISIBLE
+        btn_login.visibility = View.INVISIBLE
+    }
+
+    private fun hideProgress() {
+        progressBar.visibility = View.GONE
+        btn_login.visibility = View.VISIBLE
     }
 
     private fun getFCMToken(): String {
@@ -73,6 +90,7 @@ class LoginActivity : AppCompatActivity() {
         mLVM.l_res.observe(this,
             Observer { l_res ->
                 l_res?.let {
+                    hideProgress()
                     if (it.status!!) {
                         saveRefreshToken(it)
                         val i = Intent(this, HomeActivity::class.java)
@@ -88,6 +106,7 @@ class LoginActivity : AppCompatActivity() {
     private fun saveRefreshToken(it: LoginRes) {
         val editor = getSharedPreferences(SHARED_PREF_DOG_APP, MODE_PRIVATE).edit()
         editor.putString(REFRESH_TOKEN, it.refreshToken)
+        editor.putString(USER_EMAIL, et_email.text.toString().trim())
         editor.apply()
     }
 
