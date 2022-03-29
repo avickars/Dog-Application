@@ -1,10 +1,13 @@
 package com.an2t.myapplication.view_pager_test
 
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.an2t.myapplication.R
@@ -14,6 +17,7 @@ import com.an2t.myapplication.home.ui.home.adapters.DashMatchResultsAdapter
 import com.an2t.myapplication.model.FinalOutput
 import com.an2t.myapplication.model.Match
 import com.squareup.picasso.Picasso
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -45,6 +49,7 @@ class DogMatchResultsMapsFragment : Fragment() {
 
     private var dogData: Match? = null
     private var itemNumber: Int = 0
+    private var selectedEmail: String = ""
 
     private var _binding: FragmentDogMatchResultsMapsBinding? = null
 
@@ -100,7 +105,8 @@ class DogMatchResultsMapsFragment : Fragment() {
                     binding.cardRes2.visibility = View.VISIBLE
                     binding.tvTitleMatch.visibility = View.VISIBLE
                     binding.tvTitleEmail.visibility = View.VISIBLE
-                    binding.tvTitleEmail.text = "Contact Email: ${fo?.contact_email}"
+                    selectedEmail = fo.contact_email.toString()
+                    binding.tvTitleEmail.text = "Contact Email: ${selectedEmail}"
                     Picasso.get()
                         .load(fo.imageUrl)
                         .placeholder(R.drawable.gallery)
@@ -109,6 +115,24 @@ class DogMatchResultsMapsFragment : Fragment() {
                     onMatchResultClickListener?.onMatchedResClick(fo, it.indexOf(fo))
                 })
                 adapter = matchResultsAdapter
+            }
+        }
+
+
+        binding.tvTitleEmail.setOnClickListener {
+            val i = Intent(Intent.ACTION_SEND)
+            i.type = "message/rfc822"
+            i.putExtra(Intent.EXTRA_EMAIL, arrayOf(selectedEmail))
+            i.putExtra(Intent.EXTRA_SUBJECT, "subject of email")
+            i.putExtra(Intent.EXTRA_TEXT, "body of email")
+            try {
+                startActivity(Intent.createChooser(i, "Send mail..."))
+            } catch (ex: ActivityNotFoundException) {
+                Toast.makeText(
+                    activity,
+                    "There are no email clients installed.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
