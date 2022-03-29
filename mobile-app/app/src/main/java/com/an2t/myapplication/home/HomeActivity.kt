@@ -1,6 +1,7 @@
 package com.an2t.myapplication.home
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -16,12 +17,14 @@ import com.an2t.myapplication.maps.MapsFragment
 import com.an2t.myapplication.R
 import com.an2t.myapplication.databinding.ActivityHomeBinding
 import com.an2t.myapplication.login.LoginActivity
+import com.an2t.myapplication.maps.ProfileDialogFragment
 import com.an2t.myapplication.utils.AppConstants
 import com.an2t.myapplication.utils.FragmentsTransactionListener
 
 //import com.an2t.myapplication.home1.databinding.ActivityHomeBinding
 
-class HomeActivity : FragmentActivity(), FragmentsTransactionListener {
+class HomeActivity : FragmentActivity(), FragmentsTransactionListener,
+    ProfileDialogFragment.OnSignOutClick {
 
     private lateinit var binding: ActivityHomeBinding
 
@@ -45,29 +48,45 @@ class HomeActivity : FragmentActivity(), FragmentsTransactionListener {
         navView.setupWithNavController(navController)
 
         _addListeners()
+        setEmailName()
 //        _openMapsBottomSheet()
     }
 
+    private fun setEmailName() {
+        if(getUserEmail().isNotEmpty()){
+            binding.tvInitEmail.text = getUserEmail()[0].toString().uppercase()
+        }
+    }
 
-    private fun _openMapsBottomSheet() {
-        val bottomSheetFragment = MapsFragment()
-        bottomSheetFragment.isCancelable = false
-        openBottomSheetFragment(bottomSheetFragment)
+    private fun getUserEmail(): String {
+        val sharedPreference =
+            getSharedPreferences(AppConstants.SHARED_PREF_DOG_APP, Context.MODE_PRIVATE)
+        val email = sharedPreference?.getString(AppConstants.USER_EMAIL, "")
+        return email!!
+    }
+
+
+    private fun openProfileDialog() {
+        val bottomSheetFragment = ProfileDialogFragment()
+        bottomSheetFragment.isCancelable = true
+        bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
     }
 
 
     fun _addListeners(){
         binding.btnLogout.setOnClickListener {
-            removeRefreshToken()
-            val i = Intent(this, LoginActivity::class.java)
-            startActivity(i)
-            finish()
+            initSignOutUser()
         }
-
-        binding.card.setOnClickListener {
-            _openMapsBottomSheet()
+        binding.cardProfileTitle.setOnClickListener {
+            openProfileDialog()
         }
+    }
 
+    private fun initSignOutUser() {
+        removeRefreshToken()
+        val i = Intent(this, LoginActivity::class.java)
+        startActivity(i)
+        finish()
     }
 
     @SuppressLint("CommitPrefEdits")
@@ -119,6 +138,10 @@ class HomeActivity : FragmentActivity(), FragmentsTransactionListener {
 
     override fun dismissBottomSheetFragment(fragment: AppCompatDialogFragment) {
         fragment.dismiss()
+    }
+
+    override fun onSignOutClickListener() {
+        initSignOutUser()
     }
 
 }

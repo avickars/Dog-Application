@@ -19,7 +19,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ProgressBar
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
@@ -31,9 +31,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.an2t.myapplication.R
 import com.an2t.myapplication.databinding.FragmentHome1Binding
 import com.an2t.myapplication.home.HomeActivity
-import com.an2t.myapplication.home.ui.home.adapters.DashMatchAdapter
 import com.an2t.myapplication.home.ui.home.adapters.MainMatchAdapter
-import com.an2t.myapplication.home.ui.home.adapters.MatchResultsAdapter
 import com.an2t.myapplication.maps.GalleryOrCameraFragment
 import com.an2t.myapplication.maps.MapsFragment
 import com.an2t.myapplication.maps.SelectLostOrFoundFragment
@@ -44,6 +42,7 @@ import com.an2t.myapplication.network.ServiceAPI
 import com.an2t.myapplication.utils.AppConstants
 import com.an2t.myapplication.utils.AppConstants.Companion.BASE_URL_MODEL
 import com.an2t.myapplication.utils.FragmentsTransactionListener
+import kotlinx.android.synthetic.main.activity_login.view.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -75,7 +74,8 @@ class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionLi
     internal lateinit var cam_uri_photo: Uri
     internal lateinit var mSAPI: ServiceAPI
     lateinit var mPD: ProgressDialog
-    lateinit var mPB_show: ProgressBar
+//    lateinit var mPB_show: ProgressBar
+
 
 
 
@@ -100,7 +100,7 @@ class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionLi
         iniProgress()
         val btnUploadCamera: Button = binding.btnUploadCamera
         val btnUploadGallery: Button = binding.btnUploadGallery
-        mPB_show = binding.pbShow
+//        mPB_show = binding.pbShow
 //        animationView = binding.animationView
 //        imageUploaded = binding.imgUpload
 //        d_op = binding.imgDOp
@@ -149,9 +149,13 @@ class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionLi
                 hideProgress()
                 if (it) {
                     l_res.matchList?.let {
-                        matchResultsAdapter.apply {
-                            setListData(it)
-                            notifyDataSetChanged()
+                        if(it.isEmpty()){
+                            showNoDataFound()
+                        }else {
+                            matchResultsAdapter.apply {
+                                setListData(it)
+                                notifyDataSetChanged()
+                            }
                         }
                     }
                 }
@@ -167,6 +171,20 @@ class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionLi
                 Toast.LENGTH_LONG
             ).show()
         }
+    }
+
+    private fun showNoDataFound() {
+        binding.llProgress.visibility = View.VISIBLE
+        binding.animationView.setAnimation(R.raw.error_state_dog)
+        binding.animationView.playAnimation()
+        binding.animationView.loop(true)
+        binding.tvProgressTitle.text = resources.getString(R.string.no_records_found)
+        binding.tvProgressTitle.textSize = 16.0f
+        _binding?.rvShowMatchResults?.visibility = View.GONE
+        val params: LinearLayout.LayoutParams =
+            LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        params.setMargins(0, -50, 0, 0)
+        binding.tvProgressTitle.layoutParams = params
     }
 
     private fun iniProgress() {
@@ -193,12 +211,16 @@ class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionLi
     }
 
     private fun hideProgress() {
-        mPB_show.visibility = View.GONE
+//        mPB_show.visibility = View.GONE
+        binding.llProgress.visibility = View.GONE
         _binding?.rvShowMatchResults?.visibility = View.VISIBLE
     }
 
     private fun showProgress() {
-        mPB_show.visibility = View.VISIBLE
+//        mPB_show.visibility = View.VISIBLE
+        binding.llProgress.visibility = View.VISIBLE
+        binding.animationView.setAnimation(R.raw.purple_dog_walking)
+        binding.animationView.playAnimation()
         _binding?.rvShowMatchResults?.visibility = View.GONE
     }
 

@@ -3,7 +3,7 @@
     <style name="Theme.MyApplication" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/purple_400</item>
         <item name="colorPrimaryDark">@color/purple_200</item>
-        <item name="colorAccent">@color/white</item>
+        <item name="colorAccent">@color/purple_200</item>
         <item name="android:statusBarColor">@color/purple_400</item>
     </style>
 </resources>

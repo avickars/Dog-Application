@@ -156,7 +156,7 @@ class PetsSchema(ma.Schema):
 class PetsSchemaUp(ma.Schema):
     class Meta:
         fields = (
-            'user_id', 'id', 'image_url', 'dog_identification', 'breed', 'lat', 'lng')
+            'user_id', 'id', 'image_url', 'dog_identification', 'breed', 'lat', 'lng', 'contact_email')
 
 pets_schema = PetsSchema()
 pets_s_schema = PetsSchema(many=True)

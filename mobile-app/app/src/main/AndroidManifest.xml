@@ -22,8 +22,10 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:screenOrientation="sensorPortrait"
         android:theme="@style/Theme.MyApplication">
         <activity
+            android:screenOrientation="portrait"
             android:name=".view_pager_test.ViewPagerTestActivity"
             android:exported="true">
         </activity>
@@ -32,6 +34,7 @@
             android:value="${MAPS_API_KEY}" />
 
         <activity
+            android:screenOrientation="portrait"
             android:name=".MapsActivity"
             android:exported="true"
             android:label="@string/title_activity_maps">
@@ -59,10 +62,12 @@
             android:resource="@color/purple_200" />
 
         <activity
+            android:screenOrientation="portrait"
             android:name=".home.HomeActivity"
             android:exported="false"
             android:label="@string/title_activity_home" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".spash.SplashActivity"
             android:exported="true">
             <intent-filter>
@@ -72,9 +77,11 @@
             </intent-filter>
         </activity>
         <activity
+            android:screenOrientation="portrait"
             android:name=".register.RegisterActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".login.LoginActivity"
             android:exported="true" />
 

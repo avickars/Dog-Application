@@ -22,6 +22,7 @@ class MatchResultsAdapter(val matchResList: List<FinalOutput>) : RecyclerView.Ad
         // Getting element from names list at this position
         val o = matchResList.get(position)
         // Updating the text of the txtName with this element
+        holder.tv_title_res.visibility = View.GONE
         holder.tv_title_res.text = String.format("%.3f", o.cScore)
         Picasso.get()
             .load(o.imageUrl)
