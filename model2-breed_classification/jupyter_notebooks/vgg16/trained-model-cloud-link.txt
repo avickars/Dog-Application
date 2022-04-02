@@ -1,0 +1,3 @@
+trained .pt models based on VGG16 can be downloaded from the following drive link:
+
+https://drive.google.com/drive/folders/1CpYqwyAW9Ilnk7MOvb3alp20TWPZUqWc?usp=sharing

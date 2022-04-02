@@ -1,0 +1,3 @@
+trained .pt models based on densenet can be downloaded from the following drive link:
+
+https://drive.google.com/drive/folders/1NNAx2IKvweY4xH3-W12hm-istff4Xsj1?usp=sharing
