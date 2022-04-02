@@ -1,0 +1,161 @@
+INCEPTION_V3
+
+inception_v3 = train_model(inception_v3, criterion, optimizer_inception_v3, exp_lr_scheduler, num_epochs=30)
+
+
+
+
+
+Epoch 0/29
+----------
+train Loss: 3.6304 Acc: 0.2336
+val Loss: 1.3396 Acc: 0.7578
+
+Epoch 1/29
+----------
+train Loss: 2.5110 Acc: 0.4168
+val Loss: 0.7167 Acc: 0.8197
+
+Epoch 2/29
+----------
+train Loss: 2.2134 Acc: 0.4663
+val Loss: 0.5640 Acc: 0.8343
+
+Epoch 3/29
+----------
+train Loss: 2.0730 Acc: 0.4915
+val Loss: 0.4750 Acc: 0.8558
+
+Epoch 4/29
+----------
+train Loss: 2.0356 Acc: 0.4979
+val Loss: 0.4939 Acc: 0.8402
+
+Epoch 5/29
+----------
+train Loss: 1.9765 Acc: 0.5054
+val Loss: 0.4418 Acc: 0.8523
+
+Epoch 6/29
+----------
+train Loss: 1.9334 Acc: 0.5224
+val Loss: 0.5381 Acc: 0.8304
+
+Epoch 7/29
+----------
+train Loss: 1.8747 Acc: 0.5237
+val Loss: 0.3763 Acc: 0.8738
+
+Epoch 8/29
+----------
+train Loss: 1.8828 Acc: 0.5268
+val Loss: 0.4556 Acc: 0.8533
+
+Epoch 9/29
+----------
+train Loss: 1.8527 Acc: 0.5307
+val Loss: 0.4116 Acc: 0.8665
+
+Epoch 10/29
+----------
+train Loss: 1.8659 Acc: 0.5333
+val Loss: 0.4405 Acc: 0.8514
+
+Epoch 11/29
+----------
+train Loss: 1.8622 Acc: 0.5325
+val Loss: 0.3820 Acc: 0.8748
+
+Epoch 12/29
+----------
+train Loss: 1.8536 Acc: 0.5351
+val Loss: 0.3910 Acc: 0.8709
+
+Epoch 13/29
+----------
+train Loss: 1.8459 Acc: 0.5344
+val Loss: 0.3916 Acc: 0.8733
+
+Epoch 14/29
+----------
+train Loss: 1.8406 Acc: 0.5365
+val Loss: 0.4512 Acc: 0.8533
+
+Epoch 15/29
+----------
+train Loss: 1.8249 Acc: 0.5446
+val Loss: 0.3787 Acc: 0.8762
+
+Epoch 16/29
+----------
+train Loss: 1.8282 Acc: 0.5441
+val Loss: 0.3925 Acc: 0.8684
+
+Epoch 17/29
+----------
+train Loss: 1.8339 Acc: 0.5409
+val Loss: 0.3753 Acc: 0.8723
+
+Epoch 18/29
+----------
+train Loss: 1.8169 Acc: 0.5446
+val Loss: 0.4298 Acc: 0.8640
+
+Epoch 19/29
+----------
+train Loss: 1.8233 Acc: 0.5384
+val Loss: 0.3984 Acc: 0.8660
+
+Epoch 20/29
+----------
+train Loss: 1.8387 Acc: 0.5419
+val Loss: 0.3966 Acc: 0.8694
+
+Epoch 21/29
+----------
+train Loss: 1.8337 Acc: 0.5390
+val Loss: 0.4088 Acc: 0.8611
+
+Epoch 22/29
+----------
+train Loss: 1.8360 Acc: 0.5379
+val Loss: 0.4224 Acc: 0.8592
+
+Epoch 23/29
+----------
+train Loss: 1.8317 Acc: 0.5409
+val Loss: 0.4046 Acc: 0.8689
+
+Epoch 24/29
+----------
+train Loss: 1.8315 Acc: 0.5378
+val Loss: 0.4080 Acc: 0.8660
+
+Epoch 25/29
+----------
+train Loss: 1.8290 Acc: 0.5410
+val Loss: 0.3972 Acc: 0.8655
+
+Epoch 26/29
+----------
+train Loss: 1.8330 Acc: 0.5392
+val Loss: 0.3767 Acc: 0.8738
+
+Epoch 27/29
+----------
+train Loss: 1.8242 Acc: 0.5437
+val Loss: 0.3979 Acc: 0.8699
+
+Epoch 28/29
+----------
+train Loss: 1.8291 Acc: 0.5398
+val Loss: 0.4232 Acc: 0.8562
+
+Epoch 29/29
+----------
+train Loss: 1.8217 Acc: 0.5404
+val Loss: 0.3926 Acc: 0.8665
+
+Training complete in 267m 46s
+Best val Acc: 0.876218
+

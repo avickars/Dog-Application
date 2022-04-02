@@ -1,3 +1,6 @@
+model2-breed_classification/*.pt
+model2-breed_classification/.ipynb_checkpoints
+model2-breed_classification/.ipynb_checkpoints/*
 flask-celery-backend/.env
 flask-celery-backend/__pycache__/*
 flask-celery-backend/__pycache__/*.pyc
