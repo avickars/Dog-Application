@@ -1,0 +1,3 @@
+trained .pt models based on Googlenet can be downloaded from the following drive link:
+
+https://drive.google.com/drive/folders/1fpFuffOF45kvEqhs7u9anNcDglPkuEa4?usp=sharing
