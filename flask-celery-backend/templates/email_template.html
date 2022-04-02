@@ -55,8 +55,10 @@
                                     <table style="margin: 0 auto 0 auto;">
                                         <tr>
                                             <td>
-                                                <p style="margin:0 0 0 0;font-size:24px;line-height:24px;font-family:Arial,sans-serif;text-align: center;">
+                                                {% if isFound is sameas true %}
+                                                    <p style="margin:0 0 0 0;font-size:24px;line-height:24px;font-family:Arial,sans-serif;text-align: center;">
                                                     Lost Dog Image</p>
+                                                {% endif %}
                                             </td>
                                         </tr>
                                     </table>
@@ -75,8 +77,10 @@
                                     <table style="margin: 16px auto 0 auto;">
                                         <tr>
                                             <td>
-                                                <p style="margin:0 0 0 0;font-size:24px;line-height:24px;font-family:Arial,sans-serif;text-align: center;">
+                                                {% if isFound is sameas true %}
+                                                    <p style="margin:0 0 0 0;font-size:24px;line-height:24px;font-family:Arial,sans-serif;text-align: center;">
                                                     Matched Results</p>
+                                                {% endif %}
                                             </td>
                                         </tr>
                                     </table>
