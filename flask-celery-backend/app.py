@@ -47,6 +47,7 @@ else:
     CELERY_RESULT_BACKEND = os.environ['CELERY_RESULT_BACKEND']
     SQLALCHEMY_DATABASE_URI = os.environ['SQLALCHEMY_DATABASE_URI']
 
+FIREBASE_SERVER_KEY = "key=AAAAM9hqUJ4:APA91bGuUaPEC6EcsTZBBCcQD29CZ-tG9dSx0rXsklvB_DZSXr6HX4Q9EkNJYW-1BHLoLVijWE8sSE8AM9S8am0KU0tnHofU5v0a57_nmQyOR_6ybl_ZqEXGu94m5Dv6igkJDSWWhOS6"
 basedir = os.getcwd()
 
 
@@ -209,19 +210,18 @@ def viewTemp():
     }
     return render_template('email_template.html', **_message_body)
 
-def send_email_to_user(data=[], to_email='karthiksrinath24007@gmail.com', count=0, uploaded_img=''):
+def send_email_to_user_for_no_dog_found(to_email='karthiksrinath24007@gmail.com', uploaded_img=''):
     API_KEY = config('SEND_GRID_API_KEY', default='')
     if API_KEY == '':
         API_KEY = os.environ['SEND_GRID_API_KEY']
 
-    _d = format_data_for_email_temp(data)
-
     _message_body = {
-        "title": "Here is a good news for you!",
-        "message": f"We found {count} match results of your lost dog.",
+        "title": "Dog not identified!",
+        "message": f"We could not able to detect dog in the picture.",
         "banner_img": "https://i.imgur.com/jcP2YnQ.png",
         "input_img": uploaded_img,
-        "matched_results": _d
+        "matched_results": [],
+        "isFound": False
     }
 
     message = Mail(
@@ -242,6 +242,71 @@ def send_email_to_user(data=[], to_email='karthiksrinath24007@gmail.com', count=
     except Exception as e:
         return 'Not able to send email'
 
+def send_email_to_user(data=[], to_email='karthiksrinath24007@gmail.com', count=0, uploaded_img=''):
+    API_KEY = config('SEND_GRID_API_KEY', default='')
+    if API_KEY == '':
+        API_KEY = os.environ['SEND_GRID_API_KEY']
+
+    _d = format_data_for_email_temp(data)
+
+    _message_body = {
+        "title": "Here is a good news for you!",
+        "message": f"We found {count} match results of your lost dog.",
+        "banner_img": "https://i.imgur.com/jcP2YnQ.png",
+        "input_img": uploaded_img,
+        "matched_results": _d,
+        "isFound": True
+    }
+
+    message = Mail(
+        from_email='cmpt733dogapp@gmail.com',
+        to_emails=to_email,
+        subject='Your Dog Status',
+        html_content=render_template('email_template.html', **_message_body),
+        is_multiple=True,
+    )
+    try:
+        sg = SendGridAPIClient(API_KEY)
+        response = sg.send(message)
+
+        if response.status_code == 202:
+            return 'Email Sent'
+        else:
+            return 'Not able to send email'
+    except Exception as e:
+        return 'Not able to send email'
+
+
+def sendNotificationOfInvalidImage(user_id, db_session):
+    _res = db_session.query(User.id, User.fcm_token).filter_by(
+        id=user_id).first()
+    db_session.close()
+
+    if _res is not None:
+        fcm_token = _res[1]
+        _headers = {
+            "Content-Type": "application/json",
+            'Authorization': FIREBASE_SERVER_KEY
+        }
+
+        b_data = {
+            "to": fcm_token,
+            "data": {
+                "title": "Dog not identified!",
+                "message": f"We could not able to detect dog in the picture."
+            }
+        }
+        fb_url = 'https://fcm.googleapis.com/fcm/send'
+        response = requests.post(fb_url,
+                                 data=json.dumps(b_data), headers=_headers)
+
+        if response.status_code == 200:
+            message = "Notification sent to the user!"
+        else:
+            message = "Some error occurred while sending notification"
+        return message
+
+
 def sendNotificationToLostDogUser(user_id, db_session, count, ac_img, mat_img):
 
     _res = db_session.query(User.id, User.fcm_token).filter_by(id=user_id).first()
@@ -251,7 +316,7 @@ def sendNotificationToLostDogUser(user_id, db_session, count, ac_img, mat_img):
         fcm_token = _res[1]
         _headers = {
             "Content-Type": "application/json",
-            'Authorization': "key=AAAAM9hqUJ4:APA91bGuUaPEC6EcsTZBBCcQD29CZ-tG9dSx0rXsklvB_DZSXr6HX4Q9EkNJYW-1BHLoLVijWE8sSE8AM9S8am0KU0tnHofU5v0a57_nmQyOR_6ybl_ZqEXGu94m5Dv6igkJDSWWhOS6"
+            'Authorization': FIREBASE_SERVER_KEY
         }
 
         b_data = {
@@ -264,7 +329,6 @@ def sendNotificationToLostDogUser(user_id, db_session, count, ac_img, mat_img):
             }
         }
 
-        print(b_data)
         fb_url = 'https://fcm.googleapis.com/fcm/send'
         response = requests.post(fb_url,
                                  data=json.dumps(b_data), headers=_headers)
@@ -281,82 +345,92 @@ def sendNotificationToLostDogUser(user_id, db_session, count, ac_img, mat_img):
 def run_models_in_background(img_pth, img_name, user_id, url, is_lost, lat, lng, email):
     app = create_app()
     with app.app_context():
-        extractor_outputs = dog_extractor(img_pth)
-        breeds = predict_breed(img_pth)
-        breed_tup = tuple(breeds)
-        if extractor_outputs[0]['boxes'] == []:
-            os.remove(img_name)
-            data = {
-                "status": True,
-                "dog_extractor": None,
-                "dog_identification": None,
-                "image_url": None
-            }
+        return call_all_models_for_data_processing(email, img_name, img_pth,
+                                                   is_lost, lat, lng, url,
+                                                   user_id)
 
-            return jsonify(data)
-        comparator_outputs = dog_comparator(img_pth, extractor_outputs[0]['boxes'])
 
-        if int(is_lost) == 1:
-            find_status = 0
-        else:
-            find_status = 1
-
-        query = "select * from pets where is_lost = " + str(find_status) + " and breed in " + str(breed_tup)
-        fetch_pets = db_session.execute(query)
-        # all_pets_filtered = pets_up_schema.dump(fetch_pets)
-        # print(all_pets_filtered)
-        # fetch_pets = db_session.query(Pets).filter_by(is_lost=find_status)
-        db_session.close()
-        all_pets = pets_up_schema.dump(fetch_pets)
-
-        similar_dogs = []
-        if len(all_pets) > 0:
-            for each_val in all_pets:
-                comparison = sigmoid(torch.FloatTensor(comparator_outputs),
-                                     torch.FloatTensor(each_val['dog_identification']))
-                comparison = comparison.tolist()
-                comparison = comparison[0]
-                each_val['c_score'] = comparison
-                del each_val['dog_identification']
-                similar_dogs.append(each_val)
-
-            similar_dogs = pd.DataFrame.from_records(similar_dogs)
-            similar_dogs = similar_dogs.sort_values(by=['c_score'], ascending=False)
-            similar_dogs = similar_dogs.head(5)
-            similar_dogs = similar_dogs.to_dict('records')
-            os.remove(img_name)
-
-        # DB entry after first model response
-        pets = Pets(
-            user_id=user_id,
-            image_url=url,
-            is_lost=int(is_lost),
-            dog_extractor=extractor_outputs,
-            dog_identification=comparator_outputs,
-            final_output=similar_dogs,
-            breed=breeds[0],
-            lat=float(lat),
-            lng=float(lng),
-            contact_email=email
-        )
-        db_session.add(pets)
-        db_session.commit()
-        db_session.close()
-
-        similar_dog_url = url
-
-        if len(similar_dogs) > 0:
-            similar_dog_url = similar_dogs[-1]['image_url']
-
+def call_all_models_for_data_processing(email, img_name, img_pth, is_lost, lat,
+                                        lng, url, user_id):
+    extractor_outputs = dog_extractor(img_pth)
+    breeds = predict_breed(img_pth)
+    breed_tup = tuple(breeds)
+    user_email = db_session.query(User.email).filter_by(id=user_id).first()[0]
+    if extractor_outputs[0]['boxes'] == []:
+        os.remove(img_name)
         data = {
             "status": True,
-            "stacked_comparision": similar_dogs,
-            "image_url": url
+            "dog_extractor": None,
+            "dog_identification": None,
+            "image_url": None
         }
-        noti_message = sendNotificationToLostDogUser(user_id, db_session, len(similar_dogs), url, similar_dog_url)
-        user_email = db_session.query(User.email).filter_by(id=user_id).first()[0]
-        mail_status = send_email_to_user(similar_dogs, user_email, len(similar_dogs), url)
-        return {"data": data, "email_status":  mail_status, "notification_response": noti_message}
+        sendNotificationOfInvalidImage(user_id, db_session)
+        mail_status = send_email_to_user_for_no_dog_found(
+            to_email=user_email, uploaded_img=url)
+        return jsonify({"notification_response": data, "email_status": mail_status })
+    comparator_outputs = dog_comparator(img_pth, extractor_outputs[0]['boxes'])
+    if int(is_lost) == 1:
+        find_status = 0
+    else:
+        find_status = 1
+    query = "select * from pets where is_lost = " + str(
+        find_status) + " and breed in " + str(breed_tup)
+    fetch_pets = db_session.execute(query)
+    # all_pets_filtered = pets_up_schema.dump(fetch_pets)
+    # print(all_pets_filtered)
+    # fetch_pets = db_session.query(Pets).filter_by(is_lost=find_status)
+    db_session.close()
+    all_pets = pets_up_schema.dump(fetch_pets)
+    similar_dogs = []
+    if len(all_pets) > 0:
+        for each_val in all_pets:
+            comparison = sigmoid(torch.FloatTensor(comparator_outputs),
+                                 torch.FloatTensor(
+                                     each_val['dog_identification']))
+            comparison = comparison.tolist()
+            comparison = comparison[0]
+            each_val['c_score'] = comparison
+            del each_val['dog_identification']
+            similar_dogs.append(each_val)
+
+        similar_dogs = pd.DataFrame.from_records(similar_dogs)
+        similar_dogs = similar_dogs.sort_values(by=['c_score'],
+                                                ascending=False)
+        similar_dogs = similar_dogs.head(5)
+        similar_dogs = similar_dogs.to_dict('records')
+        os.remove(img_name)
+    # DB entry after first model response
+    pets = Pets(
+        user_id=user_id,
+        image_url=url,
+        is_lost=int(is_lost),
+        dog_extractor=extractor_outputs,
+        dog_identification=comparator_outputs,
+        final_output=similar_dogs,
+        breed=breeds[0],
+        lat=float(lat),
+        lng=float(lng),
+        contact_email=email
+    )
+    db_session.add(pets)
+    db_session.commit()
+    db_session.close()
+    similar_dog_url = url
+    if len(similar_dogs) > 0:
+        similar_dog_url = similar_dogs[-1]['image_url']
+    data = {
+        "status": True,
+        "stacked_comparision": similar_dogs,
+        "image_url": url
+    }
+    noti_message = sendNotificationToLostDogUser(user_id, db_session,
+                                                 len(similar_dogs), url,
+                                                 similar_dog_url)
+    mail_status = send_email_to_user(similar_dogs, user_email,
+                                     len(similar_dogs), url)
+    return {"data": data, "email_status": mail_status,
+            "notification_response": noti_message}
+
 
 # App Models
 
@@ -448,6 +522,9 @@ def upload_lost_pet_image(*args, **kwargs):
     lng = request.form.get('lng', '-122.867152')
 
     run_models_in_background.delay(img_pth, img_name, user_id, url, is_lost, lat, lng, email)
+    # call_all_models_for_data_processing(email, img_name, img_pth,
+    #                                     is_lost, lat, lng, url,
+    #                                     user_id)
     return jsonify(data)
 
 

@@ -41,6 +41,7 @@
         <entry key="app/src/main/res/layout/match_res_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/match_res_sub_item.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/notification.xml" value="0.2542510986328125" />
+        <entry key="app/src/main/res/layout/notification_dog_not_identified.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/notification_item.xml" value="0.16183136899365366" />
         <entry key="app/src/main/res/layout/view_pager_item.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.231722958529286" />

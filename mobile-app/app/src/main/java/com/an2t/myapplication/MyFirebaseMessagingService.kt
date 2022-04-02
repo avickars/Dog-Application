@@ -1,6 +1,7 @@
 package com.an2t.myapplication
 
 import android.annotation.SuppressLint
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -56,23 +57,47 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
 
     }
 
+
+    @SuppressLint("RemoteViewLayout")
+    fun getRemoteViewToShowNoDogFound(n_res: NotificationResponse) : RemoteViews {
+        val rv = RemoteViews("com.an2t.myapplication", R.layout.notification)
+        rv.apply{
+            setTextViewText(R.id.title,n_res.title)
+            setTextViewText(R.id.desc,n_res.message)
+        }
+        return rv
+    }
+
     fun generateNotification(n_res : NotificationResponse){
         val intent = Intent(this, HomeActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
         val pendingIntent = PendingIntent.getActivity(this, 0 , intent, PendingIntent.FLAG_ONE_SHOT)
 
+        var builder: NotificationCompat.Builder
 
-        val builder = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setAutoCancel(true)
-            .setVibrate(longArrayOf(1000,1000,1000,1000))
-            .setOnlyAlertOnce(true)
-            .setContentIntent(pendingIntent)
-            .setCustomContentView(getRemoteView(n_res))
-            .setCustomBigContentView(getRemoteView(n_res))
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+        if (n_res.m_img.isNullOrEmpty()){
 
+            builder = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setAutoCancel(true)
+                .setVibrate(longArrayOf(1000,1000,1000,1000))
+                .setOnlyAlertOnce(true)
+                .setContentIntent(pendingIntent)
+                .setCustomContentView(getRemoteViewToShowNoDogFound(n_res))
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+
+        }else{
+            builder = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setAutoCancel(true)
+                .setVibrate(longArrayOf(1000,1000,1000,1000))
+                .setOnlyAlertOnce(true)
+                .setContentIntent(pendingIntent)
+                .setCustomContentView(getRemoteView(n_res))
+                .setCustomBigContentView(getRemoteView(n_res))
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+        }
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 

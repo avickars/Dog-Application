@@ -221,6 +221,7 @@ class HomeFragment : Fragment(), Callback<ImageResponse>, FragmentsTransactionLi
         binding.llProgress.visibility = View.VISIBLE
         binding.animationView.setAnimation(R.raw.purple_dog_walking)
         binding.animationView.playAnimation()
+        binding.animationView.loop(true)
         _binding?.rvShowMatchResults?.visibility = View.GONE
     }
 

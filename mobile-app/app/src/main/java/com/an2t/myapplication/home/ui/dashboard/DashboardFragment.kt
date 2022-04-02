@@ -212,6 +212,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
         binding.llProgress.visibility = View.VISIBLE
         binding.animationView.setAnimation(R.raw.purple_dog_walking)
         binding.animationView.playAnimation()
+        binding.animationView.loop(true)
         _binding?.clMainMapView?.visibility = View.GONE
     }
 
