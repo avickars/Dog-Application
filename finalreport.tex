@@ -204,7 +204,39 @@ To develop the Dog Extractor model, we investigated multiple avenues that includ
         \end{itemize}
 \end{enumerate}
 
-The model was trained on the cleaned "Open Images" data-set for 10 epochs with an initial learning rate of 0.005 and a decay of 0.1 every 3 epochs, as well as a momentum value of 0.9.  Due to memory limitations, our batch size was set to one.  We note that PyTorch's tutorial on object detection \cite{TorchVision} was very helpful here and we give all credit accordingly.  During training we concerned ourselves only with the validation Mean Average Precision (MAP) because we are concerned only with a single class.  We coded and computed the MAP over an IOU threshold range from 0.5 to 0.95 in increments of 0.05, and computed the mean.  We denote this value as MAP 0.5:0.95.  During training we saved the model weights only when the MAP 0.5:0.95 increased and achieved a best validation MAP 0.5:0.95 of 0.73 during training using an object score threshold of 0.6 and an IOU threshold of 0.5 in non max suppression (NMS).  The MAP 0.5:0.95 is plotted below in Figure \ref{fig:x epoch_v_map} over 10 epochs. 
+The model was trained on the cleaned "Open Images" data-set for 10 epochs with an initial learning rate of 0.005 and a decay of 0.1 every 3 epochs, as well as a momentum value of 0.9.  Due to memory limitations, our batch size was set to one.  We note that PyTorch's tutorial on object detection \cite{TorchVision} was very helpful here and we give all credit accordingly.  During training we concerned ourselves only with the validation Mean Average Precision (MAP) because we are concerned only with a single class.  We coded and computed the MAP over an IOU threshold range from 0.5 to 0.95 in increments of 0.05, and computed the mean.  We denote this value as MAP 0.5:0.95.   If the reader is unfamiliar with MAP, we outline the algorithm here:
+
+\begin{minipage}{1\textwidth}%
+	\noindent \textbf{Mean Average Precision Algorithm} \\
+
+  \noindent \textbf{Input:} 
+  	\begin{itemize}
+  		\item L
+  	\end{itemize}
+  
+  \noindent \textbf{Output:} Filtered list of bounding box proposals and object score pairs. \\
+  
+  \noindent \textbf{Algorithm:} \\
+\end{minipage}%
+
+\begin{enumerate}
+
+  \item Initialize empty list, lets call it list B.
+
+  \item Order the bounding boxes and object score pairs according to the object score in descending order.
+  
+  \item Discard any pairs whose object score is less than the pre-defined object threshold.  Bounding boxes with an object score lower than this threshold likely do not bound anything or do so poorly.
+  
+  \item While there are still bounding boxes and object score pairs on the list:
+        \begin{itemize}
+             \item Pop the first pair off the list and record it in list B.            
+             \item Compute the intersection over union (IOU) between the pair just popped off the list, and all remaining pairs on the list.
+             \item If the resulting IOUs are greater than the predefined IOU threshold, discard the corresponding pairs.  The bounding boxes of these pairs likely bound the same dog.
+        \end{itemize}
+
+
+
+During training we saved the model weights only when the MAP 0.5:0.95 increased and achieved a best validation MAP 0.5:0.95 of 0.73 during training using an object score threshold of 0.6 and an IOU threshold of 0.5 in non max suppression (NMS).  The MAP 0.5:0.95 is plotted below in Figure \ref{fig:x epoch_v_map} over 10 epochs. 
 
 \begin{figure}[h]
 \centering
@@ -322,7 +354,7 @@ To investigate the bias of the model towards the most populous dogs, we divided 
 
 \begin{tabular}{|l|l|l|}
 \hline
-                          & \textbf{F1} & \textbf{Classification Accuracy} \\ \hline
+                          & \textbf{F1 Score} & \textbf{Classification Accuracy} \\ \hline
 \textbf{Top 3 Breeds}     & 0.85        & 0.86              \\ \hline
 \textbf{All Other Breeds} & 0.91        & 0.90              \\ \hline
 \end{tabular}
@@ -341,7 +373,7 @@ To investigate the bias of the model towards the most populous dogs, we divided 
 
 \begin{tabular}{|l|l|l|}
 \hline
-                          & \textbf{F1} & \textbf{Classification Accuracy} \\ \hline
+                          & \textbf{F1 Score} & \textbf{Classification Accuracy} \\ \hline
 \textbf{Top 3 Breeds}     & 0.83        & 0.84              \\ \hline
 \textbf{All Other Breeds} & 0.74        & 0.78              \\ \hline
 \end{tabular}
@@ -372,7 +404,11 @@ Using the optimum parameter combination as determined over the validation split 
 
 \section{Lessons Learnt}
 
+
 \section{Summary}
+	In this project we developed an Android application where users will submit an image of their lost dog and the most similar lost dogs that have been found will be returned.  Similarly, users that find a lost dog will submit an image and the most similar dogs that have been lost will be returned.  To accurately match lost and found dogs, the app uses three convolutional neural networks that work together.  The first model that is denoted as the Dog Extractor computes the bounding box coordinates of the dog contained in every image submitted to the app that are used to crop the images accordingly.  The second model that is denoted as the Dog Classifier computes the most likely breed of every dog submitted to the app.  This is done to reduce the number of comparisons made using the third model by ensuring only dogs from the same breed are compared.  Finally, the third model that is denoted as the Dog Comparator is used to create a similarity score between two dogs.  This is done by passing the cropped images of each dog into the Dog Comparator model that creates a five dimensional encoding of each image.  The euclidean distance between the encodings of each image is computed and the sigmoid function is applied to constrain the values between zero and one.  This creates the similarity value where values near one indicate the dogs are very dissimilar and values near zero indicate the dogs are very similar.
+
+	To assess how well the app matches lost and found dogs, we assessed each model individually as well as together.  The Dog Extractor achieved a mean average precision score (MAP) of 0.74 when evaluated over intersection over union thresholds of 0.5 to 0.95 in increments of 0.05.  The Dog Classifier achieved a top one classification accuracy of 88\%.  While the Dog Comparator achieved a classification accuracy of 89\% when determining if two dogs are the same or different.  To test how well all three models worked together, we designated the entire test data set (~1000 dogs) as lost.  At the same time, we randomly designated 10 \% of these dogs as found.  For every lost dog we randomly selected an image to use as input and for every found dog we randomly selected a different image to use as input as well.   A success was defined as the found dog being among the top 15 lost dogs returned to the user.  We found that the found dog was among the top 15 lost dogs 88\% of the time.  This indicated that together the models accurate matched lost and found dogs together.  Furthermore, built into the application is the ability to filter comparisons by location that only improves accuracy.`	'
 
 \newpage
 
