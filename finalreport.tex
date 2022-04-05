@@ -15,7 +15,7 @@
 
 
 \title{An Analysis of the Applications of Computer Vision on Identifying Lost Dogs}
-\author{Aidan Vickars, Anant Sunilam Awasthy, Karthik Srinatha, and Rishabh Kausha}
+\author{Aidan Vickars, Anant Sunilam Awasthy, Karthik Srinatha, and Rishabh Kaushal}
 \date{\today}
 
 \begin{document}
@@ -31,7 +31,7 @@
 As the most common house pet, lost dogs are a frequent problem around the world.  With this is mind, it stands to reason there is no shortage of interest in new techniques for finding a lost dog.  Of course, there are a variety classical of methods that include posting flyers on telephone poles, posting adds on Craiglist and social media sites as well as leveraging purpose built applications like the BC SPCA's "Pet Search".  However, all of these methods require creating some form of an eye catching poster or description that has been used in so many different forms that they have lost their intended affect.  As a result, a new method is needed.  Thus, in this paper we will present an Android application that leverages three separate convolutional neural networks to match lost dog and found dogs together.  We do this by computing the similarity between lost and found dogs and subsequently returning the most similar matches to the user.
 
 \section{Related Work}
-	While dog-identification is a sub-class of the heavily researched facial recognition area, it remains extremely undeveloped.  However, there are two related works that we discuss here.  The first is "A Deep Learning Approach for Dog Face Verification and Recognition" \cite{MougeotGuillaume2019ADLA}  by  Guillaume Mougeit, Dewei Li and Shuai Jia.  In this paper, Mougeit, Li and Jia present "VGG-like and "ResNet-like" models that encode the image of a dog and compute the Euclidean distance between the encodings to measure the similarity between two dogs.  This value is used to perform face verification to determine if two dogs are the same.  To quantify the accuracy of their models they generated 2500 positive pairs and 2500 negative pairs of images and applied their model on each pair.  Note, positive indicates the images represent the same dog and negative indicates the images represent different dogs.  Their models made the correctly classified two dogs as the same or different respectively 92\% and 91\% of the time respectively.
+	While dog-identification is a sub-class of the heavily researched facial recognition area, it remains extremely undeveloped.  However, there are two related works that we discuss here.  The first is "A Deep Learning Approach for Dog Face Verification and Recognition" \cite{MougeotGuillaume2019ADLA}  by  Guillaume Mougeit, Dewei Li and Shuai Jia.  In this paper, Mougeit, Li and Jia present "VGG-like and "ResNet-like" models that encode the image of a dog and compute the Euclidean distance between the encodings to measure the similarity between two dogs.  This value is used to perform face verification to determine if two dogs are the same.  To quantify the accuracy of their models they generated 2500 positive pairs and 2500 negative pairs of images and applied their model on each pair.  Note, positive indicates the images represent the same dog and negative indicates the images represent different dogs.  Their models made the correct classification 92\% and 91\% of the time respectively.
 
 	The second work is "Dog Identification using Soft Biometrics and Neural Networks" \cite{LaiKenneth2019DIuS} by Kenneth Lai, Xinyuan Tu and Svetlana Yanushkevich.  In this paper, Lai, Tu and Yanushkevich present an approach to increase the accuracy in dog-identification that is also the inspiration behind the work presented here, and all credit is given with respect to the similarities between our works.  Lai, Tu and Yanushkevich developed a dog detection model, a breed classification model, and a dog-identification model that work together in the order specified.   The dog detection model determines the bounding box of the face of a dog and is used to crop the image accordingly.  The breed classification model like other models of this type, simply determines the most likely breed(s) of the dog.  Finally, the dog-identification model functions in the same way as the models created by Mougeit, Li and Jia.  By first cropping the image, and filtering by the breed of the dog, the number of comparisons that are made using the dog-identification model is significantly reduced and the face verification accuracy is improved.  However, we do not state the accuracy of the models as the dog-identification model is trained on the "Flickr-dog" \cite{LaiKenneth2019DIuS} data-set that contains only 374 images made up of just two breeds.  As a result, our findings are incomparable.
 
@@ -76,7 +76,7 @@ Thus, we can now present the key problems this project aims to answer:
 
 	To answer the questions stated above, we use the work done by Mougeit, Li and Jia and use a similar VGG model to compare dogs.  We also incorporate the work done by Lai, Tu and Yanushkevich and create a dog localization model and breed classification model to improve accuracy.   We extend this by using the entire body of a dog instead of the face to remove possible miss classifications as explained above.  In future references we refer to the these models as the Dog Comparator, the Dog Extractor and the Dog Classifier respectively.  However, before elaborating on each individual model we will present the Data Product to give the reader context as to how the models work together.
 
-	To utilize this work in a production environment, we have created an Android application (app) to act as user interface to allow for easy image upload, and have packaged the models inside a Flask API to match lost and found dogs together. We also use an AWS S3 bucket and a Relational Database System to store images and image metadata respectively.  This system is visualized below in Figure \ref{fig:x app system}.
+	To utilize this work in a production environment, we have created an Android application to act as user interface to allow for easy image upload, and have packaged the models inside a Flask API to match lost and found dogs together. We also use an AWS S3 bucket and a Relational Database System to store images and image metadata respectively.  This system is visualized below in Figure \ref{fig:x app system}.
 
 \begin{figure}[h]
 \centering
@@ -85,7 +85,7 @@ Thus, we can now present the key problems this project aims to answer:
 \label{fig:x app system}
 \end{figure}
 
-At a lower level if the user has lost a dog, they will submit a photo and their contact information and location via the app.  The app will then submit this information to the API.  Once a submission has been made to the API, the application pipeline that is visualized below in Figure \ref{fig:x app pipeline} is triggered.  The following steps outline this pipeline:
+At a lower level if the user has lost a dog, they will submit a photo and their contact information and location via the application.  The application will then submit this information to the API.  Once a submission has been made to the API, the application pipeline that is visualized below in Figure \ref{fig:x app pipeline} is triggered.  The following steps outline this pipeline:
 \newpage
 
 \begin{figure}[h]
@@ -101,7 +101,7 @@ At a lower level if the user has lost a dog, they will submit a photo and their 
   
   \item After validation, the original image is saved into an S3 bucket, and the related information such as the users contact information, location and the coordinates of the bounding box are inserted into a PostGre relational database system (RDS).
   
-  \item The original image is then into the Dog Classifier model that determines the most likely breed(s).  This information is inserted into the RDS.
+  \item The original image is then passed into the Dog Classifier model that determines the most likely breed(s).  This information is inserted into the RDS.
   
   \item The original image is cropped using the computed bounding box coordinates, and passed into the Dog Comparator model that creates a five dimensional encoding of the image that is inserted into the RDS.
   
@@ -112,12 +112,12 @@ At a lower level if the user has lost a dog, they will submit a photo and their 
       \item Dogs that are within $x$ distance from the lost dog.
   \end{enumerate}
 
-   These encodings are then compared against the encodings of the lost dogs by computing the euclidean distance between them.  The sigmoid function is applied to the distance value to constrain it to $[0,1]$.  The $n$ most similar dogs are returned to the user.
+   These encodings are then compared against the encoding of the lost dog by computing the euclidean distance between them.  The sigmoid function is applied to the distance value to constrain it to $[0,1]$.  The $n$ most similar dogs are returned to the user.
   
   \item If a match is confirmed by the user, the corresponding lost and found dogs are removed from the RDS and S3 bucket.  Otherwise, the lost dog is left in the system for future comparisons.
  
 \end{enumerate}
-An attentive reader will notice that we discuss only the submission of lost dogs.  This is done to minimize confusion.  If the user submits a found dog the pipeline is identical except that the dog is instead marked as found and is compared against lost dogs.  This completes the pipeline contained within the application. 
+An attentive reader will notice that we discuss only the submission of a lost dog.  This is done to minimize confusion.  If the user submits a found dog the pipeline is identical except that the dog is instead marked as found and is compared against lost dogs.  This completes the pipeline contained within the application. 
 
 \section{Data Science Pipeline}
 
@@ -131,7 +131,7 @@ For the Dog Classifier Model ---------------------
 
 \subsection{Petfinder Data-set}
 
-Finally, to train the Dog Comparator model we required multiple pictures of many individual dogs where each picture contained the entire body of the dog.  However, we found that there was no data-set that met these requirements.  We note that the "Stanford Dog Data-set" \cite{stanforddogs} contains multiple images of 1425 individual dogs.  However, each image contains only the face of a dog and the images appeared to be highly curated.  We found the images to be front facing and highly normalized which as discussed above is undesirable.  To solve this we scraped the trove of images on Petfinder.com that at the time of writing lists over 100 000 dogs for adoption across the world where almost every dog has multiple images.  However, scraping the images presented a challenge because the links to every dog are dynamically generated.  This meant scraping the HTML of the web page containing the grid of available dogs using Python's request package was insufficient because during download the URLs pointing to each available dog would not be included due to their dynamic creation.  To solve this, we split the scraping into two parts.  We first created a Selenium application in Python that scraped the URLs pointing to each individual dog.  Then, using these URLs we scraped and downloaded the images for every dog and also recorded additional information such as name, breed, age, size etc.  This resulted in images for 9729 dogs with 0 - 6 images for every dog.  Once the data was downloaded, we applied the following cleaning process on the images of every dog:
+Finally, to train the Dog Comparator model we required multiple pictures of many individual dogs where each picture contained the entire body of the dog.  However, we found that there was no data-set that met these requirements.  We note that the "Stanford Dog Data-set" \cite{stanforddogs} contains multiple images of 1425 individual dogs.  However, each image contains only the face of a dog and the images appeared to be highly curated.  We found the images to be front facing and highly normalized which as discussed above is undesirable.  To solve this we scraped the trove of images on Petfinder.com that at the time of writing lists over 100 000 dogs for adoption across the world where almost every dog has multiple images.  However, scraping the images presented a challenge because the links to every dog are dynamically generated.  This meant scraping the HTML of the web page containing the grid of available dogs using Python's request package was insufficient because during download the URLs pointing to each available dog would not be included due to their dynamic creation.  To solve this, we split the scraping into two parts.  We first created a program in Python that uses Selenium to scrape the URLs pointing to each individual dog.  Then using these URLs, we scraped and downloaded the images for every dog and also recorded additional information such as name, breed, age, size etc.  This resulted in images for 9729 dogs with 0 - 6 images for every dog.  Once the data was downloaded, we applied the following cleaning process on the images of every dog:
 \begin{enumerate}
   
   \item If the dog has 1 or a less images, we discarded the dog and its images.
@@ -204,39 +204,44 @@ To develop the Dog Extractor model, we investigated multiple avenues that includ
         \end{itemize}
 \end{enumerate}
 
-The model was trained on the cleaned "Open Images" data-set for 10 epochs with an initial learning rate of 0.005 and a decay of 0.1 every 3 epochs, as well as a momentum value of 0.9.  Due to memory limitations, our batch size was set to one.  We note that PyTorch's tutorial on object detection \cite{TorchVision} was very helpful here and we give all credit accordingly.  During training we concerned ourselves only with the validation Mean Average Precision (MAP) because we are concerned only with a single class.  We coded and computed the MAP over an IOU threshold range from 0.5 to 0.95 in increments of 0.05, and computed the mean.  We denote this value as MAP 0.5:0.95.   If the reader is unfamiliar with MAP, we outline the algorithm here:
+The model was trained on the cleaned "Open Images" data-set for 10 epochs with an initial learning rate of 0.005 and a decay of 0.1 every 3 epochs, as well as a momentum value of 0.9.  Due to memory limitations, our batch size was set to one.  We note that PyTorch's tutorial on object detection \cite{TorchVision} was very helpful here and we give all credit accordingly.  During training we concerned ourselves only with the validation Mean Average Precision (MAP) because we are concerned only with a single class.  We coded and computed the MAP over an IOU threshold range from 0.5 to 0.95 in increments of 0.05, and computed the mean.  We denote this value as MAP 0.5:0.95.   If the reader is unfamiliar with MAP, we outline the algorithm here: \\
 
 \begin{minipage}{1\textwidth}%
-	\noindent \textbf{Mean Average Precision Algorithm} \\
+	\noindent \textbf{Average Precision Algorithm} \\
 
   \noindent \textbf{Input:} 
   	\begin{itemize}
-  		\item L
+  		\item List of bounding box proposals and object score pairs for each image in the data-set.
+  		\item List of true bounding boxes for each image in the data-set.
+  		\item IOU Threshold.
   	\end{itemize}
   
-  \noindent \textbf{Output:} Filtered list of bounding box proposals and object score pairs. \\
+  \noindent \textbf{Output:} Average Precision \\
   
   \noindent \textbf{Algorithm:} \\
 \end{minipage}%
 
 \begin{enumerate}
 
-  \item Initialize empty list, lets call it list B.
-
-  \item Order the bounding boxes and object score pairs according to the object score in descending order.
+  \item Order the list of bounding box and object score pairs by object score in descending order.
   
-  \item Discard any pairs whose object score is less than the pre-defined object threshold.  Bounding boxes with an object score lower than this threshold likely do not bound anything or do so poorly.
+  \item Denote every bounding box and confidence score pair as either a true positive or a false positive. \\
   
-  \item While there are still bounding boxes and object score pairs on the list:
-        \begin{itemize}
-             \item Pop the first pair off the list and record it in list B.            
-             \item Compute the intersection over union (IOU) between the pair just popped off the list, and all remaining pairs on the list.
-             \item If the resulting IOUs are greater than the predefined IOU threshold, discard the corresponding pairs.  The bounding boxes of these pairs likely bound the same dog.
-        \end{itemize}
+  A bounding box proposal and object score pair is a true positive with respect to the corresponding image if there exists a true bounding box such that the IOU between them is greater than the IOU threshold and the true bounding box has not already been detected by another proposed bounding box with a higher object score.  Otherwise a bounding box proposal and object score pair is denoted as a false positive.
+  
+  \item Compute the running precision value $(True$  $Positives/ (True$ $Positives$ + $False$ $Positives))$ over the ordered list of bounding box proposals and object score pairs
+  
+  \item Compute the running recall value $(True$ $Positives / (Total$ $Number$ $of$ $True$ $Bounding$ $Boxes))$ over the ordered list of bounding box proposals and object score pairs
+  
+  \item Compute the area under the precision-recall curve.  This is the average precision.
+  
+\end{enumerate}
 
+\begin{minipage}{1\textwidth}%
+The average precision is computed repeatedly over an IOU threshold range from 0.5 to 0.95 in increments of 0.05.  The mean of the resulting values is taken to compute the MAP 0.5:0.95 value \\
+\end{minipage}%
 
-
-During training we saved the model weights only when the MAP 0.5:0.95 increased and achieved a best validation MAP 0.5:0.95 of 0.73 during training using an object score threshold of 0.6 and an IOU threshold of 0.5 in non max suppression (NMS).  The MAP 0.5:0.95 is plotted below in Figure \ref{fig:x epoch_v_map} over 10 epochs. 
+\noindent During training we saved the model weights only when the MAP 0.5:0.95 increased and achieved a best validation MAP 0.5:0.95 of 0.73 during training using an object score threshold of 0.6 and an IOU threshold of 0.5 in non max suppression (NMS).  The MAP 0.5:0.95 is plotted below in Figure \ref{fig:x epoch_v_map} over 10 epochs. 
 
 \begin{figure}[h]
 \centering
@@ -254,7 +259,33 @@ To improve the accuracy of the model we tuned the object score and IOU threshold
 \label{fig:x object v iou}
 \end{figure}
 \newpage
-\noindent We achieved the maximum MAP 0.5:0.95 of 0.75 in the top right corner of the plot using an object threshold of 0.05, and an IOU threshold of 0.9.  However, we considered the consequences of using such extreme thresholds.  By using such a low object threshold, many more bounding box proposals would be returned by NMS regardless of how uncertain the model is that there is a dog in the bounding box.  This will increase the number of false positives the model produces.  In a similar fashion, by using a strong IOU threshold of 0.9 any pair of bounding boxes must achieve an IOU greater than 0.9 to be classified as bounding the same dog.  This will again increase the false positive rate.  In the context of the app, both cases would significantly increase the number of errors users receive when submitting an image.  This is because every image submitted is validated to ensure it contains only one dog.  To combat this, we deviated from the optimum thresholds and increased the object threshold to 0.5 and decreased the IOU threshold to 0.75.  This combination achieved an MAP 0.5:0.95 of 0.74.  A very small decrease of just 0.01.  Finally, using our chosen thresholds, the model achieved an MAP 0.5:0.95 of 0.74 on the test data indicating the model performed very well.
+\noindent We achieved the maximum MAP 0.5:0.95 of 0.75 in the top right corner of the plot using an object threshold of 0.05, and an IOU threshold of 0.9.  However, we considered the consequences of using such extreme thresholds.  By using such a low object threshold, many more bounding box proposals would be returned by NMS regardless of how uncertain the model is that there is a dog in the bounding box.  This would have increased the number of false positives the model produced.  In a similar fashion, by using a strong IOU threshold of 0.9 any pair of bounding boxes must achieve an IOU greater than 0.9 to be classified as bounding the same dog.  This would again increase the false positive rate.  In the context of the application, both cases would have significantly increased the number of errors users received when submitting an image.  This is because every image submitted is validated to ensure it contains only one dog.  To combat this, we deviated from the optimum thresholds and increased the object threshold to 0.5 and decreased the IOU threshold to 0.75.  This combination achieved an MAP 0.5:0.95 of 0.74.  A very small decrease of just 0.01.  Finally, using our chosen thresholds, the model achieved an MAP 0.5:0.95 of 0.74 on the test data indicating the model performed very well.
+
+Now that the parameters in NMS have been optimized we further assessed the performance of the mode with respect to different sized bounding boxes.  To do this we first normalized the height and width of each bounding box by dividing by the height and width of the image respectively.  Then the k-means algorithm was applied using three clusters to divide the bounding boxes into small, medium and large groups.  The results of the clustering is shown in Figure \ref{fig:x box clusters} below where we can see that the algorithm accurately divided the bounding boxes into small medium and large groups with respect to area.
+
+\begin{figure}[h]
+\centering
+	\includegraphics[scale=0.7]{final-report-images/box_clusters.png}
+\caption{Results of Clustering Test Bounding Boxes by Height and Width}
+\label{fig:x box clusters}
+\end{figure}
+\noindent The Dog Extractor was then applied on the images corresponding to each group to compute the bounding box proposals.  The MAP 0.05:0.95 of each group was then computed, and is shown in Figure \ref{fig:box size} below.  We can see that the model performs extremely well on Medium and Large dogs relative to the image, however there is a steep drop in performance on smaller dogs.  This drop in performance is not surprising because object localization models typically perform significantly worse on smaller objects.  Furthermore, it should be noted that the model's performance over smaller dogs is still very strong.  The MAP 0.5:0.95 of 0.61 indicates the model still performs well on smaller dogs.
+
+\begin{figure}[]
+
+\begin{center}
+
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Group} & \textbf{MAP 0.5:0.95} \\ \hline
+Small          & 0.61                  \\ \hline
+Medium         & 0.77                  \\ \hline
+Large          & 0.78                  \\ \hline
+\end{tabular}
+\end{center}
+\caption{Test MAP 0.5:0.95 by Bounding Box Size}
+\label{fig:box size}
+\end{figure}
 
 \subsection{Dog Classifier}
 
@@ -268,7 +299,7 @@ To create the dog comparator model that assesses the similarity between two dogs
 \label{fig:x comparator}
 \end{figure}
 
-\noindent When an image is passed through the model, a five dimensional encoding of the image is produced.  To compute the similarity between two dogs, the euclidean distance between their encodings is computed.  The sigmoid function is then applied to constrain the value to $[0,1]$ .  We can call this value the similarity value.  If two dogs are very similar, their encodings should be relatively close together in five dimensional space.  As a result, the similarity value will be close to zero.  In contrast, if two dogs are very dissimilar the distance between their encodings should be large and as a result the similarity value will be close to one.  
+\noindent When an image is passed through the model, a five dimensional encoding of the image is produced.  To compute the similarity between two dogs, the euclidean distance between their encodings is computed.  The sigmoid function is then applied to constrain the value to $[0,1]$ .  We call this value the similarity value.  If two dogs are very similar, their encodings should be relatively close together in five dimensional space.  As a result, the similarity value will be close to zero.  In contrast, if two dogs are very dissimilar the distance between their encodings should be large and as a result the similarity value will be close to one.  
 
 To train the model we initially employed a triplet loss function that required a batch element that contained three images.  An anchor and positive image that contained different pictures of the same dog as well as a negative image that contained a different dog.  To generate a single batch element we used the following process: \\
 
@@ -293,7 +324,7 @@ To train the model we initially employed a triplet loss function that required a
     
     \end{enumerate}
 
-Each image was then passed through the model and the loss was computed.  In case the reader is unfamiliar with the triplet loss function,  it is defined as $L(P, A, N) = ReLU(\sigma(Dist(P, A)) - \sigma(Dist(P, N)) + M)$ where $P, A$ and $N$ are the encodings of the positive, anchor and negative images respectively, $Dist()$ is the euclidean distance between their encodings, $\sigma()$ is the sigmoid function and $M$ is the margin that was set to 0.9.  Note, an attentive reader will notice the large decrease in dimension in the first dense layer of the model.  This was done to accommodate GPU memory limitations so that the batch size could be increased during training.   The model was trained for 41 epochs with a learning rate of 0.01 that decayed by 0.1 every four epochs as well as a batch size of 30.  The training and validation losses are vizualized below in Figure \ref{fig:x epoch_v_map} .
+Each image was then passed through the model and the loss was computed.  In case the reader is unfamiliar with the triplet loss function,  it is defined as $L(P, A, N) = ReLU(\sigma(||P-A||_2) - \sigma(||P- N||_2) + M)$ where $P, A$ and $N$ are the encodings of the positive, anchor and negative images respectively, $\sigma()$ is the sigmoid function and $M$ is the margin that was set to 0.9.  Note, an attentive reader will notice the large decrease in dimension in the first dense layer of the model.  This was done to accommodate GPU memory limitations so that the batch size could be increased during training.   The model was trained for 41 epochs with a learning rate of 0.01 that decayed by 0.1 every four epochs as well as a batch size of 30.  The training and validation losses are vizualized below in Figure \ref{fig:x epoch_v_map} .
 
 \begin{figure}[h]
 \centering
@@ -312,7 +343,7 @@ To assess how well the dog comparator model performed, we first determined the o
 
 \noindent It should be noted that the reader may question why the optimum classification threshold is so high.  This is due to the significant dissimilarity between all images even of the same dog in the training data.  By placing no constraints on the type of images in the data-set set, all images had some degree of dissimilarity due to the variety of positions of each dog as well as the backgrounds in each image.  As a result, we found that similar dogs tended to have a similarity value near or slightly above 0.5 while dissimilar dogs had a similarity value near one.  
 
-Returning to the assessment of the model, using a classification threshold of 0.79 resulted in a strong test accuracy and F1 score of approximately 0.87 and 0.87 on the validation data respectively.  However, after examining the corresponding similarity values of the model we found it did not do well in grouping the comparisons between the same dogs and the comparisons between different dogs.  This is vizualized below in the line plot contained in Figure \ref{fig:x triplet lineplot} where we can see fairly significantly overlap between both groups.
+Returning to the assessment of the model, using a classification threshold of 0.79 resulted in a strong test accuracy and F1 score of approximately 0.87 and 0.87 respectively.  However, after examining the corresponding similarity values of the model we found it did not do well in grouping the comparisons between the same dogs and the comparisons between different dogs.  This is vizualized below in the line plot contained in Figure \ref{fig:x triplet lineplot} where we can see fairly significantly overlap between both groups.
 
 \begin{figure}[h]
 \centering
@@ -330,7 +361,7 @@ Returning to the assessment of the model, using a classification threshold of 0.
 \end{figure}
 \noident We also note that the accuracy of $89\%$ is highly comparable to the models created by Mougeit, Li and Jia that had an accuracy $91\%$ and $92\%$ \cite{MougeotGuillaume2019ADLA}.  Furthermore, while we concede that our model has a $2-3\%$ decrease in accuracy, we allow for a far more diverse set of images by not applying our model solely on front facing images of dog faces.
 
-However, an observant read will note that by using images from two randomly selected dogs during both the training and testing processes, differing between dogs is an easy task for the model.  This is because dogs of different breeds tend to be very dissimilar and as a result telling them apart is easy.  To account for this, we performed additional testing of our model by testing the performance of the model over different dogs that are known to be similar.  To do this we adjusted the generation of a single batch such that when two images of different dogs are produced, the dogs are of the same breed.  Thus producing two similar dogs.  The model then achieved a significantly decreased but still respectable classification accuracy and F1 score of 0.79 and 0.77 respectively.   To attempt to improve this we performed additional training of the model on the augmented training data and saw no improvement.  Upon further inspection, we found a crucial flaw in the data.  The data is biased towards the most popular dog breeds where the top three most populous dog breeds account for approximately 50 \% of the dogs in the data-set.  The frequency of the top three least and most populous breed as percentages are vizualized below in Figure \ref{fig:x breed distr}.
+However, an observant read will note that by using images from two randomly selected dogs during both the training and testing processes, differing between dogs is an easy task for the model.  This is because dogs of different breeds tend to be very dissimilar and as a result telling them apart is easy.  To account for this, we performed additional testing of our model by testing the performance of the model over different dogs that are known to be similar.  To do this we adjusted the generation of a single batch such that when two images of different dogs are produced, the dogs are from the same breed.  Thus, producing two similar dogs.  The model then achieved a significantly decreased but still respectable classification accuracy and F1 score of 0.79 and 0.77 respectively on the test data.   To attempt to improve this we performed additional training of the model on the augmented training data and saw no improvement.  Upon further inspection, we found a crucial flaw in the data.  The data is biased towards the most popular dog breeds where the top three most populous dog breeds account for approximately 50 \% of the dogs in the data-set.  The frequency of the top three least and most populous breed as percentages are vizualized below in Figure \ref{fig:x breed distr}.
 
 \begin{figure}[]
 \centering
@@ -341,12 +372,10 @@ However, an observant read will note that by using images from two randomly sele
 
 \newpage
 
-We theorize that by performing additional training by breed we only further biased the model towards these dogs.  Unfortunately, we are not able to account for this flaw in the data.  This is because in other data-sets, one could augment the data by adding random samples from the underrepresented groups with an additional degree of random variation as well.  However, in this case this we are unable to do this without creating two significant issues.  The first, is that by adding random samples of the underrepresented breeds we risk over-fitting the model to specific dogs.  We suspect this would occur because some of the underrepresented breeds have only a few instances and thus adding random samples of these breeds would require randomly sampling the same dogs many times.  The second, is by adding some degree of variation to the images of the randomly sampled dogs the images would likely be distorted significantly.  It should be noted that there is a possible solution to this.  We theorize that unique images of underrepresented breeds could be generated using a generative adversarial network.  However, this is outside the scope of this project.
+We theorize that by performing additional training by breed we only further biased the model towards these dogs.  Unfortunately, we are not able to account for this flaw in the data.  This is because in other data-sets, one could augment the data by adding random samples from the underrepresented groups with an additional degree of random variation as well.  However, in this case this we are unable to do this without creating two significant issues.  The first, is that by adding random samples of the underrepresented breeds we risk over-fitting the model to specific dogs.  We suspect this would occur because some of the underrepresented breeds have only a few instances and thus adding random samples of these breeds would require randomly sampling the same dogs many times.  The second, is by adding some degree of randomness to the images of the randomly sampled dogs the images would likely be distorted significantly.  It should be noted that there is a possible solution to this.  We theorize that unique images of underrepresented breeds could be generated using a generative adversarial network.  However, this is outside the scope of this project.
 
 To investigate the bias of the model towards the most populous dogs, we divided the test data into two groups.  The first contained dogs from the top three most populous breeds and the second contained dogs from all other breeds.  We then applied the model on each group and recorded the results below in Figure \ref{fig:x breed score}
 
-
-\newpage
 
 \begin{figure}[]
 
@@ -365,7 +394,7 @@ To investigate the bias of the model towards the most populous dogs, we divided 
 \label{fig:x breed score}
 \end{figure}
 
-\noindent Surprisingly, the model performs better on the second group.  We theorize this is because the second group contains dogs from a multitude of different breeds.   As a result the similarity between every pair of different dogs is greater and thus the model can better differentiate between them.  To test this, we performed the same experiment as before except we added the requirement such that when selecting a pair of different dogs, the dogs must be of the same breed.  The results are shown in Figure \ref{fig:x breed score in breed}.
+\noindent Surprisingly, the model performs better on the second group.  We theorize this is because the second group contains dogs from a multitude of different breeds.   As a result the similarity between every pair of different dogs is greater and thus the model can better differentiate between them.  To test this, we performed the same experiment except we added the requirement such that when selecting a pair of different dogs, the dogs must be of the same breed.  The results are shown in Figure \ref{fig:x breed score in breed}.
 
 \begin{figure}[]
 
@@ -384,12 +413,10 @@ To investigate the bias of the model towards the most populous dogs, we divided 
 
 \noident  There is a clear decrease in model performance between the top three most populous breeds and all others.  Thus, the model does exhibit some bias towards the most populous breeds.  However, the difference is reasonably small at approximately 9 \% with respect to the $F1$ score.
 
-
-
 \section{Evaluation}
-To evaluate the accuracy of the data product, we devised an experiment to assess how well the three models worked together to match lost and found dogs.  To do this, we first took the entire validation split from the Petfinder data-set and designated every dog as lost.  At the same time, we randomly designated 10 \% of these dogs as found.  For every lost dog we randomly selected an image to use as input and for every found dog we randomly selected a different image to use as input as well.   All three models were then applied over a grid of parameters to determine the optimum parameter combination to maximize the success rate of matching lost and found dogs.  To be succinct, we varied the number of the most likely breeds recorded for lost and found dogs that are used to reduce the number of comparisons over a range from one to ten respectively.  We also varied the number of results returned to the user from one to fifteen.  For every combination we determined the success rate of matching lost and found dogs.  A success was defined as the found dog being among the lost dogs returned to the user.  It is assumed that if the found dog was among the lost dogs returned to the user, the user would be able to identify the correct dog.  
+To evaluate the accuracy of the data product, we devised an experiment to assess how well the three models worked together to match lost and found dogs.  To do this, we first took the entire validation split from the Petfinder data-set and designated every dog as lost.  At the same time, we randomly designated 10 \% of these dogs as found.  For every lost dog we randomly selected an image to use as input and for every found dog we randomly selected a different image to use as input as well.   All three models were then applied over a grid of parameters to determine the optimum parameter combination to maximize the success rate of matching lost and found dogs.  To be succinct, we varied the number of the most likely breeds recorded for lost and found dogs that are used to reduce the number of comparisons over a range from one to ten respectively.  In other words, we varied the number of breed combinations that should be searched to find the lost dog.  We also varied the number of results returned to the user from one to fifteen.  For every combination we determined the success rate of matching lost and found dogs.  A success was defined as the found dog being among the lost dogs returned to the user.  It is assumed that if the found dog was among the lost dogs returned to the user, the user would be able to identify the correct dog.  
 
-We found that by recording only the most likely breed for both lost and found dogs, as well as returning the top 15 matches to the users resulted in the highest success rate of 98\% on the validation data.  Unsurprisingly, the success rate improved linearly with the number of matches returned with the user.  Surprisingly however, the highest success rates were achieved by recording the least amount of the top breeds for both lost and found dogs.  This clearly indicates the positive impact of the Dog Classifier acting as a filter for the Dog Comparator.  This is vizualized below in Figure \ref{fig:x breed comparisons} where the the number of top breeds recorded for both lost and found dogs have been multiplied together into a single number to give the number of comparisons made relative to breeds.  This is shown along the x-axis.  Along the y-axis, the average accuracy for every number of breed comparisons is shown.  We can clearly see that as the number of breed comparisons increase, the accuracy decreases.
+We found that by searching in only the top one breeds for both lost and found dogs, as well as returning the top 15 matches to the users resulted in the highest success rate of 98\% on the validation data.  Unsurprisingly, the success rate improved linearly with the number of matches returned with the user.  Surprisingly however, the highest success rates were achieved searching in the fewest amount of breed combinations between both lost and found dogs.  This clearly indicates the positive impact the Dog Classifier has acting as a filter for the Dog Comparator.  This is vizualized below in Figure \ref{fig:x breed comparisons} where the the number of breeds used to find matches for both lost and found dogs have been multiplied together into a single number to give the number of combinations searched.  This is shown along the x-axis.  Along the y-axis, the average accuracy is shown.  We can clearly see that as the number of combinations searched increases, the accuracy decreases.
 
 \begin{figure}[]
 \centering
@@ -398,11 +425,27 @@ We found that by recording only the most likely breed for both lost and found do
 \label{fig:x breed comparisons}
 \end{figure}
 
-Using the optimum parameter combination as determined over the validation split of recording only the most likely breed for both lost and found dogs respectively and returning the top 15 matches to the user, we achieved a success rate of 89\% on the test split.  We do note the decreased success rate over the test split compared to the validation split is due to the significantly increased size of the test split.  The test split is approximately two times the size of the validation split and as a result the difficulty of finding the found dog among the lost dogs is significantly more difficult.  However, after achieving a final success rate of 89\% we suspect that the true success rate is actually significantly higher in the real world.  This is because of two reasons.  The first is that in this experiment, we are applying this experiment using a single image for both lost and found dogs.  In reality, we expect users would submit multiple images in either case and thus significantly increasing the success rate.  Unfortunately, we are unable to account for this because many dogs in the data-set have only two images.  The second is that in this experiment we are not filtering by location.  By filtering by location before applying the Dog Comparator, the number of false matches would be significantly reduced.  Thus, significantly increasing the success rate.
+Using the optimum parameter combination as determined over the validation split of using only the most likely breed for both lost and found dogs respectively and returning the top 15 matches to the user, we achieved a success rate of 89\% on the test split.  We do note the decreased success rate over the test split compared to the validation split is due to the significantly increased size of the test split.  The test split is approximately two times the size of the validation split and as a result the difficulty of finding the found dog among the lost dogs is significantly increased.  However, after achieving a final success rate of 89\% we suspect that the true success rate is actually significantly higher in the real world.  This is because of two reasons.  The first is that in this experiment, we are applying this experiment using a single image for both lost and found dogs.  In reality, we expect users would submit multiple images in either case and thus significant increase the success rate.  Unfortunately, we are unable to account for this because many dogs in the data-set have only two images.  The second is that in this experiment we are not filtering by location.  By filtering by location before applying the Dog Comparator, the number of false matches would be significantly reduced.  Thus, significantly increasing the success rate.
 
 \newpage
 
 \section{Lessons Learnt}
+From this project we learned several new skills that can be broken down into a team dynamics perspective as well as a technical skill perspective.  With respect to team dynamics, we discovered the benefits of splitting the work into independent modules.  Where the modules were distributed among the team members such that each member owned, and was responsible for their assigned modules.  This benefited the group in two ways.  The first was that it ensured every member had a well defined definition of what their role in the project was and what their definition of done was.  The second was that by splitting the work into independent modules, the development process was significantly enhanced.  Because every module was relatively independent from the others, each member was able to work according to their own schedule and pace without having to wait for other team members.  
+
+With respect learnt technical skills, we acquired several and discuss three here.  For instance, the most notable example of a skill we acquired was the deployment of machine learning models in a cloud environment.  After some experimentation we found that packaging them into a Flask API was the most convenient as it allowed us to maintain a smaller number resources in the Cloud.  In an environment with greater load, we certainly realize we would likely deploy the models to their own endpoints to reduce latency.  A second example of a technical skill we learned was how to accommodate the processing time models can require.  In our application we take advantage of users not requiring immediate matches from the app by using larger and more accurate models.  However, this resulted in the slower processing times when users submitted lost or found dogs.  To accommodate this we implemented Celery that allowed the application to continue to function while awaiting for the results from the API.  Finally, a third example of a skill we learnt in this project is less a new skill but rather a refinement.  To be precise, this project allowed us to gain additional experience in model experimentation by assessing the strengths and weaknesses of models.  We did this by not only trying a multitude of models to determine which performed the best, but also by delving deeper into the models to assess their performance on subsets of the data.  For example, in the Dog Comparator we assessed the model both at a high level with respect to accuracy but we also delved deeper and assessed the accuracy of the model over similar dogs.
+
+
+\item ownership of each module worked well
+\item webscraping for dynamic pages using selenium
+\item deployment of models
+\item AWS stuff like ec2
+\item comparison of various ML models - strengths and weeknesses
+\item using google direction API to plot polygon lines
+\item Kotlin
+\item giving the models tasks to cerlery to work asynnchrinolously
+\item settying up firebase
+\item integration of firebase messaging services for sending notifications
+\item Sendgrid
 
 
 \section{Summary}
