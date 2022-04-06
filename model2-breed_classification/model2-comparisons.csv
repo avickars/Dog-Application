@@ -1,0 +1,7 @@
+model,validation_loss,validation_accuracy,testing_loss,testing_accuracy,input_features
+densenet,0.5495,0.8289,0.564295,0.82,1024
+efficientnet,0.92,0.7675,0.876047,0.75,1280
+googlenet,0.6956,0.7904,0.718252,0.77,1024
+inception_v3,0.3787,0.8762,0.900824,0.8,2048
+vgg16,0.5148,0.8635,0.489324,0.84,4096
+vgg19,0.4323,0.8767,0.45274,0.85,4096
