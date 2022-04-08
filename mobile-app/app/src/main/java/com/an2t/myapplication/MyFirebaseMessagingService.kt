@@ -1,7 +1,7 @@
 package com.an2t.myapplication
 
+import android.R.attr.action
 import android.annotation.SuppressLint
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -72,7 +72,8 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
         val intent = Intent(this, HomeActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
-        val pendingIntent = PendingIntent.getActivity(this, 0 , intent, PendingIntent.FLAG_ONE_SHOT)
+        var pendingIntent = PendingIntent.getActivity(this, 0 , intent, PendingIntent.FLAG_ONE_SHOT or
+                PendingIntent.FLAG_IMMUTABLE)
 
         var builder: NotificationCompat.Builder
 
