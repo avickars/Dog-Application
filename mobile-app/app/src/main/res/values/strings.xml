@@ -27,10 +27,13 @@
     <string name="ok">Okay</string>
     <string name="found">Found</string>
     <string name="lost">Lost</string>
+    <string name="lost_dog_image">Lost Dog</string>
+    <string name="found_dog_image">Found Dog</string>
     <string name="pick_upload_type">Pick Upload Type</string>
     <string name="upload_from">Upload from</string>
     <string name="submit_picture">Submit Picture</string>
     <string name="uploaded_image">Input Image</string>
+    <string name="dog_image">Dog Image</string>
     <string name="matched_results">Results</string>
     <string name="google_maps_api_key">AIzaSyBrPZDULnIR1fQ9H4Npt8oFp6Kx3nuGf-8</string>
     <string name="lorem_ipsum">In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before the final copy is available.</string>
@@ -41,4 +44,7 @@
     <string name="loading">Loading...</string>
     <string name="no_records_found">No upload record found.\nPlease upload an image of a dog.</string>
     <string name="sign_out">Sign out</string>
+    <string name="upload_type">Upload Type:</string>
+    <string name="predicted_breed">Predicted Breed:</string>
+    <string name="no_result_found">No result found</string>
 </resources>

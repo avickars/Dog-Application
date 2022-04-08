@@ -1,87 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="wrap_content">
 
 
     <TextView
-        android:textSize="18sp"
         android:id="@+id/tv_title_input"
-        android:paddingVertical="16dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
+        android:paddingVertical="16dp"
+        android:text="@string/uploaded_image"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:text="@string/uploaded_image"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.cardview.widget.CardView
-        android:layout_marginHorizontal="16dp"
         android:id="@+id/card_res"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_title_input"
         android:layout_width="100dp"
-        app:cardCornerRadius="6dp"
+        android:layout_height="100dp"
+        android:layout_marginHorizontal="16dp"
         android:padding="8dp"
+        app:cardCornerRadius="6dp"
         app:cardElevation="2dp"
         app:cardUseCompatPadding="true"
-        android:layout_height="100dp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_title_input">
+
         <ImageView
             android:id="@+id/iv_img_main_dog"
-            android:scaleType="centerCrop"
-            android:src="@drawable/big_data"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/big_data" />
     </androidx.cardview.widget.CardView>
 
-    <TextView
+
+    <LinearLayout
+        android:gravity="center_vertical"
         app:layout_constraintBottom_toTopOf="@id/tv_title_output"
-        android:id="@+id/tv_res_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/card_res"
         app:layout_constraintTop_toTopOf="@id/card_res"
         android:layout_margin="8dp"
-        android:text="@string/app_name"
         android:layout_width="0dp"
-        android:textSize="18sp"
-        android:layout_height="wrap_content"/>
+        android:orientation="vertical"
+        android:layout_height="0dp">
+
+
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:text="@string/upload_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            </TextView>
+
+            <androidx.cardview.widget.CardView
+                app:cardElevation="0dp"
+                android:layout_marginStart="6dp"
+                app:layout_constraintBottom_toTopOf="@id/tv_title_output"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/purple_200"
+                app:cardCornerRadius="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/card_res"
+                app:layout_constraintTop_toTopOf="@id/card_res">
+
+                <TextView
+                    android:id="@+id/tv_lost_found"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="4dp"
+                    android:textColor="@android:color/white" />
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_marginTop="8dp"
+                android:id="@+id/tv_res_title_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/predicted_breed"
+                android:textSize="14sp"
+                />
+
+            <TextView
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"
+                android:id="@+id/tv_res_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textSize="14sp"
+                />
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
 
     <TextView
-        android:textSize="18sp"
-        android:layout_marginHorizontal="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:paddingVertical="16dp"
-        app:layout_constraintTop_toBottomOf="@id/card_res"
-        android:text="@string/matched_results"
         android:id="@+id/tv_title_output"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:paddingVertical="16dp"
+        android:text="@string/matched_results"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/card_res" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_res"
-        app:layout_constraintTop_toBottomOf="@id/tv_title_output"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"/>
-
+        app:layout_constraintTop_toBottomOf="@id/tv_title_output" />
 
 
     <View
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintTop_toBottomOf="@id/rv_res"
-        android:layout_marginHorizontal="8dp"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/line_sep_color"/>
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/line_sep_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rv_res" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

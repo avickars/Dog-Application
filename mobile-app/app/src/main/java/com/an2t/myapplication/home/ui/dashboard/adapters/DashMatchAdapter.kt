@@ -40,6 +40,13 @@ class DashMatchAdapter() : RecyclerView.Adapter<DashMatchAdapter.DashViewHolder>
             .error(R.drawable.gallery)
             .into(holder.iv_img_main_dog)
 
+
+        if(o?.isLost == 1){
+            holder.tv_lost_found.text = holder.tv_lost_found.context.resources.getText(R.string.lost)
+        }else{
+            holder.tv_lost_found.text = holder.tv_lost_found.context.resources.getText(R.string.found)
+        }
+
         var matchResultsAdapter: DashMatchResultsAdapter
         o?.finalOutput?.let {
             val lm = LinearLayoutManager(holder.rv_res.context, LinearLayoutManager.HORIZONTAL, false)
@@ -68,5 +75,6 @@ class DashMatchAdapter() : RecyclerView.Adapter<DashMatchAdapter.DashViewHolder>
         val tv_res_title = view.findViewById(R.id.tv_res_title) as TextView
         val rv_res = view.findViewById(R.id.rv_res) as RecyclerView
         val iv_img_main_dog = view.findViewById(R.id.iv_img_main_dog) as ImageView
+        val tv_lost_found = view.findViewById(R.id.tv_lost_found) as TextView
     }
 }

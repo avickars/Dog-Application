@@ -96,8 +96,8 @@ class DogMatchResultsMapsFragment : Fragment() {
         var matchResultsAdapter: DashMatchResultsAdapter
         dogData?.finalOutput?.let {
             val lm = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            lm.reverseLayout = true
-            lm.stackFromEnd = true
+            lm.reverseLayout = false
+            lm.stackFromEnd = false
             binding.rvRes.apply {
                 layoutManager = lm
                 matchResultsAdapter = DashMatchResultsAdapter(it, DashMatchResultsAdapter.OnClickListener { fo ->
@@ -134,6 +134,13 @@ class DogMatchResultsMapsFragment : Fragment() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
+        }
+
+
+        if(dogData?.isLost == 1){
+            binding.tvLostFound.text = resources.getText(R.string.lost_dog_image)
+        }else{
+            binding.tvLostFound.text = resources.getText(R.string.found_dog_image)
         }
     }
 
