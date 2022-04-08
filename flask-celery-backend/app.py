@@ -192,6 +192,12 @@ def format_data_for_email_temp(data=[]):
         i += 1
     return md
 
+def remove_duplicates(res):
+    result = {i['c_score']: i for i in reversed(res)}
+    ans = []
+    for k in result.values():
+        ans.append(k)
+    return ans
 
 @app.route('/viewTemp')
 def viewTemp():
@@ -209,41 +215,6 @@ def viewTemp():
         "matched_results": _d
     }
     return render_template('email_template.html', **_message_body)
-
-def send_email_to_user_for_no_dog_found(to_email='karthiksrinath24007@gmail.com', uploaded_img='',
-                                        title="Dog not identified!",
-                                        message="We could not able to detect dog in the picture."
-                                        ):
-    API_KEY = config('SEND_GRID_API_KEY', default='')
-    if API_KEY == '':
-        API_KEY = os.environ['SEND_GRID_API_KEY']
-
-    _message_body = {
-        "title": title,
-        "message": message,
-        "banner_img": "https://i.imgur.com/jcP2YnQ.png",
-        "input_img": uploaded_img,
-        "matched_results": [],
-        "isFound": False
-    }
-
-    message = Mail(
-        from_email='cmpt733dogapp@gmail.com',
-        to_emails=to_email,
-        subject='Your Dog Status',
-        html_content=render_template('email_template.html', **_message_body),
-        is_multiple=True
-    )
-    try:
-        sg = SendGridAPIClient(API_KEY)
-        response = sg.send(message)
-
-        if response.status_code == 202:
-            return 'Email Sent'
-        else:
-            return 'Not able to send email'
-    except Exception as e:
-        return 'Not able to send email'
 
 def send_email_to_user(data=[], to_email='karthiksrinath24007@gmail.com', count=0, uploaded_img='', is_lost=1):
     API_KEY = config('SEND_GRID_API_KEY', default='')
@@ -284,37 +255,40 @@ def send_email_to_user(data=[], to_email='karthiksrinath24007@gmail.com', count=
         return 'Not able to send email'
 
 
-def sendNotificationOfInvalidImage(user_id, db_session,
-                                   title="Dog not identified!",
-                                   message="We could not able to detect dog in the picture."):
-    _res = db_session.query(User.id, User.fcm_token).filter_by(
-        id=user_id).first()
-    db_session.close()
+def send_email_to_user_for_no_dog_found(to_email='karthiksrinath24007@gmail.com', uploaded_img='',
+                                        title="Dog not identified!",
+                                        message="We could not able to detect dog in the picture."
+                                        ):
+    API_KEY = config('SEND_GRID_API_KEY', default='')
+    if API_KEY == '':
+        API_KEY = os.environ['SEND_GRID_API_KEY']
 
-    if _res is not None:
-        fcm_token = _res[1]
-        _headers = {
-            "Content-Type": "application/json",
-            'Authorization': FIREBASE_SERVER_KEY
-        }
+    _message_body = {
+        "title": title,
+        "message": message,
+        "banner_img": "https://i.imgur.com/jcP2YnQ.png",
+        "input_img": uploaded_img,
+        "matched_results": [],
+        "isFound": False
+    }
 
-        b_data = {
-            "to": fcm_token,
-            "data": {
-                "title": title,
-                "message": message
-            }
-        }
-        fb_url = 'https://fcm.googleapis.com/fcm/send'
-        response = requests.post(fb_url,
-                                 data=json.dumps(b_data), headers=_headers)
+    message = Mail(
+        from_email='cmpt733dogapp@gmail.com',
+        to_emails=to_email,
+        subject='Your Dog Status',
+        html_content=render_template('email_template.html', **_message_body),
+        is_multiple=True
+    )
+    try:
+        sg = SendGridAPIClient(API_KEY)
+        response = sg.send(message)
 
-        if response.status_code == 200:
-            message = "Notification sent to the user!"
+        if response.status_code == 202:
+            return 'Email Sent'
         else:
-            message = "Some error occurred while sending notification"
-        return message
-
+            return 'Not able to send email'
+    except Exception as e:
+        return 'Not able to send email'
 
 def sendNotificationToLostDogUser(user_id, db_session, count, ac_img, mat_img, is_lost):
 
@@ -352,12 +326,39 @@ def sendNotificationToLostDogUser(user_id, db_session, count, ac_img, mat_img, i
             message = "Some error occurred while sending notification"
         return message
 
-def remove_duplicates(res):
-    result = {i['c_score']: i for i in reversed(res)}
-    ans = []
-    for k in result.values():
-        ans.append(k)
-    return ans
+
+
+def sendNotificationOfInvalidImage(user_id, db_session,
+                                   title="Dog not identified!",
+                                   message="We could not able to detect dog in the picture."):
+    _res = db_session.query(User.id, User.fcm_token).filter_by(
+        id=user_id).first()
+    db_session.close()
+
+    if _res is not None:
+        fcm_token = _res[1]
+        _headers = {
+            "Content-Type": "application/json",
+            'Authorization': FIREBASE_SERVER_KEY
+        }
+
+        b_data = {
+            "to": fcm_token,
+            "data": {
+                "title": title,
+                "message": message
+            }
+        }
+        fb_url = 'https://fcm.googleapis.com/fcm/send'
+        response = requests.post(fb_url,
+                                 data=json.dumps(b_data), headers=_headers)
+
+        if response.status_code == 200:
+            message = "Notification sent to the user!"
+        else:
+            message = "Some error occurred while sending notification"
+        return message
+
 
 
 
