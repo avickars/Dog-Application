@@ -74,6 +74,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:18.0.0'
     implementation 'com.google.maps.android:android-maps-utils:2.3.0'
     implementation 'com.google.maps:google-maps-services:2.0.0'
+    implementation 'androidx.work:work-runtime-ktx:2.8.0-alpha01'
 
 //    implementation 'com.android.databinding:compiler:3.5.1'
 

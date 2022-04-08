@@ -36,14 +36,19 @@ class DogMatchResultsMapsFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        val _fc = requireActivity().supportFragmentManager.fragments[0].childFragmentManager.fragments[0]
-        if (_fc is OnMatchedResListener) {
-            onMatchResultClickListener =  _fc as DashboardFragment
-        } else {
-            throw ClassCastException(
-                "DashboardFragment must implement OnMatchedResListener"
-            )
+        try {
+            val _fc = requireActivity().supportFragmentManager.fragments[0].childFragmentManager.fragments[0]
+            if (_fc is OnMatchedResListener) {
+                onMatchResultClickListener =  _fc as DashboardFragment
+            } else {
+                throw ClassCastException(
+                    "DashboardFragment must implement OnMatchedResListener"
+                )
+            }
+        } catch (exception: Exception) {
+            print(exception.toString())
         }
+
     }
 
 
