@@ -34,6 +34,8 @@ import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.internal.PolylineEncoding
 import com.google.maps.model.DirectionsResult
 import java.lang.IllegalStateException
+import java.util.*
+import kotlin.concurrent.schedule
 
 
 //import com.an2t.myapplication.home1.databinding.FragmentDashboardBinding
@@ -91,6 +93,8 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnCameraMove
 
         val refresh_token = getRefreshToken()
         val fcm_token = getFCMToken()
+
+
         dashboardViewModel.callMatchRecords(refresh_token, fcm_token)
 
         _observe()
