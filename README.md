@@ -31,11 +31,17 @@ This folder contains the code used to develop the dog classifier model.
 
 These directories contain the code used to create the custom dogs dataset by scraping petfinder.com.
 
-## flashbackend
+## flask-backend
 
-## flash-celery-backend
+This folder consists of code which help the users to register to our application and login. This is deployed in Heroku
+
+## flask-celery-backend
+
+This folder consists of code which communicates with all the models and gives the results, this folder is actually deployed in our servers
 
 ## mobile-app
+
+This folder consists of our frontend development code which communicates to flask-celery-backend and flask-backend codes
 
 ## open-images-processing
 
