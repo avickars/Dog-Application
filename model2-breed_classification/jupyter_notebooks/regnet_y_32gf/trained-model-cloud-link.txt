@@ -1,0 +1,3 @@
+trained .pt models based on regnet_y_32gf can be downloaded from the following drive link:
+
+	https://drive.google.com/drive/folders/1cQZ7ahjoGbR91Rcma2DPcV6sjq1jZEMw?usp=sharing
