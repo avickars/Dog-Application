@@ -1,3 +1,7 @@
+# Dog-Application/webscraping
+
+   This directory contains files related to webscraping
+
 
 ## get_multiple_dog_links_from_dynamic_webpage.ipynb
 
