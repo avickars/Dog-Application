@@ -27,7 +27,7 @@ This folder contains the code used to develop the dog comparator model.
 
 This folder contains the code used to develop the dog classifier model.
 
-## petfinder/web scraping
+## petfinder and web scraping
 
 These directories contain the code used to create the custom dogs dataset by scraping petfinder.com.
 
