@@ -32,6 +32,9 @@ interface ServiceAPI {
     @POST("pets/getAllUserUploadRecords")
     fun getAllUserUploadRecords(@Body req : CommonReq) : Observable<Response<AllLostUploadRecords>>
 
+    @POST("pets/getAllUserUploadRecordsMap")
+    fun getAllUserUploadRecordsForMap(@Body req : CommonReq) : Observable<Response<AllLostUploadRecords>>
+
 
     @POST("auth/getUserDataByUserId")
     fun getUserDetails(@Body req : CommonReq) : Observable<Response<UserDetailsResponse>>

@@ -21,7 +21,7 @@ def get_all_matches(*args, **kwargs):
     body = json.loads(request.data)
     user_id = kwargs['user_id']
     fcm_token = body['fcm_token']
-    fetch_list = db.session.query(Pets).filter_by(user_id=user_id, is_lost=1).order_by(desc(Pets.id))
+    fetch_list = db.session.query(Pets).filter_by(user_id=user_id).order_by(desc(Pets.id))
 
     User.query.filter_by(id=user_id).update(
         dict(fcm_token=fcm_token))
@@ -29,6 +29,37 @@ def get_all_matches(*args, **kwargs):
 
     all_pets = pets_s_schema.dump(fetch_list)
     return jsonify({"status": True, "match_list": all_pets})
+
+@pets.route('/getAllUserUploadRecordsMap', methods=['POST'])
+@handle_all_exceptions
+@logged_in
+def get_all_matches_maps(*args, **kwargs):
+
+    if 'user_id' not in kwargs:
+        _error = jsonify({
+            "status": False,
+            "message": "Seems you have not signed in. Please sign-in!"
+        })
+        return _error
+
+    body = json.loads(request.data)
+    user_id = kwargs['user_id']
+    fcm_token = body['fcm_token']
+    fetch_list = db.session.query(Pets).filter_by(user_id=user_id).order_by(desc(Pets.id))
+
+    User.query.filter_by(id=user_id).update(
+        dict(fcm_token=fcm_token))
+    db.session.commit()
+
+    all_pets = pets_s_schema.dump(fetch_list)
+
+    ap = []
+
+    for _p in all_pets:
+        if len(_p["final_output"]) > 0:
+            ap.append(_p)
+
+    return jsonify({"status": True, "match_list": ap})
 
 
 

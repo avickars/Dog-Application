@@ -6,6 +6,7 @@
         <entry key="../../../../../../layout/custom_preview.xml" value="0.2537037037037037" />
         <entry key="../../../../Library/Android/sdk/platforms/android-32/data/res/drawable/btn_default_small.xml" value="0.137" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.137" />
+        <entry key="app/src/main/res/drawable/badge_lost_found.xml" value="0.157" />
         <entry key="app/src/main/res/drawable/bg_my_location.xml" value="0.137" />
         <entry key="app/src/main/res/drawable/bg_profile.xml" value="0.137" />
         <entry key="app/src/main/res/drawable/et_background.xml" value="0.226" />
@@ -18,16 +19,16 @@
         <entry key="app/src/main/res/drawable/ic_round_login_24.xml" value="0.1235" />
         <entry key="app/src/main/res/drawable/react.xml" value="0.335" />
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.21784565916398713" />
-        <entry key="app/src/main/res/layout/activity_login.xml" value="0.45" />
+        <entry key="app/src/main/res/layout/activity_login.xml" value="0.28490600585937503" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.27237854003906253" />
         <entry key="app/src/main/res/layout/activity_maps.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/activity_register.xml" value="0.22780797101449277" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.16183136899365366" />
         <entry key="app/src/main/res/layout/activity_view_pager_test.xml" value="0.19628286491387126" />
-        <entry key="app/src/main/res/layout/dash_main_item.xml" value="0.19628286491387126" />
+        <entry key="app/src/main/res/layout/dash_main_item.xml" value="0.346600341796875" />
         <entry key="app/src/main/res/layout/dash_main_sub_item.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/layout/fragment_dashboard.xml" value="0.16183136899365366" />
-        <entry key="app/src/main/res/layout/fragment_dog_match_results_maps.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/fragment_dog_match_results_maps.xml" value="2.0" />
         <entry key="app/src/main/res/layout/fragment_found_dog.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_gallery_or_camera.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.16183136899365366" />
@@ -45,6 +46,8 @@
         <entry key="app/src/main/res/layout/notification_item.xml" value="0.16183136899365366" />
         <entry key="app/src/main/res/layout/view_pager_item.xml" value="0.19628286491387126" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.231722958529286" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.157" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.157" />
         <entry key="app/src/main/res/xml/network_security_config.xml" value="0.16183136899365366" />
       </map>
     </option>

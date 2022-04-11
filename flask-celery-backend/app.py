@@ -192,6 +192,12 @@ def format_data_for_email_temp(data=[]):
         i += 1
     return md
 
+def remove_duplicates(res):
+    result = {i['c_score']: i for i in reversed(res)}
+    ans = []
+    for k in result.values():
+        ans.append(k)
+    return ans
 
 @app.route('/viewTemp')
 def viewTemp():
@@ -210,48 +216,20 @@ def viewTemp():
     }
     return render_template('email_template.html', **_message_body)
 
-def send_email_to_user_for_no_dog_found(to_email='karthiksrinath24007@gmail.com', uploaded_img=''):
-    API_KEY = config('SEND_GRID_API_KEY', default='')
-    if API_KEY == '':
-        API_KEY = os.environ['SEND_GRID_API_KEY']
-
-    _message_body = {
-        "title": "Dog not identified!",
-        "message": f"We could not able to detect dog in the picture.",
-        "banner_img": "https://i.imgur.com/jcP2YnQ.png",
-        "input_img": uploaded_img,
-        "matched_results": [],
-        "isFound": False
-    }
-
-    message = Mail(
-        from_email='cmpt733dogapp@gmail.com',
-        to_emails=to_email,
-        subject='Your Dog Status',
-        html_content=render_template('email_template.html', **_message_body),
-        is_multiple=True
-    )
-    try:
-        sg = SendGridAPIClient(API_KEY)
-        response = sg.send(message)
-
-        if response.status_code == 202:
-            return 'Email Sent'
-        else:
-            return 'Not able to send email'
-    except Exception as e:
-        return 'Not able to send email'
-
-def send_email_to_user(data=[], to_email='karthiksrinath24007@gmail.com', count=0, uploaded_img=''):
+def send_email_to_user(data=[], to_email='karthiksrinath24007@gmail.com', count=0, uploaded_img='', is_lost=1):
     API_KEY = config('SEND_GRID_API_KEY', default='')
     if API_KEY == '':
         API_KEY = os.environ['SEND_GRID_API_KEY']
 
     _d = format_data_for_email_temp(data)
 
+    upload_type = "found"
+    if int(is_lost) == 1:
+        upload_type = "lost"
+
     _message_body = {
         "title": "Here is a good news for you!",
-        "message": f"We found {count} match results of your lost dog.",
+        "message": f"We found {count} match results of your {upload_type} dog.",
         "banner_img": "https://i.imgur.com/jcP2YnQ.png",
         "input_img": uploaded_img,
         "matched_results": _d,
@@ -277,37 +255,42 @@ def send_email_to_user(data=[], to_email='karthiksrinath24007@gmail.com', count=
         return 'Not able to send email'
 
 
-def sendNotificationOfInvalidImage(user_id, db_session):
-    _res = db_session.query(User.id, User.fcm_token).filter_by(
-        id=user_id).first()
-    db_session.close()
+def send_email_to_user_for_no_dog_found(to_email='karthiksrinath24007@gmail.com', uploaded_img='',
+                                        title="Dog not identified!",
+                                        message="We could not able to detect dog in the picture."
+                                        ):
+    API_KEY = config('SEND_GRID_API_KEY', default='')
+    if API_KEY == '':
+        API_KEY = os.environ['SEND_GRID_API_KEY']
 
-    if _res is not None:
-        fcm_token = _res[1]
-        _headers = {
-            "Content-Type": "application/json",
-            'Authorization': FIREBASE_SERVER_KEY
-        }
+    _message_body = {
+        "title": title,
+        "message": message,
+        "banner_img": "https://i.imgur.com/jcP2YnQ.png",
+        "input_img": uploaded_img,
+        "matched_results": [],
+        "isFound": False
+    }
 
-        b_data = {
-            "to": fcm_token,
-            "data": {
-                "title": "Dog not identified!",
-                "message": f"We could not able to detect dog in the picture."
-            }
-        }
-        fb_url = 'https://fcm.googleapis.com/fcm/send'
-        response = requests.post(fb_url,
-                                 data=json.dumps(b_data), headers=_headers)
+    message = Mail(
+        from_email='cmpt733dogapp@gmail.com',
+        to_emails=to_email,
+        subject='Your Dog Status',
+        html_content=render_template('email_template.html', **_message_body),
+        is_multiple=True
+    )
+    try:
+        sg = SendGridAPIClient(API_KEY)
+        response = sg.send(message)
 
-        if response.status_code == 200:
-            message = "Notification sent to the user!"
+        if response.status_code == 202:
+            return 'Email Sent'
         else:
-            message = "Some error occurred while sending notification"
-        return message
+            return 'Not able to send email'
+    except Exception as e:
+        return 'Not able to send email'
 
-
-def sendNotificationToLostDogUser(user_id, db_session, count, ac_img, mat_img):
+def sendNotificationToLostDogUser(user_id, db_session, count, ac_img, mat_img, is_lost):
 
     _res = db_session.query(User.id, User.fcm_token).filter_by(id=user_id).first()
     db_session.close()
@@ -319,11 +302,15 @@ def sendNotificationToLostDogUser(user_id, db_session, count, ac_img, mat_img):
             'Authorization': FIREBASE_SERVER_KEY
         }
 
+        upload_type = "found"
+        if int(is_lost) == 1:
+            upload_type = "lost"
+
         b_data = {
             "to": fcm_token,
             "data": {
                 "title": "Here is a good news for you!",
-                "message": f"We found {count} match results of your lost dog!",
+                "message": f"We found {count} match results of your {upload_type} dog!",
                 "actual_image": ac_img,
                 "match_img": mat_img
             }
@@ -338,6 +325,40 @@ def sendNotificationToLostDogUser(user_id, db_session, count, ac_img, mat_img):
         else:
             message = "Some error occurred while sending notification"
         return message
+
+
+
+def sendNotificationOfInvalidImage(user_id, db_session,
+                                   title="Dog not identified!",
+                                   message="We could not able to detect dog in the picture."):
+    _res = db_session.query(User.id, User.fcm_token).filter_by(
+        id=user_id).first()
+    db_session.close()
+
+    if _res is not None:
+        fcm_token = _res[1]
+        _headers = {
+            "Content-Type": "application/json",
+            'Authorization': FIREBASE_SERVER_KEY
+        }
+
+        b_data = {
+            "to": fcm_token,
+            "data": {
+                "title": title,
+                "message": message
+            }
+        }
+        fb_url = 'https://fcm.googleapis.com/fcm/send'
+        response = requests.post(fb_url,
+                                 data=json.dumps(b_data), headers=_headers)
+
+        if response.status_code == 200:
+            message = "Notification sent to the user!"
+        else:
+            message = "Some error occurred while sending notification"
+        return message
+
 
 
 
@@ -399,6 +420,8 @@ def call_all_models_for_data_processing(email, img_name, img_pth, is_lost, lat,
         similar_dogs = similar_dogs.head(5)
         similar_dogs = similar_dogs.to_dict('records')
         os.remove(img_name)
+
+    similar_dogs = remove_duplicates(similar_dogs)
     # DB entry after first model response
     pets = Pets(
         user_id=user_id,
@@ -423,11 +446,25 @@ def call_all_models_for_data_processing(email, img_name, img_pth, is_lost, lat,
         "stacked_comparision": similar_dogs,
         "image_url": url
     }
-    noti_message = sendNotificationToLostDogUser(user_id, db_session,
-                                                 len(similar_dogs), url,
-                                                 similar_dog_url)
-    mail_status = send_email_to_user(similar_dogs, user_email,
-                                     len(similar_dogs), url)
+
+    if len(similar_dogs) == 0:
+        title = "No result found!"
+        message = "We are sorry but currently, we don't have any dog matches for you."
+        noti_message = sendNotificationOfInvalidImage(user_id, db_session,
+            title= title,
+            message=message
+        )
+        mail_status = send_email_to_user_for_no_dog_found(
+            to_email=user_email, uploaded_img=url,
+            title=title,
+            message=message
+        )
+    else:
+        noti_message = sendNotificationToLostDogUser(user_id, db_session,
+                                                     len(similar_dogs), url,
+                                                     similar_dog_url, is_lost)
+        mail_status = send_email_to_user(similar_dogs, user_email,
+                                     len(similar_dogs), url, is_lost)
     return {"data": data, "email_status": mail_status,
             "notification_response": noti_message}
 
@@ -518,6 +555,8 @@ def upload_lost_pet_image(*args, **kwargs):
     }
 
     is_lost = request.form.get('lost', 0)
+
+
     lat = request.form.get('lat', '49.191855')
     lng = request.form.get('lng', '-122.867152')
 

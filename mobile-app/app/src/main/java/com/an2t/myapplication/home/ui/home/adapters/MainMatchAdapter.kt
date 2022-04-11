@@ -38,7 +38,19 @@ class MainMatchAdapter() : RecyclerView.Adapter<MainMatchAdapter.MainMatchViewHo
             .error(R.drawable.gallery)
             .into(holder.iv_img_main_dog)
 
-        holder.tv_res_title.text = "Predicted Breed: \n${o?.breed}"
+        holder.tv_res_title.text = o?.breed
+
+        if(o?.isLost == 1){
+            holder.tv_lost_found.text = holder.tv_lost_found.context.resources.getText(R.string.lost)
+            holder.tv_title_output.text =  "${holder.tv_title_output.context.resources.getText(R.string.found)} Dog Results"
+        }else{
+            holder.tv_lost_found.text = holder.tv_lost_found.context.resources.getText(R.string.found)
+            holder.tv_title_output.text =  "${holder.tv_title_output.context.resources.getText(R.string.lost)} Dog Results"
+        }
+
+        if(o?.finalOutput.isNullOrEmpty()){
+            holder.tv_title_output.text =  holder.tv_title_output.context.resources.getText(R.string.no_result_found)
+        }
 
         var matchResultsAdapter: MatchResultsAdapter
         o?.finalOutput?.let {
@@ -61,7 +73,7 @@ class MainMatchAdapter() : RecyclerView.Adapter<MainMatchAdapter.MainMatchViewHo
         // Adding an OnClickLister to the holder.itemView
         holder.itemView.setOnClickListener {
             // Invoking itemClickListener and passing it the position and name
-//            itemClickListener?.invoke(position, element)
+            // itemClickListener?.invoke(position, element)
         }
     }
 
@@ -75,5 +87,7 @@ class MainMatchAdapter() : RecyclerView.Adapter<MainMatchAdapter.MainMatchViewHo
         val tv_res_title = view.findViewById(R.id.tv_res_title) as TextView
         val rv_res = view.findViewById(R.id.rv_res) as RecyclerView
         val iv_img_main_dog = view.findViewById(R.id.iv_img_main_dog) as ImageView
+        val tv_lost_found = view.findViewById(R.id.tv_lost_found) as TextView
+        val tv_title_output = view.findViewById(R.id.tv_title_output) as TextView
     }
 }

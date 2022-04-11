@@ -1,25 +1,52 @@
 # Dog-Application
 
- - Dog Extractor 
- 	- determining optimum hyper parameters in non max surpression - Aidan
+This repository contains our work for the project for CMPT 733 where we developed an Android Application to help users
+to find lost dogs.  
 
- 	 - using the test data, normalize and compute the area of each bounding box.  Then using k-means - 
- 	 	clustering, classify each box as a small, medium and large box.  Then evaluate the model
- 	 	on each subclass as small, medium and large.
+## Proposal.docx
 
+This is the project proposal.
 
- - Dog Comparator - Determinging optimum threshold to classify dogs as the same or similar
+## finalreport.tex/references.bib
 
- 	- Test dog comparator within individual breeds. i.e. pull two images from the same breed. See how well 
- 		the model performs.  Repeat for other breeds.
+This is the final report latex final and references.
 
- - Dog Breed - Rishab
- 	-  Use external data to get some insights on as well as scraped data.
+## dog-detection-model-fasterrcnn
 
- - All three - Aidan
- 	- 1000 lost dogs
- 	- 100 found dogs
- 	- Is the true match returned in the top n matches
+This folder contains the code used to develop the production model that detects dogs and computes bounding boxes.
 
+## dog-detection-model-yolov2
 
- All three models  - next 
+This folder contains the code used to develop a dog detection model using yolo V2.
+
+## dog-identifcation-model
+
+This folder contains the code used to develop the dog comparator model.
+
+## model2-breed_classification
+
+This folder contains the code used to develop the dog classifier model.
+
+## petfinder and web scraping
+
+These directories contain the code used to create the custom dogs dataset by scraping petfinder.com.
+
+## flask-backend
+
+This folder consists of code which help the users to register to our application and login. This is deployed in Heroku
+
+## flask-celery-backend
+
+This folder consists of code which communicates with all the models and gives the results, this folder is actually deployed in our servers
+
+## mobile-app
+
+This folder consists of our frontend development code which communicates to flask-celery-backend and flask-backend codes
+
+## open-images-processing
+
+This directory contains the code used to download and clean the open-images dataset. 
+
+## final-report-images
+
+This directory contains the images used in the final report/

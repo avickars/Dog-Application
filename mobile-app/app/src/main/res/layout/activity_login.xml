@@ -7,12 +7,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
+
         <FrameLayout
-            android:layout_weight="1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
             <ImageView
                 android:layout_width="match_parent"
@@ -28,11 +28,10 @@
         </FrameLayout>
 
         <FrameLayout
-            android:layout_weight="1"
-            android:elevation="2dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        </FrameLayout>
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:elevation="2dp"></FrameLayout>
 
     </LinearLayout>
 
@@ -42,11 +41,11 @@
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:paddingTop="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="120dp"
             android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:paddingTop="16dp">
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -55,90 +54,91 @@
             </FrameLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:paddingBottom="20dp"
-                android:elevation="2dp"
-                android:paddingHorizontal="24dp"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:elevation="2dp"
+                android:paddingHorizontal="24dp"
+                android:paddingBottom="20dp"
                 tools:context=".LoginActivity">
 
 
                 <RelativeLayout
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
                     android:id="@+id/rl_logo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:orientation="vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
                     <ImageView
-                        android:layout_centerInParent="true"
                         android:id="@+id/img_logo"
-                        android:layout_alignParentTop="true"
-                        android:src="@drawable/paws"
                         android:layout_width="100dp"
-                        android:layout_height="100dp"/>
+                        android:layout_height="100dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/paws" />
 
                     <TextView
-                        android:gravity="center"
-                        android:layout_below="@id/img_logo"
-                        android:textSize="40dp"
-                        android:textStyle="bold"
-                        android:textColor="@android:color/white"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_below="@id/img_logo"
                         android:fontFamily="@font/comfortaa"
-                        android:text="@string/app_name" />
+                        android:gravity="center"
+                        android:text="@string/app_name"
+                        android:textColor="@android:color/white"
+                        android:textSize="40dp"
+                        android:textStyle="bold" />
 
                 </RelativeLayout>
 
 
                 <androidx.appcompat.widget.AppCompatEditText
-                    app:layout_constraintTop_toBottomOf="@id/rl_logo"
-                    android:inputType="textEmailAddress"
-                    android:elevation="2dp"
-                    android:padding="12dp"
                     android:id="@+id/et_email"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_marginTop="20dp"
                     android:background="@drawable/et_background"
+                    android:elevation="2dp"
                     android:hint="@string/input_email"
+                    android:inputType="textEmailAddress"
+                    android:padding="12dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    tools:ignore="MissingConstraints"/>
+                    app:layout_constraintTop_toBottomOf="@id/rl_logo"
+                    tools:ignore="MissingConstraints" />
 
 
                 <androidx.appcompat.widget.AppCompatEditText
-                    android:inputType="textPassword"
-                    android:elevation="2dp"
-                    android:padding="12dp"
-                    android:background="@drawable/et_background"
                     android:id="@+id/et_password"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_marginTop="20dp"
+                    android:background="@drawable/et_background"
+                    android:elevation="2dp"
                     android:hint="@string/input_password"
+                    android:inputType="textPassword"
+                    android:padding="12dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/et_email"
-                    tools:ignore="MissingConstraints"/>
+                    tools:ignore="MissingConstraints" />
 
                 <ProgressBar
-                    android:visibility="gone"
+                    android:id="@+id/pb_show"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:layout_marginTop="16dp"
                     android:elevation="10dp"
-                    android:layout_gravity="center"
-                    android:id="@+id/pb_show"
                     android:indeterminateTint="@color/purple_200"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="@id/et_password"
                     app:layout_constraintStart_toStartOf="@id/et_password"
-                    app:layout_constraintTop_toBottomOf="@id/et_password"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    app:layout_constraintTop_toBottomOf="@id/et_password" />
 
 
                 <Button
@@ -153,20 +153,19 @@
                     tools:ignore="MissingConstraints" />
 
                 <RelativeLayout
-                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    app:layout_constraintTop_toBottomOf="@id/btn_login"
+                    android:gravity="center"
                     app:layout_constraintEnd_toEndOf="@id/et_password"
                     app:layout_constraintStart_toStartOf="@id/et_password"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    app:layout_constraintTop_toBottomOf="@id/btn_login">
 
                     <TextView
                         android:id="@+id/tv_dont"
-                        android:text="@string/dont_have_account"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-                    </TextView>
+                        android:layout_height="wrap_content"
+                        android:text="@string/dont_have_account"></TextView>
 
                     <TextView
                         android:id="@+id/tv_sign_up"
@@ -175,19 +174,19 @@
                         android:layout_marginStart="8dp"
                         android:layout_toRightOf="@id/tv_dont"
                         android:text="@string/sign_up"
-                        android:textColor="@color/purple_500"/>
+                        android:textColor="@color/purple_500" />
                 </RelativeLayout>
 
                 <Switch
-                    android:visibility="gone"
                     android:id="@+id/switch_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_marginTop="12dp"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="@id/et_password"
                     app:layout_constraintStart_toStartOf="@id/et_password"
                     app:layout_constraintTop_toBottomOf="@id/btn_login"
-                    tools:ignore="UseSwitchCompatOrMaterialXml"/>
+                    tools:ignore="UseSwitchCompatOrMaterialXml" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>

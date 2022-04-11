@@ -36,14 +36,19 @@ class DogMatchResultsMapsFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        val _fc = requireActivity().supportFragmentManager.fragments[0].childFragmentManager.fragments[0]
-        if (_fc is OnMatchedResListener) {
-            onMatchResultClickListener =  _fc as DashboardFragment
-        } else {
-            throw ClassCastException(
-                "DashboardFragment must implement OnMatchedResListener"
-            )
+        try {
+            val _fc = requireActivity().supportFragmentManager.fragments[0].childFragmentManager.fragments[0]
+            if (_fc is OnMatchedResListener) {
+                onMatchResultClickListener =  _fc as DashboardFragment
+            } else {
+                throw ClassCastException(
+                    "DashboardFragment must implement OnMatchedResListener"
+                )
+            }
+        } catch (exception: Exception) {
+            print(exception.toString())
         }
+
     }
 
 
@@ -96,8 +101,8 @@ class DogMatchResultsMapsFragment : Fragment() {
         var matchResultsAdapter: DashMatchResultsAdapter
         dogData?.finalOutput?.let {
             val lm = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            lm.reverseLayout = true
-            lm.stackFromEnd = true
+            lm.reverseLayout = false
+            lm.stackFromEnd = false
             binding.rvRes.apply {
                 layoutManager = lm
                 matchResultsAdapter = DashMatchResultsAdapter(it, DashMatchResultsAdapter.OnClickListener { fo ->
@@ -134,6 +139,13 @@ class DogMatchResultsMapsFragment : Fragment() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
+        }
+
+
+        if(dogData?.isLost == 1){
+            binding.tvLostFound.text = resources.getText(R.string.lost_dog_image)
+        }else{
+            binding.tvLostFound.text = resources.getText(R.string.found_dog_image)
         }
     }
 
