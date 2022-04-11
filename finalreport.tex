@@ -10,8 +10,20 @@
 \usepackage{subcaption}
 \usepackage{url}
 \usepackage[english]{babel}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+    }
+
 %Includes "References" in the table of contents
 \usepackage[nottoc]{tocbibind}
+
+\usepackage{float}
 
 \title{An Analysis of the Applications of Computer Vision on Identifying Lost Dogs}
 \author{Aidan Vickars, Anant Sunilam Awasthy, Karthik Srinatha, and Rishabh Kaushal}
@@ -118,15 +130,38 @@ At a lower level if the user has lost a dog, they will submit a photo of their d
 \end{enumerate}
 An attentive reader will notice that we discuss only the submission of a lost dog.  This is done to minimize confusion.  If the user submits a found dog the pipeline is identical except that the dog is instead marked as found and is compared against lost dogs.  This completes the pipeline contained within the application. 
 
+From the perspective of the user, the application contains several features to augment the process of matching lost and found dogs together.  For instance, in Figure: \ref{fig:x Android app 1} the matches found for a sample lost dog submitted to the application are shown.  We can see that the application does extremely well in identifying similar dogs to the point that it is difficult to identify which found dog is the lost dog (it is the right most dog).
+
+\begin{figure}[h]
+\centering
+	\includegraphics[scale=0.1]{final-report-images/app-search-results.jpeg}
+\caption{Results for Sample Lost Dog}
+\label{fig:x Android app 1}
+\end{figure}
+\noindent A second feature in the application is a visualization that displays the location with additional information such as the distance, estimated driving time, breed and contact information of the users matches.  This is shown in Figure \ref{fig:x Android app 2}.
+
+\begin{figure}[h]
+\centering
+	\includegraphics[scale=0.1]{final-report-images/app-locating-dogs.jpeg}
+\caption{Additional Information contained in the Results for a Lost Dog}
+\label{fig:x Android app 2}
+\end{figure}
+
+\noindent  For a comprehensive demo of the application and all of its features, the reader is directed to the following \href{https://youtu.be/jVjqX4sfAKU}{video}
+
+
+
+\newpage
+
 \section{Data Science Pipeline}
 
 \subsection{Open Images Data-set}
 
 To train each model, we leveraged three different data sets for each model respectively.  For the Dog Extractor model, we utilized the "Open Images" \cite{openimages} data-set that contains thousands of images of dogs with corresponding bounding boxes.  While this data is already relatively clean, we discarded all grey-scale images, and converted all images to RGB format.  The decision was made to discard grey-scale images because our expectation is that in the production environment of the app, the vast majority of images will be colour images.  After cleaning this left 19 995 training images, 1568 validation images , and 4791 test images.
 
-\subsection{Dog Classifier Models Data-set}
+\subsection{Stanford Dogs Data-set}
 
-For the Dog Classifier Model ---------------------
+For the Dog Classifier Model, we used the "Stanford Dogs" data-set \cite{stanforddogs} that contains 20 580 images with 120 different breeds from around the world. This data-set was built using images and annotations from "ImageNet" \cite{imagenet} for the task of fine-grained image categorization.  We split this data-set into training, validation and test splits of approximately 80\%, 10\%, and 10\% respectively.
 
 \subsection{Petfinder Data-set}
 
@@ -286,7 +321,187 @@ Large          & 0.78                  \\ \hline
 \label{fig:box size}
 \end{figure}
 
+\newpage
 \subsection{Dog Classifier}
+
+To train a convolutional neural network for breed classification, we used a transfer learning approach by using a pre-trained model from PyTorch.  To do this, we first loaded a pre-trained model and adjusted the dimension of the output layer to 120. The dimension was set to 120 to correspond with the number of breeds contained in the  "Stanford Dogs" data-set \cite{stanforddogs}.  To devise the optimum model, several models were trained and were chosen through either random selection or according to the best ImageNet error rates for top one and top five accuracy.  We used the following pre-trained models from PyTorch \cite{torchpretrained}  to train a convolutional neural network for dog breed classification.
+
+
+ 	\begin{itemize}
+ 	  \item Densenet-121
+      \item EfficientNet-B0
+      \item GoogleNet
+      \item Inception v3
+      \item VGG 16
+      \item VGG 19
+      \item Convnext Large
+      \item Regnet\_y\_32gf
+      \item EfficientNet-B7
+      \item Vit\_b\_1
+
+    \end{itemize}
+
+
+
+The training data for the above models has been presented in the following table:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{model} & \textbf{input\_features} & \textbf{requires grad} & \textbf{optimizer} & \textbf{epoch} & \textbf{training\_time} \\ \hline
+densenet          & 1024 & FALSE & SGD & 30 & 31m 53s   \\ \hline
+efficientnet      & 1280 & FALSE & SGD & 30 & 48m 51s   \\ \hline
+googlenet         & 1024 & FALSE & SGD & 30 & 18m 7s    \\ \hline
+inception\_v3     & 2048 & FALSE & SGD & 30 & 35m 55s   \\ \hline
+vgg16             & 4096 & FALSE & SGD & 30 & 37m 59s   \\ \hline
+vgg19             & 4096 & FALSE & SGD & 60 & 1545m 13s \\ \hline
+covenext\_large   & 1536 & FALSE & SGD & 2  & 12m 11s   \\ \hline
+regnet\_y\_3\_2gf & 1512 & FALSE & SGD & 30 & 31m 5s    \\ \hline
+efficientnet\_b7  & 2560 & TRUE  & SGD & 30 & 267m 15s  \\ \hline
+vit\_b\_16        & 768  & TRUE  & SGD & 30 & 172m 57s  \\ \hline
+\end{tabular}
+\caption{Dog Classifier Model: Training Data}
+\label{tab:model2-train}
+\end{table}
+
+
+
+\newpage
+
+The Testing Top-1 Accuracy Scores and Testing Cross-Entropy log Loss sorted by testing accuracy is shown below:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|cc|ccc|ccc|}
+\hline
+\multicolumn{1}{|l|}{} &
+  \multicolumn{2}{c|}{Testing} &
+  \multicolumn{3}{c|}{Macro} &
+  \multicolumn{3}{c|}{Weighted} \\ \hline
+\textbf{Model} &
+  \multicolumn{1}{c|}{\textbf{Loss}} &
+  \textbf{Accuracy} &
+  \multicolumn{1}{c|}{\textbf{Precision}} &
+  \multicolumn{1}{c|}{\textbf{Recall}} &
+  \textbf{F1} &
+  \multicolumn{1}{c|}{\textbf{Precision}} &
+  \multicolumn{1}{c|}{\textbf{Recall}} &
+  \textbf{F1} \\ \hline
+covenext\_large &
+  \multicolumn{1}{c|}{0.10765} &
+  0.96 &
+  \multicolumn{1}{c|}{0.97} &
+  \multicolumn{1}{c|}{0.967} &
+  0.967 &
+  \multicolumn{1}{c|}{0.97} &
+  \multicolumn{1}{c|}{0.969} &
+  0.968 \\ \hline
+vgg19 &
+  \multicolumn{1}{c|}{0.45274} &
+  0.85 &
+  \multicolumn{1}{c|}{0.86} &
+  \multicolumn{1}{c|}{0.852} &
+  0.851 &
+  \multicolumn{1}{c|}{0.861} &
+  \multicolumn{1}{c|}{0.856} &
+  0.854 \\ \hline
+regnet\_y\_3\_2gf &
+  \multicolumn{1}{c|}{0.459066} &
+  0.85 &
+  \multicolumn{1}{c|}{0.863} &
+  \multicolumn{1}{c|}{0.849} &
+  0.845 &
+  \multicolumn{1}{c|}{0.862} &
+  \multicolumn{1}{c|}{0.852} &
+  0.846 \\ \hline
+vgg16 &
+  \multicolumn{1}{c|}{0.489324} &
+  0.84 &
+  \multicolumn{1}{c|}{0.846} &
+  \multicolumn{1}{c|}{0.837} &
+  0.837 &
+  \multicolumn{1}{c|}{0.847} &
+  \multicolumn{1}{c|}{0.841} &
+  0.839 \\ \hline
+densenet &
+  \multicolumn{1}{c|}{0.564295} &
+  0.82 &
+  \multicolumn{1}{c|}{0.835} &
+  \multicolumn{1}{c|}{0.82} &
+  0.817 &
+  \multicolumn{1}{c|}{0.836} &
+  \multicolumn{1}{c|}{0.825} &
+  0.82 \\ \hline
+efficientnet\_b7 &
+  \multicolumn{1}{c|}{0.652045} &
+  0.82 &
+  \multicolumn{1}{c|}{0.835} &
+  \multicolumn{1}{c|}{0.822} &
+  0.819 &
+  \multicolumn{1}{c|}{0.835} &
+  \multicolumn{1}{c|}{0.826} &
+  0.822 \\ \hline
+vit\_b\_16 &
+  \multicolumn{1}{c|}{0.555616} &
+  0.82 &
+  \multicolumn{1}{c|}{0.832} &
+  \multicolumn{1}{c|}{0.824} &
+  0.824 &
+  \multicolumn{1}{c|}{0.834} &
+  \multicolumn{1}{c|}{0.827} &
+  0.8247 \\ \hline
+inception\_v3 &
+  \multicolumn{1}{c|}{0.900824} &
+  0.8 &
+  \multicolumn{1}{c|}{0.814} &
+  \multicolumn{1}{c|}{0.803} &
+  0.801 &
+  \multicolumn{1}{c|}{0.815} &
+  \multicolumn{1}{c|}{0.809} &
+  0.803 \\ \hline
+googlenet &
+  \multicolumn{1}{c|}{0.718252} &
+  0.77 &
+  \multicolumn{1}{c|}{0.789} &
+  \multicolumn{1}{c|}{0.772} &
+  0.768 &
+  \multicolumn{1}{c|}{0.789} &
+  \multicolumn{1}{c|}{0.778} &
+  0.771 \\ \hline
+efficientnet &
+  \multicolumn{1}{c|}{0.876047} &
+  0.75 &
+  \multicolumn{1}{c|}{0.766} &
+  \multicolumn{1}{c|}{0.753} &
+  0.748 &
+  \multicolumn{1}{c|}{0.768} &
+  \multicolumn{1}{c|}{0.759} &
+  0.753 \\ \hline
+\end{tabular}
+\caption{Dog Classifier Model: Testing Data}
+\label{tab:model2-test-further}
+\end{table}
+
+
+
+\newpage
+
+\begin{figure}[h]
+\centering
+	\includegraphics[scale=0.60]{final-report-images/test_accuracy_comp_fig.png}
+\caption{Dog Classifier Model - Testing Top-1 Accuracy}
+\label{fig:model2 testing accuracy}
+\end{figure}
+
+As we can see the "ConvNext" model easily outperforms all the other models.  This is particular evident in the top one accuracy of the model on both the validation and test data where the difference in accuracy relative to the next best model is approximately 10\%.  However, since the validation and testing accuracy was relatively still so high even after reducing the training time and adding the drop out layer, we were concerned that this "ConvNext" model might still be over-fitting. 
+As a result, based on the testing accuracy, we picked the top 2 models i.e. the  "ConvNext" model and "VGG 19" based model as our final candidates for the application.
+
+
+\newpage
+
+
+
 
 \subsection{Dog Comparator}
 To create the dog comparator model that assesses the similarity between two dogs, we leveraged the pre-trained feature extractor from the VGG 19 classifier \cite{SimonyanKaren2014VDCN} and added three additional layers.  This is visualized in Figure \ref{fig:x comparator} below.
@@ -323,7 +538,7 @@ To train the model we initially employed a triplet loss function that required a
     
     \end{enumerate}
 
-Each image was then passed through the model and the loss was computed.  In case the reader is unfamiliar with the triplet loss function,  it is defined as $L(\vec{P}, \vec{A}, \vec{N}) = ReLU(\sigma(||\vec{P}-\vec{A}||_2) - \sigma(||\vec{P}- \vec{N}||_2) + M)$ where $\vec{P}, \vec{A}$ and $\vec{N}$ are the encodings of the positive, anchor and negative images respectively, $\sigma()$ is the sigmoid function and $M$ is the margin that was set to 0.9.  Note, an attentive reader will notice the large decrease in dimension in the first dense layer of the model.  This was done to accommodate GPU memory limitations so that the batch size could be increased during training.   The model was trained for 41 epochs with a learning rate of 0.01 that decayed by 0.1 every four epochs and a batch size of 30.  The training and validation losses are vizualized below in Figure \ref{fig:x epoch_v_map} .
+Each image was then passed through the model and the loss was computed.  In case the reader is unfamiliar with the triplet loss function,  it is defined as $L(\vec{P}, \vec{A}, \vec{N}) = ReLU(\sigma(||\vec{P}-\vec{A}||_2) - \sigma(||\vec{A}- \vec{N}||_2) + M)$ where $\vec{P}, \vec{A}$ and $\vec{N}$ are the encodings of the positive, anchor and negative images respectively, $\sigma()$ is the sigmoid function and $M$ is the margin that was set to 0.9.  Note, an attentive reader will notice the large decrease in dimension in the first dense layer of the model.  This was done to accommodate GPU memory limitations so that the batch size could be increased during training.   The model was trained for 41 epochs with a learning rate of 0.01 that decayed by 0.1 every four epochs and a batch size of 30.  The training and validation losses are vizualized below in Figure \ref{fig:x epoch_v_map} .
 
 \begin{figure}[h]
 \centering
@@ -342,7 +557,7 @@ To assess how well the dog comparator model performed, we first determined the o
 
 \noindent It should be noted that the reader may question why the optimum classification threshold is so high.  This is due to the significant dissimilarity between all images even of the same dog in the training data.  By placing no constraints on the type of images in the data-set set, all images had some degree of dissimilarity due to the variety of positions of each dog as well as the backgrounds in each image.  As a result, we found that similar dogs tended to have a similarity value near or slightly above 0.5 while dissimilar dogs had a similarity value near one.  
 
-Returning to the assessment of the model, using a classification threshold of 0.79 resulted in a strong test accuracy and F1 score of approximately 0.87 and 0.87 respectively.  However, after examining the corresponding similarity values of the model we found it did not do well in grouping the comparisons between the same dogs and the comparisons between different dogs.  This is vizualized below in the line plot contained in Figure \ref{fig:x triplet lineplot} where we can see fairly significant overlap between both groups.
+Returning to the assessment of the model, using a classification threshold of 0.79 resulted in a strong test accuracy and F1 score of approximately 0.87 and 0.87 respectively.  However, after examining the corresponding similarity values of the model we found it did not do well in grouping the comparisons between the same dogs and the comparisons between different dogs.  This is visualized below in the line plot contained in Figure \ref{fig:x triplet lineplot} where we can see fairly significant overlap between both groups.
 
 \begin{figure}[h]
 \centering
@@ -415,7 +630,7 @@ To investigate the bias of the model towards the most populous dogs, we divided 
 \section{Evaluation}
 To evaluate the accuracy of the data product, we devised an experiment to assess how well the three models worked together to match lost and found dogs.  To do this, we first took the entire validation split from the Petfinder data-set and designated every dog as lost.  At the same time, we randomly designated 10 \% of these dogs as found.  For every lost dog we randomly selected an image to use as input and for every found dog we randomly selected a different image to use as input as well.   All three models were then applied over a grid of parameters to determine the optimum parameter combination to maximize the success rate of matching lost and found dogs.  To be succinct, we varied the number of the most likely breeds recorded for lost and found dogs that are used to reduce the number of comparisons over a range from one to ten respectively.  In other words, we varied the number of breed combinations that should be searched to find the lost dog.  We also varied the number of results returned to the user from one to fifteen.  For every combination we determined the success rate of matching lost and found dogs.  A success was defined as the found dog being among the lost dogs returned to the user.  It is assumed that if the found dog was among the lost dogs returned to the user, the user would be able to identify the correct dog.  
 
-We found that by searching in only the top one breeds for both lost and found dogs, as well as returning the top 15 matches to the users resulted in the highest success rate of 98\% on the validation data.  Unsurprisingly, the success rate improved linearly with the number of matches returned with the user.  Surprisingly however, the highest success rates were achieved by searching in the fewest amount of breed combinations between lost and found dogs.  This clearly indicates the positive impact the Dog Classifier has acting as a filter for the Dog Comparator.  This is vizualized below in Figure \ref{fig:x breed comparisons} where the the number of breeds used to find matches for both lost and found dogs have been multiplied together into a single number to give the number of combinations searched.  This is shown along the x-axis.  Along the y-axis, the average accuracy is shown.  We can clearly see that as the number of combinations searched increases, the accuracy decreases.
+We found that by searching in only the top one breeds for both lost and found dogs, as well as returning the top 15 matches to the users resulted in the highest success rate of 92\% on the validation data.  Unsurprisingly, the success rate improved linearly with the number of matches returned with the user.  Surprisingly however, the highest success rates were achieved by searching in the fewest amount of breed combinations between lost and found dogs.  This clearly indicates the positive impact the Dog Classifier has acting as a filter for the Dog Comparator.  This is vizualized below in Figure \ref{fig:x breed comparisons} where the the number of breeds used to find matches for both lost and found dogs have been multiplied together into a single number to give the number of combinations searched.  This is shown along the x-axis.  Along the y-axis, the average accuracy is shown.  We can clearly see that as the number of combinations searched increases, the accuracy decreases.
 
 \begin{figure}[]
 \centering
@@ -424,7 +639,7 @@ We found that by searching in only the top one breeds for both lost and found do
 \label{fig:x breed comparisons}
 \end{figure}
 
-Using the optimum parameter combination as determined over the validation split of using only the most likely breed for both lost and found dogs respectively and returning the top 15 matches to the user, we achieved a success rate of 89\% on the test split.  We do note the decreased success rate over the test split compared to the validation split is due to the significantly increased size of the test split.  The test split is approximately two times the size of the validation split and as a result the difficulty of finding the found dog among the lost dogs is significantly increased.  However, after achieving a final success rate of 89\% we suspect that the true success rate is actually significantly higher in the real world.  This is because of two reasons.  The first is that in this experiment, we are applying this experiment using a single image for both lost and found dogs.  In reality, we expect users would submit multiple images in either case and thus the success rate would be increased significantly.  Unfortunately, we are unable to account for this because many dogs in the data-set have only two images.  The second is that in this experiment we are not filtering by location.  By filtering by location before applying the Dog Comparator, the number of false matches would be significantly reduced.  Thus, again significantly increasing the success rate.
+Using the optimum parameter combination as determined over the validation split of using only the most likely breed for both lost and found dogs respectively and returning the top 15 matches to the user, we achieved a success rate of 87\% on the test split.  We do note the decreased success rate over the test split compared to the validation split is due to the significantly increased size of the test split.  The test split is approximately two times the size of the validation split and as a result the difficulty of finding the found dog among the lost dogs is significantly increased.  However, after achieving a final success rate of 87\% we suspect that the true success rate is actually significantly higher in the real world.  This is because of two reasons.  The first is that in this experiment, we are applying this experiment using a single image for both lost and found dogs.  In reality, we expect users would submit multiple images in either case and thus the success rate would be increased significantly.  Unfortunately, we are unable to account for this because many dogs in the data-set have only two images.  The second is that in this experiment we are not filtering by location.  By filtering by location before applying the Dog Comparator, the number of false matches would be significantly reduced.  Thus, again significantly increasing the success rate.
 
 \newpage
 
